@@ -126,6 +126,7 @@
     </div>
     <div class="modal-body" id="viewModalBody"></div>
     <div class="modal-footer">
+      <button class="btn btn-primary" id="viewPdfBtn" onclick="downloadPdf(_viewingAppId)" style="margin-right:auto;">&#128196; Download PDF</button>
       <button class="btn btn-secondary" onclick="closeViewModal()">Close</button>
     </div>
   </div>
@@ -161,6 +162,7 @@ var currentUser = null;
 var currentView = 'my-applications';
 var editingUserId = null;
 var _appsList = [];
+var _viewingAppId = null;
 var _confirmCallback = null;
 
 // ── Confirm dialog ────────────────────────────────────────────────────────
@@ -484,6 +486,7 @@ async function viewApplication(id) {
     '</div>' +
   '</div>';
 
+  _viewingAppId = id;
   document.getElementById('viewModalTitle').textContent = 'Application – ' + (app.request_id || '');
   document.getElementById('viewModalBody').innerHTML = html;
   document.getElementById('viewModal').classList.add('visible');
