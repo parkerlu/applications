@@ -1,6 +1,18 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 
+# Resolve Docker socket for macOS Docker Desktop if /var/run/docker.sock is absent
+if [ ! -S /var/run/docker.sock ] && [ -S "$HOME/.docker/run/docker.sock" ]; then
+    export DOCKER_HOST="unix://$HOME/.docker/run/docker.sock"
+fi
+
+# Start MongoDB if not running
+if ! docker compose ps --quiet mongodb 2>/dev/null | grep -q .; then
+    echo "Starting MongoDB..."
+    docker compose up -d
+    sleep 2
+fi
+
 # Create venv if not exists
 if [ ! -d "venv" ]; then
     echo "Creating virtual environment..."
