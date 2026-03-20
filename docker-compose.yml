@@ -1,14 +1,14 @@
 services:
-  mongodb:
-    image: mongo:7
-    container_name: wpp_mongodb
+  app:
+    build: .
+    container_name: wpp_laptop_app
     ports:
-      - "27017:27017"
+      - "8900:8900"
     volumes:
       - mongodb_data:/data/db
-    environment:
-      MONGO_INITDB_DATABASE: wpp_laptop
+      - app_data:/app/applications
     restart: unless-stopped
 
 volumes:
   mongodb_data:
+  app_data:

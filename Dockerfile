@@ -23,4 +23,5 @@ RUN chmod +x /entrypoint.sh
 
 EXPOSE 8900
 
+ENTRYPOINT []
 CMD ["/entrypoint.sh"]
