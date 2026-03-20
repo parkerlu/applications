@@ -270,6 +270,12 @@ h1, h2, h3 {
   color: var(--selection-text);
 }
 
+/* Select dropdown options in dark mode */
+select, select option {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+}
+
 /* Modal overlay */
 .modal-overlay {
   display: none;
@@ -327,7 +333,7 @@ html:not(.dark) .alert-success { background: #dcfce7; color: #166534; }
   <!-- Top Header -->
   <header class="w-full sticky top-0 z-40 backdrop-blur-xl flex justify-between items-center px-12 py-6"
           style="background:var(--header-bg); border-bottom:1px solid var(--header-border);">
-    <div class="text-2xl font-black tracking-tighter text-primary font-headline">IT Asset Application Portal</div>
+    <div id="portalTitle" class="text-2xl font-black tracking-tighter text-primary font-headline">IT Asset Application Portal</div>
     <div class="flex items-center gap-6">
       <!-- Search -->
       <div id="searchWrap" class="relative group" style="display:none;">
@@ -337,6 +343,11 @@ html:not(.dark) .alert-success { background: #dcfce7; color: #166534; }
                placeholder="Search assets..." type="text" oninput="filterTable(this.value)">
         <span class="material-symbols-outlined absolute right-4 top-2 text-on-surface-variant">search</span>
       </div>
+      <!-- Language Toggle -->
+      <button id="langBtn" onclick="toggleLang()"
+              class="w-8 h-8 flex items-center justify-center rounded-full text-xs font-black transition-colors"
+              style="background:var(--toggle-bg); border:1px solid var(--toggle-border); color:var(--c-primary);"
+              title="Switch Language">EN</button>
       <!-- Dark/Light Toggle -->
       <div class="flex items-center gap-0 rounded-full p-1" style="background:var(--toggle-bg); border:1px solid var(--toggle-border);">
         <button id="btnLight" onclick="setTheme('light')"
@@ -353,7 +364,7 @@ html:not(.dark) .alert-success { background: #dcfce7; color: #166534; }
               class="flex items-center gap-2 px-4 py-2 rounded-lg text-on-surface-variant hover:text-error transition-colors duration-200 text-sm font-medium"
               style="border:1px solid var(--sidebar-border);">
         <span class="material-symbols-outlined text-lg">logout</span>
-        <span>Sign Out</span>
+        <span id="signOutLabel">Sign Out</span>
       </button>
     </div>
   </header>
@@ -568,6 +579,142 @@ function updateToggleButtons() {
   }
 })();
 
+// ── i18n ──────────────────────────────────────────────────────────────────
+var _lang = localStorage.getItem('lang') || 'en';
+var I18N = {
+  en: {
+    'portal_title': 'IT Asset Application Portal',
+    'my_applications': 'My Applications',
+    'new_application': 'New Application',
+    'all_applications': 'All Applications',
+    'user_management': 'User Management',
+    'profile': 'Profile',
+    'sign_out': 'Sign Out',
+    'search_placeholder': 'Search assets...',
+    'my_apps_desc': 'Manage and track your hardware and software requests within the WPP network.',
+    'all_apps_desc': 'Review all submitted laptop requests across the WPP network.',
+    'user_mgmt_desc': 'Manage users and permissions across the portal.',
+    'profile_desc': 'Update your email, market, and password.',
+    'export_all': 'Export All',
+    'export_selected': 'Export Selected',
+    'no_apps_title': 'No applications yet',
+    'no_apps_desc': 'Click "New Application" to get started.',
+    'request_id': 'Request ID',
+    'opco': 'OpCo',
+    'device_model': 'Device Model',
+    'quantity': 'Quantity',
+    'date': 'Date',
+    'actions': 'Actions',
+    'submitted_by': 'Submitted By',
+    'view': 'View',
+    'edit': 'Edit',
+    'delete': 'Delete',
+    'pdf': 'PDF',
+    'add_user': 'Add User',
+    'edit_user': 'Edit User',
+    'username': 'Username',
+    'password': 'Password',
+    'full_name': 'Full Name',
+    'email': 'Email',
+    'market': 'Market',
+    'role': 'Role',
+    'save_user': 'Save User',
+    'cancel': 'Cancel',
+    'close': 'Close',
+    'download_pdf': 'Download PDF',
+    'account_info': 'Account Information',
+    'account_info_desc': 'Update your email address and market.',
+    'change_password': 'Change Password',
+    'change_pw_desc': 'Leave empty to keep your current password.',
+    'current_password': 'Current Password',
+    'new_password': 'New Password',
+    'confirm_password': 'Confirm New Password',
+    'save_changes': 'Save Changes',
+    'select_market': '-- Select Market --',
+    'delete_app_title': 'Delete Application',
+    'delete_app_msg': 'Are you sure you want to delete this application? This action cannot be undone.',
+    'delete_user_title': 'Delete User',
+    'delete_user_msg': 'Are you sure you want to delete this user? This action cannot be undone.',
+    'no_users': 'No users found.',
+    'loading': 'Loading...',
+  },
+  zh: {
+    'portal_title': 'IT 资产申请门户',
+    'my_applications': '我的申请',
+    'new_application': '新建申请',
+    'all_applications': '所有申请',
+    'user_management': '用户管理',
+    'profile': '个人资料',
+    'sign_out': '退出登录',
+    'search_placeholder': '搜索资产...',
+    'my_apps_desc': '管理和跟踪您在 WPP 网络中的硬件和软件申请。',
+    'all_apps_desc': '查看 WPP 网络中所有已提交的笔记本电脑申请。',
+    'user_mgmt_desc': '管理门户中的用户和权限。',
+    'profile_desc': '更新您的邮箱、市场和密码。',
+    'export_all': '导出全部',
+    'export_selected': '导出选中',
+    'no_apps_title': '暂无申请',
+    'no_apps_desc': '点击"新建申请"开始。',
+    'request_id': '申请编号',
+    'opco': '运营公司',
+    'device_model': '设备型号',
+    'quantity': '数量',
+    'date': '日期',
+    'actions': '操作',
+    'submitted_by': '提交人',
+    'view': '查看',
+    'edit': '编辑',
+    'delete': '删除',
+    'pdf': 'PDF',
+    'add_user': '添加用户',
+    'edit_user': '编辑用户',
+    'username': '用户名',
+    'password': '密码',
+    'full_name': '姓名',
+    'email': '邮箱',
+    'market': '市场',
+    'role': '角色',
+    'save_user': '保存用户',
+    'cancel': '取消',
+    'close': '关闭',
+    'download_pdf': '下载 PDF',
+    'account_info': '账户信息',
+    'account_info_desc': '更新您的邮箱地址和市场。',
+    'change_password': '修改密码',
+    'change_pw_desc': '留空则保持当前密码不变。',
+    'current_password': '当前密码',
+    'new_password': '新密码',
+    'confirm_password': '确认新密码',
+    'save_changes': '保存更改',
+    'select_market': '-- 选择市场 --',
+    'delete_app_title': '删除申请',
+    'delete_app_msg': '确定要删除此申请吗？此操作无法撤销。',
+    'delete_user_title': '删除用户',
+    'delete_user_msg': '确定要删除此用户吗？此操作无法撤销。',
+    'no_users': '未找到用户。',
+    'loading': '加载中...',
+  }
+};
+
+function t(key) { return (I18N[_lang] && I18N[_lang][key]) || (I18N['en'][key]) || key; }
+
+function toggleLang() {
+  _lang = _lang === 'en' ? 'zh' : 'en';
+  localStorage.setItem('lang', _lang);
+  document.getElementById('langBtn').textContent = _lang === 'en' ? 'EN' : '中';
+  document.getElementById('portalTitle').textContent = t('portal_title');
+  document.getElementById('signOutLabel').textContent = t('sign_out');
+  document.getElementById('globalSearch').placeholder = t('search_placeholder');
+  renderSidebar();
+  showView(currentView);
+}
+
+// Apply saved language
+(function() {
+  var saved = localStorage.getItem('lang');
+  if (saved) _lang = saved;
+})();
+
 // ── Confirm dialog ────────────────────────────────────────────────────────
 function showConfirm(title, message, btnLabel, callback) {
   document.getElementById('confirmTitle').textContent = title;
@@ -608,6 +755,11 @@ function showToast(message, type) {
 // ── Init ───────────────────────────────────────────────────────────────────
 async function init() {
   updateToggleButtons();
+  // Apply saved language on load
+  document.getElementById('langBtn').textContent = _lang === 'en' ? 'EN' : '中';
+  document.getElementById('portalTitle').textContent = t('portal_title');
+  document.getElementById('signOutLabel').textContent = t('sign_out');
+  document.getElementById('globalSearch').placeholder = t('search_placeholder');
   try {
     var res = await fetch('/api/me');
     if (!res.ok) { window.location.href = '/login'; return; }
@@ -625,14 +777,14 @@ async function init() {
 // ── Sidebar ────────────────────────────────────────────────────────────────
 function renderSidebar() {
   var items = [
-    { id: 'my-applications',  label: 'My Applications',  icon: 'apps' },
-    { id: 'new-application',  label: 'New Application',  icon: 'add_box', href: '/application' },
+    { id: 'my-applications',  label: t('my_applications'),  icon: 'apps' },
+    { id: 'new-application',  label: t('new_application'),  icon: 'add_box', href: '/application' },
   ];
   if (currentUser.role === 'admin') {
-    items.push({ id: 'all-applications', label: 'All Applications', icon: 'admin_panel_settings' });
-    items.push({ id: 'user-management',  label: 'User Management',  icon: 'group' });
+    items.push({ id: 'all-applications', label: t('all_applications'), icon: 'admin_panel_settings' });
+    items.push({ id: 'user-management',  label: t('user_management'),  icon: 'group' });
   }
-  items.push({ id: 'profile', label: 'Profile', icon: 'account_circle' });
+  items.push({ id: 'profile', label: t('profile'), icon: 'account_circle' });
 
   var nav = document.getElementById('nav');
   nav.innerHTML = items.map(function(item) {
@@ -693,10 +845,10 @@ function showView(view) {
   setActiveNav(view);
 
   var headers = {
-    'my-applications':  { title: 'My Applications',  desc: 'Manage and track your hardware and software requests within the WPP network.' },
-    'all-applications': { title: 'All Applications',  desc: 'Review all submitted laptop requests across the WPP network.' },
-    'user-management':  { title: 'User Management',   desc: 'Manage users and permissions across the portal.' },
-    'profile':          { title: 'Profile',            desc: 'Update your email, market, and password.' },
+    'my-applications':  { title: t('my_applications'),  desc: t('my_apps_desc') },
+    'all-applications': { title: t('all_applications'),  desc: t('all_apps_desc') },
+    'user-management':  { title: t('user_management'),   desc: t('user_mgmt_desc') },
+    'profile':          { title: t('profile'),            desc: t('profile_desc') },
   };
   var h = headers[view] || headers['my-applications'];
   var ph = document.getElementById('pageHeader');
@@ -755,7 +907,7 @@ async function loadApplications(showAll) {
 }
 
 function renderApplicationsView(apps, showUser) {
-  var title = showUser ? 'All Applications' : 'My Applications';
+  var title = showUser ? t('all_applications') : t('my_applications');
   var content = document.getElementById('content');
 
   var tableHtml;
@@ -763,8 +915,8 @@ function renderApplicationsView(apps, showUser) {
     tableHtml =
       '<div class="flex flex-col items-center justify-center py-20 text-on-surface-variant">' +
         '<span class="material-symbols-outlined text-5xl mb-4 text-outline">inbox</span>' +
-        '<p class="text-lg font-medium">No applications yet</p>' +
-        '<p class="text-sm mt-1">Click "New Application" to get started.</p>' +
+        '<p class="text-lg font-medium">' + t('no_apps_title') + '</p>' +
+        '<p class="text-sm mt-1">' + t('no_apps_desc') + '</p>' +
       '</div>';
   } else {
     _appsList = apps;
@@ -836,21 +988,22 @@ function renderApplicationsView(apps, showUser) {
     }).join('');
 
     var userHeader = showUser
-      ? '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Submitted By</th>'
+      ? '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">' + t('submitted_by') + '</th>'
       : '';
+    var thCls = 'px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary';
     tableHtml =
       '<div class="rounded-xl overflow-hidden" style="background:var(--table-bg); box-shadow:var(--table-shadow); border:1px solid var(--table-border);">' +
         '<div class="overflow-x-auto">' +
           '<table class="w-full text-left border-collapse" id="dataTable">' +
             '<thead><tr style="background:var(--table-head-bg);">' +
               '<th class="px-4 py-5 text-center"><input type="checkbox" class="accent-primary w-4 h-4 rounded" onchange="toggleSelectAll(this)"></th>' +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Request ID</th>' +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">OpCo</th>' +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Device Model</th>' +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Quantity</th>' +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Date</th>' +
+              '<th class="' + thCls + '">' + t('request_id') + '</th>' +
+              '<th class="' + thCls + '">' + t('opco') + '</th>' +
+              '<th class="' + thCls + '">' + t('device_model') + '</th>' +
+              '<th class="' + thCls + '">' + t('quantity') + '</th>' +
+              '<th class="' + thCls + '">' + t('date') + '</th>' +
               userHeader +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary text-right">Actions</th>' +
+              '<th class="' + thCls + ' text-right">' + t('actions') + '</th>' +
             '</tr></thead>' +
             '<tbody class="divide-y" style="--tw-divide-opacity:0.1; --tw-divide-color:var(--c-outline-variant);">' + rows + '</tbody>' +
           '</table>' +
@@ -864,19 +1017,19 @@ function renderApplicationsView(apps, showUser) {
       '<div class="flex items-center gap-3">' +
         '<button id="exportSelectedBtn" class="flex items-center gap-2 px-5 py-3 rounded-lg font-bold text-sm transition-all duration-300 active:scale-95 bg-primary text-on-primary-container" ' +
           'style="display:none;" onclick="exportSelected()">' +
-          '<span class="material-symbols-outlined text-lg">download</span>Export Selected (<span id="selectedCount">0</span>)</button>' +
+          '<span class="material-symbols-outlined text-lg">download</span>' + t('export_selected') + ' (<span id="selectedCount">0</span>)</button>' +
         '<button class="flex items-center gap-2 px-5 py-3 rounded-lg font-bold text-primary transition-all duration-300 active:scale-95 text-sm" ' +
           'style="background:var(--export-bg); border:1px solid var(--table-border);" ' +
           'onmouseenter="this.style.background=\'var(--export-hover)\'" onmouseleave="this.style.background=\'var(--export-bg)\'" ' +
           'onclick="exportAll()">' +
-          '<span class="material-symbols-outlined text-lg">download</span>Export All</button>' +
+          '<span class="material-symbols-outlined text-lg">download</span>' + t('export_all') + '</button>' +
       '</div>' +
     '</div>' +
     tableHtml;
 }
 
 async function deleteApplication(id) {
-  showConfirm('Delete Application', 'Are you sure you want to delete this application? This action cannot be undone.', 'Delete', async function() {
+  showConfirm(t('delete_app_title'), t('delete_app_msg'), t('delete'), async function() {
     try {
       var res = await fetch('/api/applications/' + id, { method: 'DELETE' });
       if (!res.ok) {
@@ -1073,7 +1226,7 @@ function renderUsersView(users) {
     tableHtml =
       '<div class="flex flex-col items-center justify-center py-20 text-on-surface-variant">' +
         '<span class="material-symbols-outlined text-5xl mb-4 text-outline">group_off</span>' +
-        '<p class="text-lg font-medium">No users found</p>' +
+        '<p class="text-lg font-medium">' + t('no_users') + '</p>' +
       '</div>';
   } else {
     var rows = users.map(function(u) {
@@ -1102,13 +1255,13 @@ function renderUsersView(users) {
         '<div class="overflow-x-auto">' +
           '<table class="w-full text-left border-collapse" id="dataTable">' +
             '<thead><tr style="background:var(--table-head-bg);">' +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Username</th>' +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Name</th>' +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Email</th>' +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">OpCo</th>' +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Market</th>' +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Role</th>' +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary text-right">Actions</th>' +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">' + t('username') + '</th>' +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">' + t('full_name') + '</th>' +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">' + t('email') + '</th>' +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">' + t('opco') + '</th>' +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">' + t('market') + '</th>' +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">' + t('role') + '</th>' +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary text-right">' + t('actions') + '</th>' +
             '</tr></thead>' +
             '<tbody class="divide-y" style="--tw-divide-opacity:0.1; --tw-divide-color:var(--c-outline-variant);">' + rows + '</tbody>' +
           '</table>' +
@@ -1118,9 +1271,9 @@ function renderUsersView(users) {
 
   content.innerHTML =
     '<div class="flex items-end justify-between mb-6">' +
-      '<h2 class="text-xl font-bold text-on-surface">User Management</h2>' +
+      '<h2 class="text-xl font-bold text-on-surface">' + t('user_management') + '</h2>' +
       '<button class="flex items-center gap-2 px-6 py-3 rounded-lg font-bold text-on-primary-container bg-primary transition-all duration-300 active:scale-95 text-sm hover:opacity-90" onclick="showUserModal(null)">' +
-        '<span class="material-symbols-outlined text-lg">person_add</span>Add User</button>' +
+        '<span class="material-symbols-outlined text-lg">person_add</span>' + t('add_user') + '</button>' +
     '</div>' +
     tableHtml;
 }
@@ -1210,7 +1363,7 @@ function showUserError(msg) {
 }
 
 async function deleteUser(id) {
-  showConfirm('Delete User', 'Are you sure you want to delete this user? This action cannot be undone.', 'Delete', async function() {
+  showConfirm(t('delete_user_title'), t('delete_user_msg'), t('delete'), async function() {
     try {
       var res = await fetch('/api/users/' + id, { method: 'DELETE' });
       var data = await res.json();
@@ -1233,24 +1386,24 @@ function showChangePasswordForm() {
   content.innerHTML =
     '<div class="max-w-2xl mx-auto">' +
       '<div class="rounded-xl p-8" style="background:var(--table-bg); border:1px solid var(--table-border); box-shadow:var(--table-shadow);">' +
-        '<h2 class="text-xl font-bold text-on-surface mb-1 font-headline">Account Information</h2>' +
-        '<p class="text-sm text-on-surface-variant mb-6">Update your email address and market.</p>' +
+        '<h2 class="text-xl font-bold text-on-surface mb-1 font-headline">' + t('account_info') + '</h2>' +
+        '<p class="text-sm text-on-surface-variant mb-6">' + t('account_info_desc') + '</p>' +
         '<div class="alert alert-error" id="cpError"></div>' +
         '<div class="alert alert-success" id="cpSuccess"></div>' +
         '<form onsubmit="updateProfile(event)">' +
           '<div class="grid grid-cols-2 gap-4 mb-6">' +
             '<div>' +
-              '<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="cpEmail">Email</label>' +
+              '<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="cpEmail">' + t('email') + '</label>' +
               '<input type="email" id="cpEmail" value="' + esc(currentUser ? currentUser.email : '') + '" placeholder="Your email address"' +
                 ' class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"' +
                 ' style="background:var(--input-bg); border:1px solid var(--input-border); color:var(--input-text); --tw-ring-color:var(--neon-color);">' +
             '</div>' +
             '<div>' +
-              '<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="cpMarket">Market</label>' +
+              '<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="cpMarket">' + t('market') + '</label>' +
               '<select id="cpMarket"' +
                 ' class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"' +
                 ' style="background:var(--input-bg); border:1px solid var(--input-border); color:var(--input-text); --tw-ring-color:var(--neon-color);">' +
-                '<option value="">-- Select Market --</option>' +
+                '<option value="">' + t('select_market') + '</option>' +
                 '<option value="Shanghai"' + (m === 'Shanghai' ? ' selected' : '') + '>Shanghai</option>' +
                 '<option value="Beijing"' + (m === 'Beijing' ? ' selected' : '') + '>Beijing</option>' +
                 '<option value="Guangzhou"' + (m === 'Guangzhou' ? ' selected' : '') + '>Guangzhou</option>' +
@@ -1262,30 +1415,30 @@ function showChangePasswordForm() {
             '</div>' +
           '</div>' +
           '<div class="my-6" style="border-top:1px solid var(--modal-border);"></div>' +
-          '<h2 class="text-xl font-bold text-on-surface mb-1 font-headline">Change Password</h2>' +
-          '<p class="text-sm text-on-surface-variant mb-6">Leave empty to keep your current password.</p>' +
+          '<h2 class="text-xl font-bold text-on-surface mb-1 font-headline">' + t('change_password') + '</h2>' +
+          '<p class="text-sm text-on-surface-variant mb-6">' + t('change_pw_desc') + '</p>' +
           '<div class="mb-4">' +
-            '<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="cpOldPassword">Current Password</label>' +
+            '<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="cpOldPassword">' + t('current_password') + '</label>' +
             '<input type="password" id="cpOldPassword" autocomplete="current-password"' +
               ' class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"' +
               ' style="background:var(--input-bg); border:1px solid var(--input-border); color:var(--input-text); --tw-ring-color:var(--neon-color);">' +
           '</div>' +
           '<div class="grid grid-cols-2 gap-4 mb-6">' +
             '<div>' +
-              '<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="cpNewPassword">New Password</label>' +
+              '<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="cpNewPassword">' + t('new_password') + '</label>' +
               '<input type="password" id="cpNewPassword" autocomplete="new-password"' +
                 ' class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"' +
                 ' style="background:var(--input-bg); border:1px solid var(--input-border); color:var(--input-text); --tw-ring-color:var(--neon-color);">' +
             '</div>' +
             '<div>' +
-              '<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="cpConfirmPassword">Confirm New Password</label>' +
+              '<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="cpConfirmPassword">' + t('confirm_password') + '</label>' +
               '<input type="password" id="cpConfirmPassword" autocomplete="new-password"' +
                 ' class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"' +
                 ' style="background:var(--input-bg); border:1px solid var(--input-border); color:var(--input-text); --tw-ring-color:var(--neon-color);">' +
             '</div>' +
           '</div>' +
           '<div class="flex justify-end">' +
-            '<button type="submit" class="px-6 py-3 rounded-lg text-sm font-bold bg-primary text-on-primary-container transition-all duration-300 active:scale-95 hover:opacity-90">Save Changes</button>' +
+            '<button type="submit" class="px-6 py-3 rounded-lg text-sm font-bold bg-primary text-on-primary-container transition-all duration-300 active:scale-95 hover:opacity-90">' + t('save_changes') + '</button>' +
           '</div>' +
         '</form>' +
       '</div>' +
