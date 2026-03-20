@@ -6,33 +6,181 @@
     <title>WPP – Sign In</title>
     <link rel="stylesheet" href="/static/styles.css">
     <style>
-        body { min-height: 100vh; display: flex; flex-direction: column; }
+        body {
+            margin: 0; min-height: 100vh; display: flex; flex-direction: column;
+            background: #0a0a0a;
+        }
+
+        .top-bar {
+            background: #000; padding: 16px 32px; flex-shrink: 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .top-bar h1 {
+            font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: 0.08em; margin: 0;
+        }
+
+        .login-bg {
+            flex: 1; position: relative; display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Tech collage background with CSS */
+        .login-bg::before {
+            content: ''; position: absolute; inset: 0; z-index: 0;
+            background:
+                radial-gradient(ellipse at 20% 30%, rgba(139,92,246,0.35) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(59,130,246,0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 60% 70%, rgba(236,72,153,0.25) 0%, transparent 50%),
+                radial-gradient(ellipse at 30% 80%, rgba(6,182,212,0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 90% 90%, rgba(168,85,247,0.2) 0%, transparent 40%);
+            background-color: #0f172a;
+        }
+
+        /* Floating tech grid pattern */
+        .login-bg::after {
+            content: ''; position: absolute; inset: 0; z-index: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* Floating device shapes */
+        .shape {
+            position: absolute; border-radius: 16px; z-index: 0;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+            backdrop-filter: blur(2px);
+        }
+        .shape-1 { width: 280px; height: 180px; top: 5%; left: 3%; transform: rotate(-8deg); }
+        .shape-2 { width: 220px; height: 160px; top: 8%; right: 5%; transform: rotate(6deg); }
+        .shape-3 { width: 200px; height: 200px; bottom: 15%; left: 8%; transform: rotate(4deg); border-radius: 20px; }
+        .shape-4 { width: 300px; height: 190px; bottom: 8%; right: 3%; transform: rotate(-5deg); }
+        .shape-5 { width: 160px; height: 120px; top: 45%; left: 2%; transform: rotate(12deg); }
+        .shape-6 { width: 180px; height: 130px; top: 35%; right: 2%; transform: rotate(-10deg); }
+        .shape-7 { width: 240px; height: 150px; top: 60%; left: 25%; transform: rotate(3deg); }
+        .shape-8 { width: 200px; height: 140px; top: 20%; left: 35%; transform: rotate(-3deg); }
+
+        /* Glowing accent dots */
+        .glow {
+            position: absolute; border-radius: 50%; z-index: 0; filter: blur(40px);
+        }
+        .glow-1 { width: 200px; height: 200px; background: rgba(99,102,241,0.3); top: 10%; left: 15%; }
+        .glow-2 { width: 150px; height: 150px; background: rgba(236,72,153,0.25); bottom: 20%; right: 20%; }
+        .glow-3 { width: 180px; height: 180px; background: rgba(6,182,212,0.2); top: 50%; right: 10%; }
+
+        /* Glassmorphism card */
+        .glass-card {
+            position: relative; z-index: 1;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px;
+            padding: 48px 44px;
+            width: 100%; max-width: 440px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .glass-card h2 {
+            font-size: 1.65rem; font-weight: 800; color: #fff; text-align: center;
+            margin-bottom: 32px; letter-spacing: -0.01em;
+        }
+
+        .glass-card .form-group label {
+            color: rgba(255,255,255,0.85); font-weight: 600; font-size: 0.85rem;
+        }
+
+        .glass-card .form-group input {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff; font-size: 0.9rem;
+            padding: 12px 16px; border-radius: 10px;
+        }
+
+        .glass-card .form-group input::placeholder {
+            color: rgba(255,255,255,0.35);
+        }
+
+        .glass-card .form-group input:focus {
+            border-color: rgba(99,102,241,0.6);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .glass-card .btn-login {
+            width: 100%; padding: 13px; font-size: 0.95rem; font-weight: 700;
+            color: #fff; border: none; border-radius: 10px; cursor: pointer;
+            background: linear-gradient(135deg, #3b82f6, #6366f1, #8b5cf6);
+            box-shadow: 0 4px 15px rgba(99,102,241,0.4);
+            transition: all 0.2s; margin-top: 8px;
+            font-family: var(--font);
+        }
+
+        .glass-card .btn-login:hover {
+            box-shadow: 0 6px 20px rgba(99,102,241,0.5);
+            transform: translateY(-1px);
+        }
+
+        .glass-card .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .forgot-link {
+            display: block; text-align: center; margin-top: 16px;
+            color: rgba(255,255,255,0.5); font-size: 0.82rem; text-decoration: none;
+            transition: color 0.2s;
+        }
+        .forgot-link:hover { color: rgba(255,255,255,0.8); }
+
+        .glass-card .error-msg {
+            background: rgba(239,68,68,0.15); color: #fca5a5;
+            border: 1px solid rgba(239,68,68,0.25); border-radius: 10px;
+            padding: 10px 14px; font-size: 0.85rem; margin-bottom: 16px;
+        }
+
+        @media (max-width: 500px) {
+            .glass-card { margin: 20px; padding: 36px 28px; }
+            .shape { display: none; }
+        }
     </style>
 </head>
 <body>
 
-    <header class="login-header">
+    <div class="top-bar">
         <h1>WPP</h1>
-    </header>
+    </div>
 
-    <div class="login-main">
-        <div class="login-card">
+    <div class="login-bg">
+        <!-- Background shapes -->
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+        <div class="shape shape-6"></div>
+        <div class="shape shape-7"></div>
+        <div class="shape shape-8"></div>
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+        <div class="glow glow-3"></div>
+
+        <div class="glass-card">
 
             <!-- Login Form -->
             <div id="loginForm">
-                <h2>Sign In</h2>
+                <h2>WPP ET Login</h2>
                 <div id="error" class="error-msg" style="display:none;"></div>
                 <form onsubmit="login(event)">
                     <div class="form-group">
                         <label for="username">Username</label>
-                        <input type="text" id="username" name="username" autocomplete="username" required>
+                        <input type="text" id="username" name="username" autocomplete="username" placeholder="Enter your username" required>
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" id="password" name="password" autocomplete="current-password" required>
+                        <input type="password" id="password" name="password" autocomplete="current-password" placeholder="Enter your password" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Sign In</button>
+                    <button type="submit" class="btn-login">Sign In</button>
                 </form>
+                <a href="#" class="forgot-link">Forgot Password?</a>
             </div>
 
             <!-- Change Password Form -->
@@ -42,13 +190,13 @@
                 <form onsubmit="changePassword(event)">
                     <div class="form-group">
                         <label for="newPassword">New Password</label>
-                        <input type="password" id="newPassword" name="newPassword" autocomplete="new-password" required>
+                        <input type="password" id="newPassword" name="newPassword" autocomplete="new-password" placeholder="Enter new password" required>
                     </div>
                     <div class="form-group">
                         <label for="confirmPassword">Confirm New Password</label>
-                        <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" required>
+                        <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" placeholder="Confirm new password" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Update Password</button>
+                    <button type="submit" class="btn-login">Update Password</button>
                 </form>
             </div>
 
