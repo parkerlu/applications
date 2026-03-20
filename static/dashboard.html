@@ -307,7 +307,7 @@ function renderApplicationsView(apps, showUser) {
         '<td>' + esc(date) + '</td>' +
         userCol +
         '<td><div class="actions-cell">' +
-          '<button class="btn btn-sm btn-secondary btn-icon" title="View" onclick="viewApplication(' + idx + ')">&#128065;</button>' +
+          '<button class="btn btn-sm btn-secondary btn-icon" title="View" onclick="viewApplication(\'' + esc(app.id) + '\')">&#128065;</button>' +
           '<button class="btn btn-sm btn-secondary btn-icon" title="Edit" onclick="editApplication(\'' + esc(app.id) + '\')">&#9998;</button>' +
           '<button class="btn btn-sm btn-danger btn-icon" title="Delete" onclick="deleteApplication(\'' + esc(app.id) + '\')">&#128465;</button>' +
         '</div></td>' +
@@ -353,9 +353,14 @@ function editApplication(id) {
   window.location.href = '/application?edit=' + id;
 }
 
-function viewApplication(idx) {
-  var app = _appsList[idx];
-  if (!app) return;
+async function viewApplication(id) {
+  try {
+    var res = await fetch('/api/applications/' + id);
+    if (!res.ok) { showToast('Failed to load application', 'error'); return; }
+    var result = await res.json();
+    if (!result.success) { showToast('Application not found', 'error'); return; }
+    var app = result.application;
+  } catch (err) { showToast('Failed to load application', 'error'); return; }
   var d = app.data || {};
 
   function dv(val) {

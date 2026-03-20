@@ -653,6 +653,14 @@ function sidebarLogout() {
     if (agencySelect) agencySelect.value = currentUser.opco;
     var marketSelect = document.getElementById('market');
     if (marketSelect) marketSelect.value = currentUser.market;
+    // Default EUS Lead email to current user's email
+    var cityLeaderField = document.getElementById('cityLeader');
+    if (cityLeaderField && !cityLeaderField.value) cityLeaderField.value = currentUser.email;
+    // Auto-fill buEmail from email when left empty
+    document.getElementById('email').addEventListener('blur', function() {
+      var buField = document.getElementById('buEmail');
+      if (buField && !buField.value) buField.value = this.value;
+    });
     // Check edit mode
     var params = new URLSearchParams(window.location.search);
     var editId = params.get('edit');
