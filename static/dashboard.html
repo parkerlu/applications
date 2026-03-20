@@ -660,47 +660,56 @@ async function deleteUser(id) {
 // ── Profile ───────────────────────────────────────────────────────────────
 function showChangePasswordForm() {
   var content = document.getElementById('content');
+  var m = currentUser ? currentUser.market : '';
   content.innerHTML =
-    '<div class="page-header"><h2>Profile</h2></div>' +
-    '<div class="card card-narrow">' +
-      '<div class="alert alert-error" id="cpError"></div>' +
-      '<div class="alert alert-success" id="cpSuccess"></div>' +
-      '<form onsubmit="updateProfile(event)">' +
-        '<div class="form-group">' +
-          '<label for="cpEmail">Email</label>' +
-          '<input type="email" id="cpEmail" value="' + (currentUser ? currentUser.email : '') + '" placeholder="Your email address">' +
-        '</div>' +
-        '<div class="form-group">' +
-          '<label for="cpMarket">Market</label>' +
-          '<select id="cpMarket">' +
-            '<option value="">-- Select Market --</option>' +
-            '<option value="Shanghai"' + (currentUser && currentUser.market === 'Shanghai' ? ' selected' : '') + '>Shanghai</option>' +
-            '<option value="Beijing"' + (currentUser && currentUser.market === 'Beijing' ? ' selected' : '') + '>Beijing</option>' +
-            '<option value="Guangzhou"' + (currentUser && currentUser.market === 'Guangzhou' ? ' selected' : '') + '>Guangzhou</option>' +
-            '<option value="Wuxi"' + (currentUser && currentUser.market === 'Wuxi' ? ' selected' : '') + '>Wuxi</option>' +
-            '<option value="Shenzhen"' + (currentUser && currentUser.market === 'Shenzhen' ? ' selected' : '') + '>Shenzhen</option>' +
-            '<option value="Hongkong"' + (currentUser && currentUser.market === 'Hongkong' ? ' selected' : '') + '>Hongkong</option>' +
-            '<option value="Taiwan"' + (currentUser && currentUser.market === 'Taiwan' ? ' selected' : '') + '>Taiwan</option>' +
-          '</select>' +
-        '</div>' +
-        '<hr style="margin:16px 0;border:none;border-top:1px solid var(--gray-200);">' +
-        '<p style="color:var(--gray-500);margin-bottom:12px;">Leave password fields empty to keep current password.</p>' +
-        '<div class="form-group">' +
-          '<label for="cpOldPassword">Current Password</label>' +
-          '<input type="password" id="cpOldPassword" autocomplete="current-password">' +
-        '</div>' +
-        '<div class="form-group">' +
-          '<label for="cpNewPassword">New Password</label>' +
-          '<input type="password" id="cpNewPassword" autocomplete="new-password">' +
-        '</div>' +
-        '<div class="form-group">' +
-          '<label for="cpConfirmPassword">Confirm New Password</label>' +
-          '<input type="password" id="cpConfirmPassword" autocomplete="new-password">' +
-        '</div>' +
-        '<div style="display:flex;gap:10px;margin-top:4px;">' +
-          '<button type="submit" class="btn btn-primary">Update</button>' +
-        '</div>' +
-      '</form>' +
+    '<div class="form-container">' +
+      '<div class="step-panel active">' +
+        '<h2>Account Information</h2>' +
+        '<p class="step-subtitle">Update your email address and market.</p>' +
+        '<div class="alert alert-error" id="cpError"></div>' +
+        '<div class="alert alert-success" id="cpSuccess"></div>' +
+        '<form onsubmit="updateProfile(event)">' +
+          '<div class="form-row">' +
+            '<div class="form-group">' +
+              '<label for="cpEmail">Email</label>' +
+              '<input type="email" id="cpEmail" value="' + esc(currentUser ? currentUser.email : '') + '" placeholder="Your email address">' +
+            '</div>' +
+            '<div class="form-group">' +
+              '<label for="cpMarket">Market</label>' +
+              '<select id="cpMarket">' +
+                '<option value="">-- Select Market --</option>' +
+                '<option value="Shanghai"' + (m === 'Shanghai' ? ' selected' : '') + '>Shanghai</option>' +
+                '<option value="Beijing"' + (m === 'Beijing' ? ' selected' : '') + '>Beijing</option>' +
+                '<option value="Guangzhou"' + (m === 'Guangzhou' ? ' selected' : '') + '>Guangzhou</option>' +
+                '<option value="Wuxi"' + (m === 'Wuxi' ? ' selected' : '') + '>Wuxi</option>' +
+                '<option value="Shenzhen"' + (m === 'Shenzhen' ? ' selected' : '') + '>Shenzhen</option>' +
+                '<option value="Hongkong"' + (m === 'Hongkong' ? ' selected' : '') + '>Hongkong</option>' +
+                '<option value="Taiwan"' + (m === 'Taiwan' ? ' selected' : '') + '>Taiwan</option>' +
+              '</select>' +
+            '</div>' +
+          '</div>' +
+          '<div style="margin:24px 0 20px;border-top:1px solid var(--gray-200);"></div>' +
+          '<h2>Change Password</h2>' +
+          '<p class="step-subtitle">Leave empty to keep your current password.</p>' +
+          '<div class="form-group">' +
+            '<label for="cpOldPassword">Current Password</label>' +
+            '<input type="password" id="cpOldPassword" autocomplete="current-password">' +
+          '</div>' +
+          '<div class="form-row">' +
+            '<div class="form-group">' +
+              '<label for="cpNewPassword">New Password</label>' +
+              '<input type="password" id="cpNewPassword" autocomplete="new-password">' +
+            '</div>' +
+            '<div class="form-group">' +
+              '<label for="cpConfirmPassword">Confirm New Password</label>' +
+              '<input type="password" id="cpConfirmPassword" autocomplete="new-password">' +
+            '</div>' +
+          '</div>' +
+          '<div class="nav-buttons" style="justify-content:flex-end;">' +
+            '<button type="submit" class="btn btn-primary">Save Changes</button>' +
+          '</div>' +
+        '</form>' +
+      '</div>' +
     '</div>';
 }
 
