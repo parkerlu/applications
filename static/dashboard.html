@@ -940,7 +940,16 @@ async function loadUsers() {
   }
 }
 
+var _usersCache = {};
+
+function editUserById(id) {
+  var user = _usersCache[id] || null;
+  showUserModal(user ? JSON.stringify(user) : null);
+}
+
 function renderUsersView(users) {
+  _usersCache = {};
+  users.forEach(function(u) { _usersCache[u.id] = u; });
   var content = document.getElementById('content');
 
   var tableHtml;
@@ -956,7 +965,7 @@ function renderUsersView(users) {
         '<td>' + esc(u.market || '—') + '</td>' +
         '<td><span class="role-badge ' + esc(u.role) + '">' + esc(u.role) + '</span></td>' +
         '<td><div class="actions-cell">' +
-          '<button class="btn btn-sm btn-secondary" onclick="showUserModal(' + JSON.stringify(JSON.stringify(u)) + ')">&#9998; Edit</button>' +
+          '<button class="btn btn-sm btn-secondary" onclick="editUserById(\'' + esc(u.id) + '\')">&#9998; Edit</button>' +
           '<button class="btn btn-sm btn-danger" onclick="deleteUser(\'' + esc(u.id) + '\')" ' + (u.id === currentUser.id ? 'disabled title="Cannot delete yourself"' : '') + '>&#128465;</button>' +
         '</div></td>' +
       '</tr>';
