@@ -1,78 +1,426 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
 <title>WPP – Dashboard</title>
-<link rel="stylesheet" href="/static/styles.css">
+<script src="/static/css/tailwind.js"></script>
+<link href="/static/fonts/fonts.css" rel="stylesheet">
+<link href="/static/fonts/material.css" rel="stylesheet">
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "inverse-primary": "var(--c-inverse-primary)",
+        "surface-dim": "var(--c-surface-dim)",
+        "on-error-container": "var(--c-on-error-container)",
+        "error": "var(--c-error)",
+        "tertiary-container": "var(--c-tertiary-container)",
+        "background": "var(--c-background)",
+        "outline": "var(--c-outline)",
+        "on-primary-fixed": "var(--c-on-primary-fixed)",
+        "secondary-container": "var(--c-secondary-container)",
+        "surface-variant": "var(--c-surface-variant)",
+        "on-primary-container": "var(--c-on-primary-container)",
+        "primary": "var(--c-primary)",
+        "error-container": "var(--c-error-container)",
+        "inverse-on-surface": "var(--c-inverse-on-surface)",
+        "primary-fixed-dim": "var(--c-primary-fixed-dim)",
+        "on-primary-fixed-variant": "var(--c-on-primary-fixed-variant)",
+        "surface-bright": "var(--c-surface-bright)",
+        "primary-fixed": "var(--c-primary-fixed)",
+        "on-background": "var(--c-on-background)",
+        "surface-container-lowest": "var(--c-surface-container-lowest)",
+        "on-secondary-container": "var(--c-on-secondary-container)",
+        "surface-container-highest": "var(--c-surface-container-highest)",
+        "on-surface-variant": "var(--c-on-surface-variant)",
+        "on-secondary": "var(--c-on-secondary)",
+        "surface-container": "var(--c-surface-container)",
+        "surface": "var(--c-surface)",
+        "secondary-dim": "var(--c-secondary-dim)",
+        "outline-variant": "var(--c-outline-variant)",
+        "on-surface": "var(--c-on-surface)",
+        "on-secondary-fixed": "var(--c-on-secondary-fixed)",
+        "tertiary-dim": "var(--c-tertiary-dim)",
+        "on-tertiary": "var(--c-on-tertiary)",
+        "primary-dim": "var(--c-primary-dim)",
+        "inverse-surface": "var(--c-inverse-surface)",
+        "error-dim": "var(--c-error-dim)",
+        "on-primary": "var(--c-on-primary)",
+        "surface-container-low": "var(--c-surface-container-low)",
+        "on-tertiary-container": "var(--c-on-tertiary-container)",
+        "on-tertiary-fixed": "var(--c-on-tertiary-fixed)",
+        "on-secondary-fixed-variant": "var(--c-on-secondary-fixed-variant)",
+        "surface-container-high": "var(--c-surface-container-high)",
+        "secondary-fixed-dim": "var(--c-secondary-fixed-dim)",
+        "secondary-fixed": "var(--c-secondary-fixed)",
+        "on-tertiary-fixed-variant": "var(--c-on-tertiary-fixed-variant)",
+        "tertiary-fixed-dim": "var(--c-tertiary-fixed-dim)",
+        "on-error": "var(--c-on-error)",
+        "tertiary-fixed": "var(--c-tertiary-fixed)",
+        "tertiary": "var(--c-tertiary)",
+        "primary-container": "var(--c-primary-container)",
+        "surface-tint": "var(--c-surface-tint)",
+        "secondary": "var(--c-secondary)"
+      },
+      fontFamily: {
+        "headline": ["Plus Jakarta Sans", "sans-serif"],
+        "body": ["Manrope", "sans-serif"],
+        "label": ["Manrope", "sans-serif"]
+      },
+      borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+    },
+  },
+}
+</script>
+<style>
+/* Dark mode colors (default) */
+.dark {
+  --c-inverse-primary: #004eea;
+  --c-surface-dim: #0e0e0e;
+  --c-on-error-container: #ffa8a3;
+  --c-error: #ff716c;
+  --c-tertiary-container: #d501f9;
+  --c-background: #0e0e0e;
+  --c-outline: #767575;
+  --c-on-primary-fixed: #000000;
+  --c-secondary-container: #006d35;
+  --c-surface-variant: #262626;
+  --c-on-primary-container: #001b61;
+  --c-primary: #94aaff;
+  --c-error-container: #9f0519;
+  --c-inverse-on-surface: #565555;
+  --c-primary-fixed-dim: #6c8cff;
+  --c-on-primary-fixed-variant: #002376;
+  --c-surface-bright: #2c2c2c;
+  --c-primary-fixed: #809bff;
+  --c-on-background: #ffffff;
+  --c-surface-container-lowest: #000000;
+  --c-on-secondary-container: #e3ffe4;
+  --c-surface-container-highest: #262626;
+  --c-on-surface-variant: #adaaaa;
+  --c-on-secondary: #005d2c;
+  --c-surface-container: #1a1a1a;
+  --c-surface: #0e0e0e;
+  --c-secondary-dim: #24f07e;
+  --c-outline-variant: #484847;
+  --c-on-surface: #ffffff;
+  --c-on-secondary-fixed: #004820;
+  --c-tertiary-dim: #c500e6;
+  --c-on-tertiary: #3c0048;
+  --c-primary-dim: #3367ff;
+  --c-inverse-surface: #fcf9f8;
+  --c-error-dim: #d7383b;
+  --c-on-primary: #00257b;
+  --c-surface-container-low: #131313;
+  --c-on-tertiary-container: #000000;
+  --c-on-tertiary-fixed: #2f0039;
+  --c-on-secondary-fixed-variant: #006832;
+  --c-surface-container-high: #20201f;
+  --c-secondary-fixed-dim: #24f07e;
+  --c-secondary-fixed: #3fff8b;
+  --c-on-tertiary-fixed-variant: #650077;
+  --c-tertiary-fixed-dim: #eb71ff;
+  --c-on-error: #490006;
+  --c-tertiary-fixed: #f189ff;
+  --c-tertiary: #e966ff;
+  --c-primary-container: #809bff;
+  --c-surface-tint: #94aaff;
+  --c-secondary: #3fff8b;
+
+  /* Sidebar */
+  --sidebar-bg: #131313;
+  --sidebar-border: rgba(72,72,71,0.15);
+  --sidebar-hover: #20201f;
+  --sidebar-logo-color: #e966ff;
+  --header-bg: rgba(14,14,14,0.8);
+  --header-border: transparent;
+  --search-bg: #131313;
+  --search-border: rgba(72,72,71,0.3);
+  --toggle-bg: #131313;
+  --toggle-border: rgba(72,72,71,0.3);
+  --toggle-active-bg: #94aaff;
+  --toggle-active-text: #001b61;
+  --table-bg: #131313;
+  --table-shadow: 0 20px 40px rgba(148,170,255,0.06);
+  --table-border: rgba(72,72,71,0.15);
+  --table-head-bg: rgba(32,32,31,0.5);
+  --table-hover: #262626;
+  --badge-bg: #262626;
+  --icon-box-bg: #262626;
+  --export-bg: #20201f;
+  --export-hover: #262626;
+  --neon-glow: 0 0 15px rgba(148,170,255,0.4);
+  --neon-color: #94aaff;
+  --selection-bg: #94aaff;
+  --selection-text: #001b61;
+
+  /* Modal */
+  --modal-bg: #1a1a1a;
+  --modal-border: #484847;
+  --input-bg: #0e0e0e;
+  --input-border: #484847;
+  --input-text: #ffffff;
+  --input-focus-ring: rgba(148,170,255,0.4);
+}
+
+/* Light mode colors */
+html:not(.dark) {
+  --c-inverse-primary: #004eea;
+  --c-surface-dim: #f4f4f4;
+  --c-on-error-container: #410002;
+  --c-error: #ba1a1a;
+  --c-tertiary-container: #ffd7f3;
+  --c-background: #f8f9fa;
+  --c-outline: #767575;
+  --c-on-primary-fixed: #001b61;
+  --c-secondary-container: #d3e8d3;
+  --c-surface-variant: #e1e2ec;
+  --c-on-primary-container: #ffffff;
+  --c-primary: #3367ff;
+  --c-error-container: #ffdad6;
+  --c-inverse-on-surface: #f1f0f4;
+  --c-primary-fixed-dim: #6c8cff;
+  --c-on-primary-fixed-variant: #002376;
+  --c-surface-bright: #fcfcfc;
+  --c-primary-fixed: #809bff;
+  --c-on-background: #1a1c1e;
+  --c-surface-container-lowest: #ffffff;
+  --c-on-secondary-container: #00210a;
+  --c-surface-container-highest: #e2e2e6;
+  --c-on-surface-variant: #44474e;
+  --c-on-secondary: #ffffff;
+  --c-surface-container: #f0f0f3;
+  --c-surface: #ffffff;
+  --c-secondary-dim: #24f07e;
+  --c-outline-variant: #c4c6d0;
+  --c-on-surface: #1a1c1e;
+  --c-on-secondary-fixed: #00210a;
+  --c-tertiary-dim: #c500e6;
+  --c-on-tertiary: #ffffff;
+  --c-primary-dim: #3367ff;
+  --c-inverse-surface: #2f3033;
+  --c-error-dim: #ba1a1a;
+  --c-on-primary: #ffffff;
+  --c-surface-container-low: #f7f7f9;
+  --c-on-tertiary-container: #2f0039;
+  --c-on-tertiary-fixed: #2f0039;
+  --c-on-secondary-fixed-variant: #006d35;
+  --c-surface-container-high: #e9e9ed;
+  --c-secondary-fixed-dim: #24f07e;
+  --c-secondary-fixed: #3fff8b;
+  --c-on-tertiary-fixed-variant: #650077;
+  --c-tertiary-fixed-dim: #eb71ff;
+  --c-on-error: #ffffff;
+  --c-tertiary-fixed: #f189ff;
+  --c-tertiary: #d501f9;
+  --c-primary-container: #3367ff;
+  --c-surface-tint: #3367ff;
+  --c-secondary: #006d35;
+
+  /* Sidebar */
+  --sidebar-bg: #ffffff;
+  --sidebar-border: rgba(196,198,208,0.3);
+  --sidebar-hover: #f7f7f9;
+  --sidebar-logo-color: #d501f9;
+  --header-bg: rgba(248,249,250,0.8);
+  --header-border: rgba(196,198,208,0.1);
+  --search-bg: #f0f0f3;
+  --search-border: rgba(196,198,208,0.5);
+  --toggle-bg: #f0f0f3;
+  --toggle-border: rgba(196,198,208,0.3);
+  --toggle-active-bg: #ffffff;
+  --toggle-active-text: #3367ff;
+  --table-bg: #ffffff;
+  --table-shadow: 0 8px 30px rgb(0,0,0,0.04);
+  --table-border: rgba(196,198,208,0.2);
+  --table-head-bg: #f7f7f9;
+  --table-hover: rgba(247,247,249,0.5);
+  --badge-bg: #e9e9ed;
+  --icon-box-bg: #f0f0f3;
+  --export-bg: #ffffff;
+  --export-hover: #e9e9ed;
+  --neon-glow: 0 0 15px rgba(51,103,255,0.2);
+  --neon-color: #3367ff;
+  --selection-bg: rgba(51,103,255,0.2);
+  --selection-text: #3367ff;
+
+  /* Modal */
+  --modal-bg: #ffffff;
+  --modal-border: #c4c6d0;
+  --input-bg: #f8f9fa;
+  --input-border: #c4c6d0;
+  --input-text: #1a1c1e;
+  --input-focus-ring: rgba(51,103,255,0.3);
+}
+
+body {
+  font-family: 'Manrope', sans-serif;
+}
+h1, h2, h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+::selection {
+  background: var(--selection-bg);
+  color: var(--selection-text);
+}
+
+/* Modal overlay */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.visible {
+  display: flex;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--c-outline-variant); border-radius: 3px; }
+
+/* Table row search highlight */
+tr.search-hidden { display: none; }
+
+/* Alert styles */
+.alert { display: none; padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 12px; }
+.alert.visible { display: block; }
+.alert-error { background: var(--c-error-container); color: var(--c-on-error-container); }
+.alert-success.visible { display: block; }
+.dark .alert-success { background: rgba(0,109,53,0.15); color: #3fff8b; }
+html:not(.dark) .alert-success { background: #dcfce7; color: #166534; }
+</style>
 </head>
-<body>
+<body class="bg-background text-on-surface min-h-screen">
 
-<div class="layout">
-
-  <!-- Sidebar -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-title">WPP</div>
-      <div class="logo-sub">IT Asset Portal</div>
-    </div>
-
-    <nav class="sidebar-nav" id="nav"></nav>
-
-    <div class="sidebar-footer">
-      <div class="user-info" id="userInfo"></div>
-      <button class="btn-logout" onclick="logout()">&#x2192; Sign Out</button>
-    </div>
-  </aside>
-
-  <!-- Main -->
-  <div class="main">
-    <div class="wizard-header">
-      <div class="wizard-header-inner" id="pageHeader">
-        <h1>WPP IT Asset Portal</h1>
-        <p>Manage laptop requests and users</p>
-      </div>
-    </div>
-    <div class="content" id="content">
-      <div class="loading">Loading&hellip;</div>
-    </div>
+<!-- Sidebar -->
+<aside class="h-screen w-64 fixed left-0 top-0 z-50 flex flex-col p-6"
+       style="background:var(--sidebar-bg); border-right:1px solid var(--sidebar-border);">
+  <!-- Logo -->
+  <div class="text-xl font-bold mb-12 flex items-center gap-2" style="color:var(--sidebar-logo-color);">
+    <span class="material-symbols-outlined text-2xl">auto_awesome</span>
+    <span class="font-headline tracking-tighter text-on-surface">WPP</span>
   </div>
 
-</div>
+  <!-- Navigation -->
+  <nav class="flex-1 space-y-2" id="nav"></nav>
+
+  <!-- Sidebar Footer / User Info -->
+  <div class="mt-auto pt-6" style="border-top:1px solid var(--sidebar-border);">
+    <div id="userInfo" class="flex items-center gap-3"></div>
+  </div>
+</aside>
+
+<!-- Main Content Wrapper -->
+<main class="ml-64 min-h-screen">
+  <!-- Top Header -->
+  <header class="w-full sticky top-0 z-40 backdrop-blur-xl flex justify-between items-center px-12 py-6"
+          style="background:var(--header-bg); border-bottom:1px solid var(--header-border);">
+    <div class="text-2xl font-black tracking-tighter text-primary font-headline">IT Asset Application Portal</div>
+    <div class="flex items-center gap-6">
+      <!-- Search -->
+      <div class="relative group">
+        <input id="globalSearch"
+               class="rounded-full px-6 py-2 text-sm focus:outline-none focus:ring-2 w-64 transition-all duration-300 group-hover:w-80"
+               style="background:var(--search-bg); border:1px solid var(--search-border); color:var(--c-on-surface); --tw-ring-color:var(--neon-color);"
+               placeholder="Search assets..." type="text" oninput="filterTable(this.value)">
+        <span class="material-symbols-outlined absolute right-4 top-2 text-on-surface-variant">search</span>
+      </div>
+      <!-- Dark/Light Toggle -->
+      <div class="flex items-center gap-0 rounded-full p-1" style="background:var(--toggle-bg); border:1px solid var(--toggle-border);">
+        <button id="btnLight" onclick="setTheme('light')"
+                class="w-8 h-8 flex items-center justify-center rounded-full transition-colors">
+          <span class="material-symbols-outlined text-lg">light_mode</span>
+        </button>
+        <button id="btnDark" onclick="setTheme('dark')"
+                class="w-8 h-8 flex items-center justify-center rounded-full transition-colors">
+          <span class="material-symbols-outlined text-lg">dark_mode</span>
+        </button>
+      </div>
+      <!-- Sign Out -->
+      <button onclick="logout()"
+              class="flex items-center gap-2 px-4 py-2 rounded-lg text-on-surface-variant hover:text-error transition-colors duration-200 text-sm font-medium"
+              style="border:1px solid var(--sidebar-border);">
+        <span class="material-symbols-outlined text-lg">logout</span>
+        <span>Sign Out</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Page Header -->
+  <div class="px-12 py-8 max-w-7xl mx-auto">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6" id="pageHeader">
+      <div class="max-w-2xl">
+        <h1 class="text-4xl font-extrabold tracking-tight mb-2 text-on-surface">My Applications</h1>
+        <p class="text-on-surface-variant text-lg">Manage and track your hardware and software requests within the WPP network.</p>
+      </div>
+    </div>
+    <!-- Content Area -->
+    <div id="content">
+      <div class="flex items-center justify-center py-20 text-on-surface-variant">
+        <span class="material-symbols-outlined animate-spin mr-3 text-2xl">progress_activity</span>
+        Loading...
+      </div>
+    </div>
+  </div>
+</main>
 
 <!-- User modal -->
 <div class="modal-overlay" id="userModal">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 id="userModalTitle">Add User</h3>
-      <button class="modal-close" onclick="closeUserModal()">&#x2715;</button>
+  <div class="rounded-xl shadow-2xl w-full max-w-lg mx-4" style="background:var(--modal-bg); border:1px solid var(--modal-border);">
+    <div class="flex items-center justify-between px-6 py-4" style="border-bottom:1px solid var(--modal-border);">
+      <h3 class="text-lg font-bold text-on-surface font-headline" id="userModalTitle">Add User</h3>
+      <button class="text-on-surface-variant hover:text-on-surface transition-colors" onclick="closeUserModal()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
     </div>
-    <div class="modal-body">
+    <div class="px-6 py-4">
       <div class="alert alert-error" id="userModalError"></div>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="umUsername">Username <span class="required">*</span></label>
-          <input type="text" id="umUsername" autocomplete="off">
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="umUsername">Username <span class="text-error">*</span></label>
+          <input type="text" id="umUsername" autocomplete="off"
+                 class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                 style="background:var(--input-bg); border:1px solid var(--input-border); color:var(--input-text); --tw-ring-color:var(--neon-color);">
         </div>
-        <div class="form-group">
-          <label for="umPassword" id="umPasswordLabel">Password <span class="required">*</span></label>
-          <input type="password" id="umPassword" autocomplete="new-password" placeholder="">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="umName">Full Name <span class="required">*</span></label>
-          <input type="text" id="umName" autocomplete="off">
-        </div>
-        <div class="form-group">
-          <label for="umEmail">Email <span class="required">*</span></label>
-          <input type="email" id="umEmail" autocomplete="off">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="umPassword" id="umPasswordLabel">Password <span class="text-error">*</span></label>
+          <input type="password" id="umPassword" autocomplete="new-password"
+                 class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                 style="background:var(--input-bg); border:1px solid var(--input-border); color:var(--input-text); --tw-ring-color:var(--neon-color);">
         </div>
       </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label for="umOpco">OpCo <span class="required">*</span></label>
-          <select id="umOpco">
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="umName">Full Name <span class="text-error">*</span></label>
+          <input type="text" id="umName" autocomplete="off"
+                 class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                 style="background:var(--input-bg); border:1px solid var(--input-border); color:var(--input-text); --tw-ring-color:var(--neon-color);">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="umEmail">Email <span class="text-error">*</span></label>
+          <input type="email" id="umEmail" autocomplete="off"
+                 class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                 style="background:var(--input-bg); border:1px solid var(--input-border); color:var(--input-text); --tw-ring-color:var(--neon-color);">
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="umOpco">OpCo <span class="text-error">*</span></label>
+          <select id="umOpco"
+                  class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                  style="background:var(--input-bg); border:1px solid var(--input-border); color:var(--input-text); --tw-ring-color:var(--neon-color);">
             <option value="">-- Select --</option>
             <option>WPP HQ</option>
             <option>WPP ET</option>
@@ -88,9 +436,11 @@
             <option>Design Bridge</option>
           </select>
         </div>
-        <div class="form-group">
-          <label for="umMarket">Market <span class="required">*</span></label>
-          <select id="umMarket">
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="umMarket">Market <span class="text-error">*</span></label>
+          <select id="umMarket"
+                  class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                  style="background:var(--input-bg); border:1px solid var(--input-border); color:var(--input-text); --tw-ring-color:var(--neon-color);">
             <option value="">-- Select --</option>
             <option>Shanghai</option>
             <option>Beijing</option>
@@ -102,56 +452,67 @@
           </select>
         </div>
       </div>
-      <div class="form-group">
-        <label for="umRole">Role <span class="required">*</span></label>
-        <select id="umRole">
+      <div class="mb-4">
+        <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="umRole">Role <span class="text-error">*</span></label>
+        <select id="umRole"
+                class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"
+                style="background:var(--input-bg); border:1px solid var(--input-border); color:var(--input-text); --tw-ring-color:var(--neon-color);">
           <option value="user">User</option>
           <option value="admin">Admin</option>
         </select>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeUserModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="saveUser()">Save User</button>
+    <div class="flex justify-end gap-3 px-6 py-4" style="border-top:1px solid var(--modal-border);">
+      <button class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors" onclick="closeUserModal()"
+              style="border:1px solid var(--modal-border);">Cancel</button>
+      <button class="px-5 py-2 rounded-lg text-sm font-semibold bg-primary text-on-primary-container transition-colors hover:opacity-90" onclick="saveUser()">Save User</button>
     </div>
   </div>
 </div>
 
 <!-- View Application modal -->
 <div class="modal-overlay" id="viewModal">
-  <div class="modal modal-lg">
-    <div class="modal-header">
-      <h3 id="viewModalTitle">Application Details</h3>
-      <button class="modal-close" onclick="closeViewModal()">&#x2715;</button>
+  <div class="rounded-xl shadow-2xl w-full max-w-3xl mx-4 max-h-[85vh] flex flex-col" style="background:var(--modal-bg); border:1px solid var(--modal-border);">
+    <div class="flex items-center justify-between px-6 py-4 flex-shrink-0" style="border-bottom:1px solid var(--modal-border);">
+      <h3 class="text-lg font-bold text-on-surface font-headline" id="viewModalTitle">Application Details</h3>
+      <button class="text-on-surface-variant hover:text-on-surface transition-colors" onclick="closeViewModal()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
     </div>
-    <div class="modal-body" id="viewModalBody"></div>
-    <div class="modal-footer">
-      <button class="btn btn-primary" id="viewPdfBtn" onclick="downloadPdf(_viewingAppId)" style="margin-right:auto;">&#128196; Download PDF</button>
-      <button class="btn btn-secondary" onclick="closeViewModal()">Close</button>
+    <div class="px-6 py-4 overflow-y-auto flex-1" id="viewModalBody"></div>
+    <div class="flex justify-between gap-3 px-6 py-4 flex-shrink-0" style="border-top:1px solid var(--modal-border);">
+      <button class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold bg-primary text-on-primary-container transition-colors hover:opacity-90" id="viewPdfBtn" onclick="downloadPdf(_viewingAppId)">
+        <span class="material-symbols-outlined text-lg">picture_as_pdf</span> Download PDF
+      </button>
+      <button class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors" onclick="closeViewModal()"
+              style="border:1px solid var(--modal-border);">Close</button>
     </div>
   </div>
 </div>
 
 <!-- Confirm dialog -->
 <div class="modal-overlay" id="confirmModal">
-  <div class="modal" style="max-width:420px;">
-    <div class="modal-header">
-      <h3 id="confirmTitle">Confirm</h3>
-      <button class="modal-close" onclick="closeConfirm()">&#x2715;</button>
+  <div class="rounded-xl shadow-2xl w-full max-w-md mx-4" style="background:var(--modal-bg); border:1px solid var(--modal-border);">
+    <div class="flex items-center justify-between px-6 py-4" style="border-bottom:1px solid var(--modal-border);">
+      <h3 class="text-lg font-bold text-on-surface font-headline" id="confirmTitle">Confirm</h3>
+      <button class="text-on-surface-variant hover:text-on-surface transition-colors" onclick="closeConfirm()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
     </div>
-    <div class="modal-body">
-      <p id="confirmMessage"></p>
+    <div class="px-6 py-6">
+      <p class="text-on-surface-variant" id="confirmMessage"></p>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" onclick="closeConfirm()">Cancel</button>
-      <button class="btn btn-danger" id="confirmOkBtn" onclick="confirmOk()">Delete</button>
+    <div class="flex justify-end gap-3 px-6 py-4" style="border-top:1px solid var(--modal-border);">
+      <button class="px-5 py-2 rounded-lg text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors" onclick="closeConfirm()"
+              style="border:1px solid var(--modal-border);">Cancel</button>
+      <button class="px-5 py-2 rounded-lg text-sm font-semibold bg-error text-on-error transition-colors hover:opacity-90" id="confirmOkBtn" onclick="confirmOk()">Delete</button>
     </div>
   </div>
 </div>
 
 <!-- Toast notification -->
 <div id="toast" style="position:fixed;bottom:24px;right:24px;z-index:2000;display:none;">
-  <div id="toastInner" style="padding:12px 20px;border-radius:8px;font-size:0.88rem;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,0.15);max-width:360px;"></div>
+  <div id="toastInner" style="padding:12px 20px;border-radius:12px;font-size:0.88rem;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,0.15);max-width:360px;backdrop-filter:blur(8px);"></div>
 </div>
 
 <script>
@@ -164,6 +525,48 @@ var editingUserId = null;
 var _appsList = [];
 var _viewingAppId = null;
 var _confirmCallback = null;
+
+// ── Theme ──────────────────────────────────────────────────────────────────
+function setTheme(mode) {
+  if (mode === 'dark') {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+  localStorage.setItem('theme', mode);
+  updateToggleButtons();
+}
+
+function updateToggleButtons() {
+  var isDark = document.documentElement.classList.contains('dark');
+  var btnLight = document.getElementById('btnLight');
+  var btnDark = document.getElementById('btnDark');
+  if (isDark) {
+    btnDark.style.background = 'var(--toggle-active-bg)';
+    btnDark.style.color = 'var(--toggle-active-text)';
+    btnDark.style.boxShadow = '0 1px 3px rgba(0,0,0,0.2)';
+    btnLight.style.background = 'transparent';
+    btnLight.style.color = 'var(--c-on-surface-variant)';
+    btnLight.style.boxShadow = 'none';
+  } else {
+    btnLight.style.background = 'var(--toggle-active-bg)';
+    btnLight.style.color = 'var(--toggle-active-text)';
+    btnLight.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+    btnDark.style.background = 'transparent';
+    btnDark.style.color = 'var(--c-on-surface-variant)';
+    btnDark.style.boxShadow = 'none';
+  }
+}
+
+// Apply saved theme or default to dark
+(function() {
+  var saved = localStorage.getItem('theme');
+  if (saved === 'light') {
+    document.documentElement.classList.remove('dark');
+  } else {
+    document.documentElement.classList.add('dark');
+  }
+})();
 
 // ── Confirm dialog ────────────────────────────────────────────────────────
 function showConfirm(title, message, btnLabel, callback) {
@@ -204,6 +607,7 @@ function showToast(message, type) {
 
 // ── Init ───────────────────────────────────────────────────────────────────
 async function init() {
+  updateToggleButtons();
   try {
     var res = await fetch('/api/me');
     if (!res.ok) { window.location.href = '/login'; return; }
@@ -221,40 +625,64 @@ async function init() {
 // ── Sidebar ────────────────────────────────────────────────────────────────
 function renderSidebar() {
   var items = [
-    { id: 'my-applications',  label: 'My Applications',  icon: '&#128203;' },
-    { id: 'new-application',  label: 'New Application',  icon: '&#43;',    href: '/application' },
+    { id: 'my-applications',  label: 'My Applications',  icon: 'apps' },
+    { id: 'new-application',  label: 'New Application',  icon: 'add_box', href: '/application' },
   ];
   if (currentUser.role === 'admin') {
-    items.push({ id: 'all-applications', label: 'All Applications', icon: '&#128202;' });
-    items.push({ id: 'user-management',  label: 'User Management',  icon: '&#128101;' });
+    items.push({ id: 'all-applications', label: 'All Applications', icon: 'admin_panel_settings' });
+    items.push({ id: 'user-management',  label: 'User Management',  icon: 'group' });
   }
-  items.push({ id: 'profile', label: 'Profile', icon: '&#128274;' });
+  items.push({ id: 'profile', label: 'Profile', icon: 'account_circle' });
 
   var nav = document.getElementById('nav');
   nav.innerHTML = items.map(function(item) {
+    var isActive = item.id === currentView;
+    var activeClass = isActive
+      ? 'bg-gradient-to-r from-primary to-primary-dim text-white shadow-[0_0_15px_rgba(148,170,255,0.4)]'
+      : 'text-on-surface-variant hover:translate-x-1';
+    var hoverBg = isActive ? '' : ' style="--hover-bg:var(--sidebar-hover);" onmouseenter="this.style.background=\'var(--sidebar-hover)\'" onmouseleave="this.style.background=\'transparent\'"';
+
     if (item.href) {
-      return '<a class="nav-item" href="' + item.href + '" data-id="' + item.id + '">' +
-        '<span class="nav-icon">' + item.icon + '</span>' +
-        '<span>' + item.label + '</span></a>';
+      return '<a class="flex items-center gap-3 px-4 py-3 cursor-pointer rounded-lg transition-all duration-200 ' + activeClass + '" href="' + item.href + '" data-id="' + item.id + '"' + hoverBg + '>' +
+        '<span class="material-symbols-outlined">' + item.icon + '</span>' +
+        '<span class="font-medium text-sm">' + item.label + '</span></a>';
     }
-    return '<div class="nav-item" data-id="' + item.id + '" onclick="showView(\'' + item.id + '\')">' +
-      '<span class="nav-icon">' + item.icon + '</span>' +
-      '<span>' + item.label + '</span></div>';
+    return '<div class="flex items-center gap-3 px-4 py-3 cursor-pointer rounded-lg transition-all duration-200 ' + activeClass + '" data-id="' + item.id + '" onclick="showView(\'' + item.id + '\')"' + hoverBg + '>' +
+      '<span class="material-symbols-outlined">' + item.icon + '</span>' +
+      '<span class="font-medium text-sm">' + item.label + '</span></div>';
   }).join('');
 
-  // User info
+  // User info in sidebar footer
   var info = document.getElementById('userInfo');
+  var roleBadgeClass = currentUser.role === 'admin'
+    ? 'bg-secondary-container text-on-secondary-container'
+    : 'bg-secondary-container text-on-secondary-container';
   info.innerHTML =
-    '<div class="user-name">' + esc(currentUser.name || currentUser.username) + '</div>' +
-    '<div class="user-meta">' +
-      '<span class="user-opco">' + esc(currentUser.opco || '') + '</span>' +
-      '<span class="role-badge ' + currentUser.role + '">' + currentUser.role + '</span>' +
+    '<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden flex items-center justify-center flex-shrink-0">' +
+      '<span class="material-symbols-outlined text-on-surface-variant text-xl">person</span>' +
+    '</div>' +
+    '<div class="min-w-0">' +
+      '<p class="text-sm font-bold text-on-surface truncate">' + esc(currentUser.name || currentUser.username) + '</p>' +
+      '<span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider inline-block ' + roleBadgeClass + '">' +
+        esc(currentUser.opco || 'WPP') + ' ' + esc(currentUser.role) +
+      '</span>' +
     '</div>';
 }
 
 function setActiveNav(id) {
-  document.querySelectorAll('.nav-item').forEach(function(el) {
-    el.classList.toggle('active', el.dataset.id === id);
+  document.querySelectorAll('#nav > *').forEach(function(el) {
+    var isActive = el.dataset.id === id;
+    if (isActive) {
+      el.className = 'flex items-center gap-3 px-4 py-3 cursor-pointer rounded-lg transition-all duration-200 bg-gradient-to-r from-primary to-primary-dim text-white shadow-[0_0_15px_rgba(148,170,255,0.4)]';
+      el.onmouseenter = null;
+      el.onmouseleave = null;
+      el.style.background = '';
+    } else {
+      el.className = 'flex items-center gap-3 px-4 py-3 cursor-pointer rounded-lg transition-all duration-200 text-on-surface-variant hover:translate-x-1';
+      el.onmouseenter = function() { this.style.background = 'var(--sidebar-hover)'; };
+      el.onmouseleave = function() { this.style.background = 'transparent'; };
+      el.style.background = 'transparent';
+    }
   });
 }
 
@@ -265,14 +693,22 @@ function showView(view) {
   setActiveNav(view);
 
   var headers = {
-    'my-applications':  { title: 'My Applications',  desc: 'View and manage your laptop requests' },
-    'all-applications': { title: 'All Applications',  desc: 'Review all submitted laptop requests' },
-    'user-management':  { title: 'User Management',   desc: 'Manage users and permissions' },
-    'profile':          { title: 'Profile',            desc: 'Update your email, market, and password' },
+    'my-applications':  { title: 'My Applications',  desc: 'Manage and track your hardware and software requests within the WPP network.' },
+    'all-applications': { title: 'All Applications',  desc: 'Review all submitted laptop requests across the WPP network.' },
+    'user-management':  { title: 'User Management',   desc: 'Manage users and permissions across the portal.' },
+    'profile':          { title: 'Profile',            desc: 'Update your email, market, and password.' },
   };
   var h = headers[view] || headers['my-applications'];
   var ph = document.getElementById('pageHeader');
-  ph.innerHTML = '<h1>' + h.title + '</h1><p>' + h.desc + '</p>';
+  ph.innerHTML =
+    '<div class="max-w-2xl">' +
+      '<h1 class="text-4xl font-extrabold tracking-tight mb-2 text-on-surface">' + esc(h.title) + '</h1>' +
+      '<p class="text-on-surface-variant text-lg">' + esc(h.desc) + '</p>' +
+    '</div>';
+
+  // Clear search
+  var searchInput = document.getElementById('globalSearch');
+  if (searchInput) searchInput.value = '';
 
   if (view === 'my-applications') {
     loadApplications(false);
@@ -285,10 +721,25 @@ function showView(view) {
   }
 }
 
+// ── Client-side search filter ─────────────────────────────────────────────
+function filterTable(query) {
+  var q = query.toLowerCase().trim();
+  var rows = document.querySelectorAll('#dataTable tbody tr');
+  rows.forEach(function(row) {
+    if (!q) {
+      row.classList.remove('search-hidden');
+    } else {
+      var text = row.textContent.toLowerCase();
+      row.classList.toggle('search-hidden', text.indexOf(q) === -1);
+    }
+  });
+}
+
 // ── Applications ───────────────────────────────────────────────────────────
 async function loadApplications(showAll) {
   var content = document.getElementById('content');
-  content.innerHTML = '<div class="loading">Loading&hellip;</div>';
+  content.innerHTML = '<div class="flex items-center justify-center py-20 text-on-surface-variant">' +
+    '<span class="material-symbols-outlined animate-spin mr-3 text-2xl">progress_activity</span>Loading...</div>';
 
   try {
     var res = await fetch('/api/applications');
@@ -296,7 +747,8 @@ async function loadApplications(showAll) {
     var data = await res.json();
     renderApplicationsView(data.applications || [], showAll);
   } catch (err) {
-    content.innerHTML = '<div class="loading">Failed to load applications. Please try again.</div>';
+    content.innerHTML = '<div class="flex items-center justify-center py-20 text-on-surface-variant">' +
+      '<span class="material-symbols-outlined mr-2 text-error">error</span>Failed to load applications. Please try again.</div>';
   }
 }
 
@@ -306,46 +758,110 @@ function renderApplicationsView(apps, showUser) {
 
   var tableHtml;
   if (apps.length === 0) {
-    tableHtml = '<div class="empty-state">' +
-      '<span class="empty-icon">&#128203;</span>' +
-      "<p>No applications yet. Click 'New Application' to get started.</p>" +
-    '</div>';
+    tableHtml =
+      '<div class="flex flex-col items-center justify-center py-20 text-on-surface-variant">' +
+        '<span class="material-symbols-outlined text-5xl mb-4 text-outline">inbox</span>' +
+        '<p class="text-lg font-medium">No applications yet</p>' +
+        '<p class="text-sm mt-1">Click "New Application" to get started.</p>' +
+      '</div>';
   } else {
     _appsList = apps;
+    var deviceIcons = {
+      'macbook': 'laptop_mac', 'laptop': 'laptop_mac', 'thinkpad': 'laptop_mac', 'dell latitude': 'laptop_mac', 'hp elitebook': 'laptop_mac',
+      'ipad': 'tablet', 'tablet': 'tablet', 'surface': 'tablet',
+      'imac': 'desktop_windows', 'desktop': 'desktop_windows', 'dell optiplex': 'desktop_windows', 'monitor': 'desktop_windows', 'dell ultrasharp': 'desktop_windows',
+      'headphones': 'headphones', 'sony': 'headphones', 'airpods': 'headphones',
+      'iphone': 'smartphone', 'phone': 'smartphone', 'samsung': 'smartphone',
+    };
+
     var rows = apps.map(function(app, idx) {
       var d = app.data || {};
-      var date = app.created_at ? app.created_at.substring(0, 10) : '—';
-      var userCol = showUser ? '<td>' + esc(app.submitted_by || app.user_id || '—') + '</td>' : '';
-      return '<tr>' +
-        '<td><span class="text-muted" style="font-family:monospace;font-size:0.8rem;">' + esc(app.request_id) + '</span></td>' +
-        '<td>' + esc(d.agency || '—') + '</td>' +
-        '<td>' + esc(d.laptopModel || '—') + '</td>' +
-        '<td>' + esc(String(d.quantity || '—')) + '</td>' +
-        '<td>' + esc(date) + '</td>' +
+      var date = app.created_at ? app.created_at.substring(0, 10) : '';
+      var model = d.laptopModel || '';
+      var specs = d.specs || (d.os || '');
+      var qty = String(d.quantity || '1');
+      if (qty.length === 1) qty = '0' + qty;
+      var userCol = showUser
+        ? '<td class="px-8 py-6 text-sm font-bold text-on-surface">' + esc(app.submitted_by || app.user_id || '') + '</td>'
+        : '';
+
+      // Determine device icon
+      var deviceIcon = 'devices';
+      var modelLower = model.toLowerCase();
+      for (var key in deviceIcons) {
+        if (modelLower.indexOf(key) !== -1) {
+          deviceIcon = deviceIcons[key];
+          break;
+        }
+      }
+      var iconColors = ['text-primary', 'text-tertiary', 'text-secondary'];
+      var iconColor = iconColors[idx % 3];
+
+      return '<tr class="hover:transition-colors duration-200" style="--hover-bg:var(--table-hover);" ' +
+        'onmouseenter="this.style.background=\'var(--table-hover)\'" onmouseleave="this.style.background=\'transparent\'">' +
+        '<td class="px-8 py-6 font-mono text-sm text-secondary font-semibold">' + esc(app.request_id) + '</td>' +
+        '<td class="px-8 py-6 text-sm font-bold">' + esc(d.agency || '') + '</td>' +
+        '<td class="px-8 py-6">' +
+          '<div class="flex items-center gap-3">' +
+            '<div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:var(--icon-box-bg);">' +
+              '<span class="material-symbols-outlined ' + iconColor + ' text-xl">' + deviceIcon + '</span>' +
+            '</div>' +
+            '<div>' +
+              '<p class="text-sm font-bold">' + esc(model) + '</p>' +
+              (specs ? '<p class="text-xs text-on-surface-variant">' + esc(specs) + '</p>' : '') +
+            '</div>' +
+          '</div>' +
+        '</td>' +
+        '<td class="px-8 py-6">' +
+          '<span class="px-3 py-1 rounded-full text-xs font-bold" style="background:var(--badge-bg);">' + esc(qty) + '</span>' +
+        '</td>' +
+        '<td class="px-8 py-6 text-sm text-on-surface-variant">' + esc(date) + '</td>' +
         userCol +
-        '<td><div class="actions-cell">' +
-          '<button class="btn btn-sm btn-secondary btn-icon" title="View" onclick="viewApplication(\'' + esc(app.id) + '\')">&#128065;</button>' +
-          '<button class="btn btn-sm btn-secondary btn-icon" title="PDF" onclick="downloadPdf(\'' + esc(app.id) + '\')">&#128196;</button>' +
-          '<button class="btn btn-sm btn-secondary btn-icon" title="Edit" onclick="editApplication(\'' + esc(app.id) + '\')">&#9998;</button>' +
-          '<button class="btn btn-sm btn-danger btn-icon" title="Delete" onclick="deleteApplication(\'' + esc(app.id) + '\')">&#128465;</button>' +
-        '</div></td>' +
+        '<td class="px-8 py-6 text-right">' +
+          '<div class="flex items-center justify-end gap-1">' +
+            '<button class="text-primary hover:text-secondary transition-colors p-2 rounded-lg" title="View" onclick="viewApplication(\'' + esc(app.id) + '\')">' +
+              '<span class="material-symbols-outlined text-xl">visibility</span></button>' +
+            '<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-lg" title="PDF" onclick="downloadPdf(\'' + esc(app.id) + '\')">' +
+              '<span class="material-symbols-outlined text-xl">picture_as_pdf</span></button>' +
+            '<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-lg" title="Edit" onclick="editApplication(\'' + esc(app.id) + '\')">' +
+              '<span class="material-symbols-outlined text-xl">edit</span></button>' +
+            '<button class="text-on-surface-variant hover:text-error transition-colors p-2 rounded-lg" title="Delete" onclick="deleteApplication(\'' + esc(app.id) + '\')">' +
+              '<span class="material-symbols-outlined text-xl">delete</span></button>' +
+          '</div>' +
+        '</td>' +
       '</tr>';
     }).join('');
 
-    var userHeader = showUser ? '<th>Submitted By</th>' : '';
-    tableHtml = '<div class="table-card"><div class="table-wrapper"><table>' +
-      '<thead><tr>' +
-        '<th>Request ID</th><th>OpCo</th><th>Device Model</th><th>Quantity</th><th>Date</th>' +
-        userHeader + '<th>Actions</th>' +
-      '</tr></thead>' +
-      '<tbody>' + rows + '</tbody>' +
-    '</table></div></div>';
+    var userHeader = showUser
+      ? '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Submitted By</th>'
+      : '';
+    tableHtml =
+      '<div class="rounded-xl overflow-hidden" style="background:var(--table-bg); box-shadow:var(--table-shadow); border:1px solid var(--table-border);">' +
+        '<div class="overflow-x-auto">' +
+          '<table class="w-full text-left border-collapse" id="dataTable">' +
+            '<thead><tr style="background:var(--table-head-bg);">' +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Request ID</th>' +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">OpCo</th>' +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Device Model</th>' +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Quantity</th>' +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Date</th>' +
+              userHeader +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary text-right">Actions</th>' +
+            '</tr></thead>' +
+            '<tbody class="divide-y" style="--tw-divide-opacity:0.1; --tw-divide-color:var(--c-outline-variant);">' + rows + '</tbody>' +
+          '</table>' +
+        '</div>' +
+      '</div>';
   }
 
   content.innerHTML =
-    '<div class="page-header">' +
-      '<h2>' + esc(title) + '</h2>' +
-      '<button class="btn btn-primary" onclick="exportAll()">&#8595; Export All</button>' +
+    '<div class="flex items-end justify-between mb-6">' +
+      '<h2 class="text-xl font-bold text-on-surface">' + esc(title) + '</h2>' +
+      '<button class="flex items-center gap-2 px-6 py-3 rounded-lg font-bold text-primary transition-all duration-300 active:scale-95 text-sm" ' +
+        'style="background:var(--export-bg); border:1px solid var(--table-border);" ' +
+        'onmouseenter="this.style.background=\'var(--export-hover)\'" onmouseleave="this.style.background=\'var(--export-bg)\'" ' +
+        'onclick="exportAll()">' +
+        '<span class="material-symbols-outlined text-lg">download</span>Export All</button>' +
     '</div>' +
     tableHtml;
 }
@@ -383,111 +899,97 @@ async function viewApplication(id) {
 
   function dv(val) {
     if (val === undefined || val === null || val === '') {
-      return '<span class="detail-value empty">—</span>';
+      return '<span class="text-on-surface-variant text-sm">--</span>';
     }
     if (Array.isArray(val)) {
-      return '<span class="detail-value">' + val.map(esc).join(', ') + '</span>';
+      return '<span class="text-sm font-medium">' + val.map(esc).join(', ') + '</span>';
     }
-    return '<span class="detail-value">' + esc(String(val)) + '</span>';
+    return '<span class="text-sm font-medium">' + esc(String(val)) + '</span>';
   }
 
   function row(label, val) {
-    return '<div class="detail-item"><div class="detail-label">' + esc(label) + '</div>' + dv(val) + '</div>';
+    return '<div class="flex flex-col gap-0.5">' +
+      '<div class="text-xs font-bold uppercase tracking-wider text-on-surface-variant">' + esc(label) + '</div>' +
+      dv(val) +
+    '</div>';
+  }
+
+  function section(title, content) {
+    return '<div class="mb-6">' +
+      '<h4 class="text-sm font-bold text-primary mb-3 pb-2" style="border-bottom:1px solid var(--modal-border);">' + esc(title) + '</h4>' +
+      '<div class="grid grid-cols-2 md:grid-cols-3 gap-4">' + content + '</div>' +
+    '</div>';
   }
 
   var typeLabel = d.requestType === 'new' ? 'New Laptop' : d.requestType === 'replacement' ? 'Replacement Laptop' : d.requestType;
 
   var html =
-    '<div class="detail-section">' +
-      '<div class="detail-section-title">Request Info</div>' +
-      '<div class="detail-grid">' +
-        row('Request ID', app.request_id) +
-        row('Status', app.status) +
-        row('Request Type', typeLabel) +
-        row('Submitted', app.created_at ? app.created_at.substring(0,10) : '') +
-      '</div>' +
-    '</div>' +
-
-    '<div class="detail-section">' +
-      '<div class="detail-section-title">Requestor Information</div>' +
-      '<div class="detail-grid">' +
-        row('Name', d.requestorName) +
-        row('Email', d.email) +
-        row('OpCo', d.agency) +
-        row('Market', d.market) +
-        row('EUS Lead Email', d.eusLeadEmail || d.cityLeader) +
-        row('BU Email', d.buEmail) +
-        row('Date Required', d.dateRequired) +
-        row('Staff Category', d.staffCategory) +
-      '</div>' +
-    '</div>' +
-
-    '<div class="detail-section">' +
-      '<div class="detail-section-title">Device Specifications</div>' +
-      '<div class="detail-grid">' +
-        row('EUC Persona', d.eucPersona) +
-        row('Device Type', d.deviceType === 'desktop' ? 'Desktop' : 'Laptop') +
-        row('Device Model', d.laptopModel) +
-        row('Make', d.selectedDeviceMake) +
-        row('MPN', d.selectedDeviceMpn) +
-        row('Operating System', d.os) +
-        row('Quantity', d.quantity) +
-        row('Specs', d.specs) +
-      '</div>' +
-    '</div>' +
-
-    '<div class="detail-section">' +
-      '<div class="detail-section-title">Cost &amp; Sourcing</div>' +
-      '<div class="detail-grid">' +
-        row('Unit Cost', d.unitCost ? d.unitCost + ' ' + (d.currency || 'USD') : '') +
-        row('Total Cost', d.unitCost && d.quantity ? (parseFloat(d.unitCost) * parseInt(d.quantity)).toFixed(2) + ' ' + (d.currency || 'USD') : '') +
-        row('Local Currency', d.localCurrency) +
-        row('Exchange Rate', d.exchangeRate) +
-        row('Local Cost Per Device', d.localCostPerDevice) +
-      '</div>' +
-    '</div>';
+    section('Request Info',
+      row('Request ID', app.request_id) +
+      row('Status', app.status) +
+      row('Request Type', typeLabel) +
+      row('Submitted', app.created_at ? app.created_at.substring(0,10) : '')
+    ) +
+    section('Requestor Information',
+      row('Name', d.requestorName) +
+      row('Email', d.email) +
+      row('OpCo', d.agency) +
+      row('Market', d.market) +
+      row('EUS Lead Email', d.eusLeadEmail || d.cityLeader) +
+      row('BU Email', d.buEmail) +
+      row('Date Required', d.dateRequired) +
+      row('Staff Category', d.staffCategory)
+    ) +
+    section('Device Specifications',
+      row('EUC Persona', d.eucPersona) +
+      row('Device Type', d.deviceType === 'desktop' ? 'Desktop' : 'Laptop') +
+      row('Device Model', d.laptopModel) +
+      row('Make', d.selectedDeviceMake) +
+      row('MPN', d.selectedDeviceMpn) +
+      row('Operating System', d.os) +
+      row('Quantity', d.quantity) +
+      row('Specs', d.specs)
+    ) +
+    section('Cost & Sourcing',
+      row('Unit Cost', d.unitCost ? d.unitCost + ' ' + (d.currency || 'USD') : '') +
+      row('Total Cost', d.unitCost && d.quantity ? (parseFloat(d.unitCost) * parseInt(d.quantity)).toFixed(2) + ' ' + (d.currency || 'USD') : '') +
+      row('Local Currency', d.localCurrency) +
+      row('Exchange Rate', d.exchangeRate) +
+      row('Local Cost Per Device', d.localCostPerDevice)
+    );
 
   if (d.requestType === 'new') {
-    html += '<div class="detail-section">' +
-      '<div class="detail-section-title">New Hire Details</div>' +
-      '<div class="detail-grid">' +
-        row('Number of New Hires', d.newHireCount) +
-        row('Expected Join Date', d.joinDate) +
-        row('EUC Persona Override', d.newHirePersona) +
-        row('Available Laptops', d.availableLaptops) +
-      '</div>' +
-    '</div>';
+    html += section('New Hire Details',
+      row('Number of New Hires', d.newHireCount) +
+      row('Expected Join Date', d.joinDate) +
+      row('EUC Persona Override', d.newHirePersona) +
+      row('Available Laptops', d.availableLaptops)
+    );
   }
 
   if (d.requestType === 'replacement') {
-    html += '<div class="detail-section">' +
-      '<div class="detail-section-title">Replacement Details</div>' +
-      '<div class="detail-grid">' +
-        row('Current Device', (d.currentDeviceMake || '') + ' ' + (d.currentDeviceModel || '')) +
-        row('Serial Number', d.currentSerialNumber) +
-        row('Device Age', d.currentDeviceAge ? d.currentDeviceAge + ' years' : '') +
-        row('Replacement Reason', d.currentCondition) +
-        row('Diagnostics', d.diagnostics) +
-        row('Current Workaround', d.currentWorkaround) +
-        row('Workaround Details', d.workaroundDetails) +
-      '</div>' +
-    '</div>';
+    html += section('Replacement Details',
+      row('Current Device', (d.currentDeviceMake || '') + ' ' + (d.currentDeviceModel || '')) +
+      row('Serial Number', d.currentSerialNumber) +
+      row('Device Age', d.currentDeviceAge ? d.currentDeviceAge + ' years' : '') +
+      row('Replacement Reason', d.currentCondition) +
+      row('Diagnostics', d.diagnostics) +
+      row('Current Workaround', d.currentWorkaround) +
+      row('Workaround Details', d.workaroundDetails)
+    );
   }
 
-  html += '<div class="detail-section">' +
-    '<div class="detail-section-title">Procurement Details</div>' +
-    '<div class="detail-grid">' +
-      row('ET Legal Entity', d.etLegalEntity) +
-      row('Lead Entity in Market', d.leadEntityInMarket) +
-      row('BFC Code', d.bfcCode) +
-      row('Stock or New Purchase', d.stockOrNewPurchase) +
-      row('Transfer Entity', d.transferEntity) +
-      row('Comments', d.comments) +
-    '</div>' +
-  '</div>';
+  html += section('Procurement Details',
+    row('ET Legal Entity', d.etLegalEntity) +
+    row('Lead Entity in Market', d.leadEntityInMarket) +
+    row('BFC Code', d.bfcCode) +
+    row('Stock or New Purchase', d.stockOrNewPurchase) +
+    row('Transfer Entity', d.transferEntity) +
+    row('Comments', d.comments)
+  );
 
   _viewingAppId = id;
-  document.getElementById('viewModalTitle').textContent = 'Application – ' + (app.request_id || '');
+  document.getElementById('viewModalTitle').textContent = 'Application -- ' + (app.request_id || '');
   document.getElementById('viewModalBody').innerHTML = html;
   document.getElementById('viewModal').classList.add('visible');
 }
@@ -512,7 +1014,7 @@ async function downloadPdf(id) {
   var d = app.data || {};
 
   function pv(val) {
-    if (val === undefined || val === null || val === '') return '—';
+    if (val === undefined || val === null || val === '') return '--';
     return esc(String(val));
   }
   function pr(label, val) {
@@ -568,7 +1070,7 @@ async function downloadPdf(id) {
       'table{width:100%;border-collapse:collapse;} tr:hover td{background:#f9fafb;}' +
       '@media print{body{padding:20px;} .hdr{margin:-20px -20px 16px;padding:16px 20px;}}' +
     '</style></head><body>' +
-    '<div class="hdr"><h1>WPP Laptop Request — ' + esc(app.request_id || '') + '</h1>' +
+    '<div class="hdr"><h1>WPP Laptop Request -- ' + esc(app.request_id || '') + '</h1>' +
     '<p>Generated ' + new Date().toLocaleDateString() + '</p></div>' +
     '<table>' + rows + '</table>' +
     '<script>window.onload=function(){window.print();}<\/script>' +
@@ -582,7 +1084,8 @@ async function downloadPdf(id) {
 // ── User Management ────────────────────────────────────────────────────────
 async function loadUsers() {
   var content = document.getElementById('content');
-  content.innerHTML = '<div class="loading">Loading&hellip;</div>';
+  content.innerHTML = '<div class="flex items-center justify-center py-20 text-on-surface-variant">' +
+    '<span class="material-symbols-outlined animate-spin mr-3 text-2xl">progress_activity</span>Loading...</div>';
 
   try {
     var res = await fetch('/api/users');
@@ -590,7 +1093,8 @@ async function loadUsers() {
     var data = await res.json();
     renderUsersView(data.users || []);
   } catch (err) {
-    content.innerHTML = '<div class="loading">Failed to load users. Please try again.</div>';
+    content.innerHTML = '<div class="flex items-center justify-center py-20 text-on-surface-variant">' +
+      '<span class="material-symbols-outlined mr-2 text-error">error</span>Failed to load users. Please try again.</div>';
   }
 }
 
@@ -608,33 +1112,57 @@ function renderUsersView(users) {
 
   var tableHtml;
   if (users.length === 0) {
-    tableHtml = '<div class="empty-state"><span class="empty-icon">&#128101;</span><p>No users found.</p></div>';
+    tableHtml =
+      '<div class="flex flex-col items-center justify-center py-20 text-on-surface-variant">' +
+        '<span class="material-symbols-outlined text-5xl mb-4 text-outline">group_off</span>' +
+        '<p class="text-lg font-medium">No users found</p>' +
+      '</div>';
   } else {
     var rows = users.map(function(u) {
-      return '<tr>' +
-        '<td><strong>' + esc(u.username) + '</strong></td>' +
-        '<td>' + esc(u.name || '—') + '</td>' +
-        '<td>' + esc(u.email || '—') + '</td>' +
-        '<td>' + esc(u.opco || '—') + '</td>' +
-        '<td>' + esc(u.market || '—') + '</td>' +
-        '<td><span class="role-badge ' + esc(u.role) + '">' + esc(u.role) + '</span></td>' +
-        '<td><div class="actions-cell">' +
-          '<button class="btn btn-sm btn-secondary" onclick="editUserById(\'' + esc(u.id) + '\')">&#9998; Edit</button>' +
-          '<button class="btn btn-sm btn-danger" onclick="deleteUser(\'' + esc(u.id) + '\')" ' + (u.id === currentUser.id ? 'disabled title="Cannot delete yourself"' : '') + '>&#128465;</button>' +
-        '</div></td>' +
+      var roleColor = u.role === 'admin' ? 'bg-primary/20 text-primary' : 'bg-secondary-container text-on-secondary-container';
+      return '<tr class="hover:transition-colors duration-200" ' +
+        'onmouseenter="this.style.background=\'var(--table-hover)\'" onmouseleave="this.style.background=\'transparent\'">' +
+        '<td class="px-8 py-5 text-sm font-bold">' + esc(u.username) + '</td>' +
+        '<td class="px-8 py-5 text-sm">' + esc(u.name || '') + '</td>' +
+        '<td class="px-8 py-5 text-sm text-on-surface-variant">' + esc(u.email || '') + '</td>' +
+        '<td class="px-8 py-5 text-sm">' + esc(u.opco || '') + '</td>' +
+        '<td class="px-8 py-5 text-sm">' + esc(u.market || '') + '</td>' +
+        '<td class="px-8 py-5"><span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ' + roleColor + '">' + esc(u.role) + '</span></td>' +
+        '<td class="px-8 py-5 text-right">' +
+          '<div class="flex items-center justify-end gap-1">' +
+            '<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-lg" title="Edit" onclick="editUserById(\'' + esc(u.id) + '\')">' +
+              '<span class="material-symbols-outlined text-xl">edit</span></button>' +
+            '<button class="text-on-surface-variant hover:text-error transition-colors p-2 rounded-lg' + (u.id === currentUser.id ? ' opacity-30 cursor-not-allowed' : '') + '" title="Delete" onclick="deleteUser(\'' + esc(u.id) + '\')" ' + (u.id === currentUser.id ? 'disabled' : '') + '>' +
+              '<span class="material-symbols-outlined text-xl">delete</span></button>' +
+          '</div>' +
+        '</td>' +
       '</tr>';
     }).join('');
 
-    tableHtml = '<div class="table-card"><div class="table-wrapper"><table>' +
-      '<thead><tr><th>Username</th><th>Name</th><th>Email</th><th>OpCo</th><th>Market</th><th>Role</th><th>Actions</th></tr></thead>' +
-      '<tbody>' + rows + '</tbody>' +
-    '</table></div></div>';
+    tableHtml =
+      '<div class="rounded-xl overflow-hidden" style="background:var(--table-bg); box-shadow:var(--table-shadow); border:1px solid var(--table-border);">' +
+        '<div class="overflow-x-auto">' +
+          '<table class="w-full text-left border-collapse" id="dataTable">' +
+            '<thead><tr style="background:var(--table-head-bg);">' +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Username</th>' +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Name</th>' +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Email</th>' +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">OpCo</th>' +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Market</th>' +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Role</th>' +
+              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary text-right">Actions</th>' +
+            '</tr></thead>' +
+            '<tbody class="divide-y" style="--tw-divide-opacity:0.1; --tw-divide-color:var(--c-outline-variant);">' + rows + '</tbody>' +
+          '</table>' +
+        '</div>' +
+      '</div>';
   }
 
   content.innerHTML =
-    '<div class="page-header">' +
-      '<h2>User Management</h2>' +
-      '<button class="btn btn-primary" onclick="showUserModal(null)">&#43; Add User</button>' +
+    '<div class="flex items-end justify-between mb-6">' +
+      '<h2 class="text-xl font-bold text-on-surface">User Management</h2>' +
+      '<button class="flex items-center gap-2 px-6 py-3 rounded-lg font-bold text-on-primary-container bg-primary transition-all duration-300 active:scale-95 text-sm hover:opacity-90" onclick="showUserModal(null)">' +
+        '<span class="material-symbols-outlined text-lg">person_add</span>Add User</button>' +
     '</div>' +
     tableHtml;
 }
@@ -653,7 +1181,7 @@ function showUserModal(userJson) {
   document.getElementById('umPassword').placeholder = user ? 'Leave blank to keep current' : '';
   document.getElementById('umPasswordLabel').innerHTML = user
     ? 'Password'
-    : 'Password <span class="required">*</span>';
+    : 'Password <span class="text-error">*</span>';
 
   document.getElementById('umName').value   = user ? (user.name || '') : '';
   document.getElementById('umEmail').value  = user ? (user.email || '') : '';
@@ -745,21 +1273,25 @@ function showChangePasswordForm() {
   var content = document.getElementById('content');
   var m = currentUser ? currentUser.market : '';
   content.innerHTML =
-    '<div class="form-container">' +
-      '<div class="step-panel active">' +
-        '<h2>Account Information</h2>' +
-        '<p class="step-subtitle">Update your email address and market.</p>' +
+    '<div class="max-w-2xl mx-auto">' +
+      '<div class="rounded-xl p-8" style="background:var(--table-bg); border:1px solid var(--table-border); box-shadow:var(--table-shadow);">' +
+        '<h2 class="text-xl font-bold text-on-surface mb-1 font-headline">Account Information</h2>' +
+        '<p class="text-sm text-on-surface-variant mb-6">Update your email address and market.</p>' +
         '<div class="alert alert-error" id="cpError"></div>' +
         '<div class="alert alert-success" id="cpSuccess"></div>' +
         '<form onsubmit="updateProfile(event)">' +
-          '<div class="form-row">' +
-            '<div class="form-group">' +
-              '<label for="cpEmail">Email</label>' +
-              '<input type="email" id="cpEmail" value="' + esc(currentUser ? currentUser.email : '') + '" placeholder="Your email address">' +
+          '<div class="grid grid-cols-2 gap-4 mb-6">' +
+            '<div>' +
+              '<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="cpEmail">Email</label>' +
+              '<input type="email" id="cpEmail" value="' + esc(currentUser ? currentUser.email : '') + '" placeholder="Your email address"' +
+                ' class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"' +
+                ' style="background:var(--input-bg); border:1px solid var(--input-border); color:var(--input-text); --tw-ring-color:var(--neon-color);">' +
             '</div>' +
-            '<div class="form-group">' +
-              '<label for="cpMarket">Market</label>' +
-              '<select id="cpMarket">' +
+            '<div>' +
+              '<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="cpMarket">Market</label>' +
+              '<select id="cpMarket"' +
+                ' class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"' +
+                ' style="background:var(--input-bg); border:1px solid var(--input-border); color:var(--input-text); --tw-ring-color:var(--neon-color);">' +
                 '<option value="">-- Select Market --</option>' +
                 '<option value="Shanghai"' + (m === 'Shanghai' ? ' selected' : '') + '>Shanghai</option>' +
                 '<option value="Beijing"' + (m === 'Beijing' ? ' selected' : '') + '>Beijing</option>' +
@@ -771,25 +1303,31 @@ function showChangePasswordForm() {
               '</select>' +
             '</div>' +
           '</div>' +
-          '<div style="margin:24px 0 20px;border-top:1px solid var(--gray-200);"></div>' +
-          '<h2>Change Password</h2>' +
-          '<p class="step-subtitle">Leave empty to keep your current password.</p>' +
-          '<div class="form-group">' +
-            '<label for="cpOldPassword">Current Password</label>' +
-            '<input type="password" id="cpOldPassword" autocomplete="current-password">' +
+          '<div class="my-6" style="border-top:1px solid var(--modal-border);"></div>' +
+          '<h2 class="text-xl font-bold text-on-surface mb-1 font-headline">Change Password</h2>' +
+          '<p class="text-sm text-on-surface-variant mb-6">Leave empty to keep your current password.</p>' +
+          '<div class="mb-4">' +
+            '<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="cpOldPassword">Current Password</label>' +
+            '<input type="password" id="cpOldPassword" autocomplete="current-password"' +
+              ' class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"' +
+              ' style="background:var(--input-bg); border:1px solid var(--input-border); color:var(--input-text); --tw-ring-color:var(--neon-color);">' +
           '</div>' +
-          '<div class="form-row">' +
-            '<div class="form-group">' +
-              '<label for="cpNewPassword">New Password</label>' +
-              '<input type="password" id="cpNewPassword" autocomplete="new-password">' +
+          '<div class="grid grid-cols-2 gap-4 mb-6">' +
+            '<div>' +
+              '<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="cpNewPassword">New Password</label>' +
+              '<input type="password" id="cpNewPassword" autocomplete="new-password"' +
+                ' class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"' +
+                ' style="background:var(--input-bg); border:1px solid var(--input-border); color:var(--input-text); --tw-ring-color:var(--neon-color);">' +
             '</div>' +
-            '<div class="form-group">' +
-              '<label for="cpConfirmPassword">Confirm New Password</label>' +
-              '<input type="password" id="cpConfirmPassword" autocomplete="new-password">' +
+            '<div>' +
+              '<label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-1" for="cpConfirmPassword">Confirm New Password</label>' +
+              '<input type="password" id="cpConfirmPassword" autocomplete="new-password"' +
+                ' class="w-full rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2"' +
+                ' style="background:var(--input-bg); border:1px solid var(--input-border); color:var(--input-text); --tw-ring-color:var(--neon-color);">' +
             '</div>' +
           '</div>' +
-          '<div class="nav-buttons" style="justify-content:flex-end;">' +
-            '<button type="submit" class="btn btn-primary">Save Changes</button>' +
+          '<div class="flex justify-end">' +
+            '<button type="submit" class="px-6 py-3 rounded-lg text-sm font-bold bg-primary text-on-primary-container transition-all duration-300 active:scale-95 hover:opacity-90">Save Changes</button>' +
           '</div>' +
         '</form>' +
       '</div>' +
