@@ -67,6 +67,11 @@ def dashboard():
     return send_from_directory(STATIC_DIR, 'dashboard.html')
 
 
+@app.route('/application')
+def application():
+    return send_from_directory(STATIC_DIR, 'index.html')
+
+
 @app.route('/api/save', methods=['POST'])
 @login_required
 def save_request():

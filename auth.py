@@ -106,3 +106,40 @@ def change_password():
         {'$set': {'password_hash': new_hash, 'must_change_password': False, 'updated_at': datetime.now(timezone.utc)}}
     )
     return jsonify({'success': True})
+
+
+@auth_bp.route('/api/profile', methods=['POST'])
+@login_required
+def update_profile():
+    data = request.get_json()
+    if not data:
+        return jsonify({'success': False, 'error': 'No data provided'}), 400
+
+    update_fields = {'updated_at': datetime.now(timezone.utc)}
+    new_email = data.get('email', '').strip()
+    new_market = data.get('market', '').strip()
+    if new_email:
+        update_fields['email'] = new_email
+    if new_market:
+        update_fields['market'] = new_market
+
+    db = get_db()
+
+    # Only change password if provided
+    old_password = data.get('old_password', '')
+    new_password = data.get('new_password', '')
+    if old_password and new_password:
+        if len(new_password) < 6:
+            return jsonify({'success': False, 'error': 'Password must be at least 6 characters'}), 400
+        user_doc = db.users.find_one({'_id': ObjectId(current_user.id)})
+        if not bcrypt.checkpw(old_password.encode('utf-8'), user_doc['password_hash'].encode('utf-8')):
+            return jsonify({'success': False, 'error': 'Current password is incorrect'}), 400
+        new_hash = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        update_fields['password_hash'] = new_hash
+        update_fields['must_change_password'] = False
+
+    db.users.update_one(
+        {'_id': ObjectId(current_user.id)},
+        {'$set': update_fields}
+    )
+    return jsonify({'success': True})

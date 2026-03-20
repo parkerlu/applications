@@ -4,7 +4,10 @@ __pycache__/
 .pytest_cache/
 .superpowers/
 .claude/
-docker-compose.override.yml
+.git/
 .server.pid
 .server.log
-applications/
+docs/
+tests/
+docker-compose.yml
+docker-compose.override.yml

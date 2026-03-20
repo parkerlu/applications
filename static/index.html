@@ -4,447 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WPP Laptop Request</title>
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --primary: #0033A0;
-  --primary-dark: #002266;
-  --primary-light: #e8edf7;
-  --success: #28a745;
-  --danger: #dc3545;
-  --warning: #f0ad4e;
-  --gray-100: #f8f9fa;
-  --gray-200: #e9ecef;
-  --gray-300: #dee2e6;
-  --gray-500: #adb5bd;
-  --gray-700: #495057;
-  --gray-900: #212529;
-  --shadow: 0 2px 12px rgba(0,0,0,0.08);
-  --radius: 8px;
-  --sidebar-bg: #1a1a2e;
-  --sidebar-text: #c8ccd8;
-  --sidebar-hover: rgba(255,255,255,0.08);
-  --sidebar-active: var(--primary);
-}
-
-html, body {
-  height: 100%;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background: var(--gray-100);
-  color: var(--gray-900);
-  line-height: 1.6;
-}
-
-/* ── Sidebar layout ─────────────────────────────── */
-.app-layout { display: flex; height: 100vh; overflow: hidden; }
-.sidebar { width: 240px; min-width: 240px; background: var(--sidebar-bg); display: flex; flex-direction: column; overflow: hidden; }
-.sidebar-logo { padding: 24px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
-.sidebar-logo .logo-title { font-size: 1.5rem; font-weight: 800; color: #fff; letter-spacing: 0.06em; }
-.sidebar-logo .logo-sub { font-size: 0.7rem; color: rgba(255,255,255,0.45); margin-top: 2px; letter-spacing: 0.08em; text-transform: uppercase; }
-.sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
-.nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 20px; cursor: pointer; color: var(--sidebar-text); font-size: 0.875rem; font-weight: 500; border-left: 3px solid transparent; transition: background 0.15s, color 0.15s; text-decoration: none; user-select: none; }
-.nav-item:hover { background: var(--sidebar-hover); color: #fff; }
-.nav-item.active { background: rgba(0,51,160,0.25); border-left-color: var(--primary); color: #fff; }
-.nav-item .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
-.sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.08); }
-.user-info { margin-bottom: 12px; }
-.user-name { font-size: 0.875rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.user-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
-.user-opco { font-size: 0.72rem; color: rgba(255,255,255,0.45); }
-.role-badge { font-size: 0.65rem; font-weight: 700; padding: 2px 7px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.05em; }
-.role-badge.admin { background: rgba(220,53,69,0.25); color: #ff8a94; border: 1px solid rgba(220,53,69,0.35); }
-.role-badge.user { background: rgba(0,51,160,0.3); color: #7fa8ff; border: 1px solid rgba(0,51,160,0.4); }
-.btn-logout { width: 100%; padding: 9px 14px; font-size: 0.8rem; font-family: inherit; font-weight: 600; color: var(--sidebar-text); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; cursor: pointer; transition: background 0.15s; }
-.btn-logout:hover { background: rgba(220,53,69,0.2); color: #ff8a94; }
-.main-content { flex: 1; overflow-y: auto; }
-
-.header {
-  background: var(--primary);
-  color: #fff;
-  padding: 20px 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
-.header-inner {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
-.header h1 { font-size: 1.5rem; font-weight: 600; letter-spacing: 0.5px; }
-.header p { font-size: 0.875rem; opacity: 0.85; margin-top: 4px; }
-
-/* Progress Bar */
-.progress-container {
-  max-width: 800px;
-  margin: 24px auto 0;
-  padding: 0 24px;
-}
-.progress-bar {
-  display: flex;
-  align-items: center;
-  gap: 0;
-}
-.progress-step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-  position: relative;
-}
-.progress-step .circle {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  background: var(--gray-300);
-  color: var(--gray-700);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.8rem; font-weight: 600;
-  z-index: 1;
-  transition: all 0.3s;
-}
-.progress-step.active .circle {
-  background: var(--primary);
-  color: #fff;
-  box-shadow: 0 0 0 4px rgba(0,51,160,0.2);
-}
-.progress-step.completed .circle {
-  background: var(--success);
-  color: #fff;
-}
-.progress-step .label {
-  font-size: 0.65rem;
-  margin-top: 6px;
-  color: var(--gray-500);
-  text-align: center;
-  white-space: nowrap;
-}
-.progress-step.active .label { color: var(--primary); font-weight: 600; }
-.progress-step.completed .label { color: var(--success); }
-
-.progress-step:not(:last-child)::after {
-  content: '';
-  position: absolute;
-  top: 16px;
-  left: calc(50% + 16px);
-  width: calc(100% - 32px);
-  height: 3px;
-  background: var(--gray-300);
-  z-index: 0;
-}
-.progress-step.completed:not(:last-child)::after { background: var(--success); }
-
-/* Form Container */
-.form-container {
-  max-width: 800px;
-  margin: 24px auto;
-  padding: 0 24px 48px;
-}
-.step-panel {
-  display: none;
-  background: #fff;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 32px;
-  animation: fadeIn 0.3s ease;
-}
-.step-panel.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-.step-panel h2 {
-  font-size: 1.25rem;
-  color: var(--primary);
-  margin-bottom: 4px;
-}
-.step-panel .step-subtitle {
-  font-size: 0.85rem;
-  color: var(--gray-500);
-  margin-bottom: 24px;
-}
-
-/* Form Elements */
-.form-group { margin-bottom: 20px; }
-.form-group label {
-  display: block;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--gray-700);
-  margin-bottom: 6px;
-}
-.form-group label .required { color: var(--danger); margin-left: 2px; }
-.form-group input[type="text"],
-.form-group input[type="email"],
-.form-group input[type="number"],
-.form-group input[type="date"],
-.form-group select,
-.form-group textarea {
-  width: 100%;
-  padding: 10px 14px;
-  border: 1.5px solid var(--gray-300);
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-family: inherit;
-  transition: border-color 0.2s;
-  background: #fff;
-}
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(0,51,160,0.1);
-}
-.form-group input.error, .form-group select.error, .form-group textarea.error {
-  border-color: var(--danger);
-}
-.form-group input[readonly] { background: var(--gray-100); color: var(--gray-700); }
-.form-group textarea { min-height: 80px; resize: vertical; }
-.error-msg { color: var(--danger); font-size: 0.78rem; margin-top: 4px; display: none; }
-.error-msg.visible { display: block; }
-
-.form-row { display: flex; gap: 16px; }
-.form-row .form-group { flex: 1; }
-
-/* Checkboxes */
-.checkbox-group { margin-bottom: 16px; }
-.checkbox-group label {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-weight: 400;
-  cursor: pointer;
-  padding: 12px 14px;
-  border: 1.5px solid var(--gray-300);
-  border-radius: 6px;
-  transition: border-color 0.2s, background 0.2s;
-}
-.checkbox-group label:hover { background: var(--gray-100); }
-.checkbox-group label input[type="checkbox"] {
-  margin-top: 3px;
-  accent-color: var(--primary);
-  flex-shrink: 0;
-}
-.checkbox-group.error label { border-color: var(--danger); }
-
-/* Radio Cards */
-.radio-cards { display: flex; gap: 16px; margin-top: 8px; }
-.radio-card {
-  flex: 1;
-  border: 2px solid var(--gray-300);
-  border-radius: var(--radius);
-  padding: 24px 20px;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-}
-.radio-card:hover { border-color: var(--primary); background: var(--primary-light); }
-.radio-card.selected { border-color: var(--primary); background: var(--primary-light); }
-.radio-card input { position: absolute; opacity: 0; }
-.radio-card .card-icon { font-size: 2rem; margin-bottom: 8px; }
-.radio-card .card-title { font-weight: 600; font-size: 1rem; color: var(--gray-900); }
-.radio-card .card-desc { font-size: 0.8rem; color: var(--gray-500); margin-top: 4px; }
-
-/* Device Type Radio Inline */
-.device-type-radios {
-  display: flex;
-  gap: 12px;
-  margin-top: 6px;
-}
-.device-type-radios label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 500;
-  font-size: 0.9rem;
-  cursor: pointer;
-  padding: 8px 18px;
-  border: 2px solid var(--gray-300);
-  border-radius: 6px;
-  transition: all 0.2s;
-}
-.device-type-radios label:hover { border-color: var(--primary); background: var(--primary-light); }
-.device-type-radios label.dt-selected { border-color: var(--primary); background: var(--primary-light); font-weight: 600; }
-.device-type-radios input[type="radio"] { accent-color: var(--primary); }
-
-/* Device Cards */
-.device-cards-container {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  margin-top: 12px;
-}
-.device-card {
-  border: 2px solid var(--gray-300);
-  border-radius: var(--radius);
-  padding: 16px 20px;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-  background: #fff;
-}
-.device-card:hover { border-color: var(--primary); background: var(--primary-light); }
-.device-card.dc-selected {
-  border-color: var(--primary);
-  background: var(--primary-light);
-  box-shadow: 0 0 0 3px rgba(0,51,160,0.15);
-}
-.device-card .dc-check {
-  position: absolute;
-  top: 12px;
-  right: 14px;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--primary);
-  color: #fff;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-.device-card.dc-selected .dc-check { display: flex; }
-.device-card .dc-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-.device-card .dc-name {
-  font-weight: 700;
-  font-size: 1rem;
-  color: var(--gray-900);
-}
-.device-card .dc-make-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-.dc-make-apple { background: #333; color: #fff; }
-.dc-make-dell { background: #007DB8; color: #fff; }
-.device-card .dc-specs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 16px;
-  font-size: 0.8rem;
-  color: var(--gray-700);
-  margin-bottom: 8px;
-}
-.device-card .dc-specs span { white-space: nowrap; }
-.device-card .dc-specs .spec-label { color: var(--gray-500); font-weight: 500; }
-.device-card .dc-price {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--primary-dark);
-}
-.device-no-results {
-  padding: 20px;
-  text-align: center;
-  color: var(--gray-500);
-  font-size: 0.9rem;
-  background: var(--gray-100);
-  border-radius: 6px;
-  margin-top: 12px;
-}
-
-/* Warning box */
-.warning-box {
-  background: #fff8e1;
-  border: 1px solid var(--warning);
-  border-radius: 6px;
-  padding: 12px 14px;
-  font-size: 0.85rem;
-  color: #856404;
-  margin-top: 8px;
-}
-
-/* Navigation Buttons */
-.nav-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 32px;
-  padding-top: 20px;
-  border-top: 1px solid var(--gray-200);
-}
-.btn {
-  padding: 10px 28px;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: inherit;
-}
-.btn-primary { background: var(--primary); color: #fff; }
-.btn-primary:hover { background: var(--primary-dark); }
-.btn-secondary { background: var(--gray-200); color: var(--gray-700); }
-.btn-secondary:hover { background: var(--gray-300); }
-.btn-success { background: var(--success); color: #fff; }
-.btn-success:hover { background: #218838; }
-.btn-danger { background: var(--danger); color: #fff; }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-/* Review Summary */
-.review-section { margin-bottom: 24px; }
-.review-section h3 {
-  font-size: 0.95rem;
-  color: var(--primary);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--gray-200);
-  padding-bottom: 8px;
-  margin-bottom: 10px;
-}
-.review-section h3 button {
-  font-size: 0.75rem;
-  padding: 4px 14px;
-  background: var(--primary-light);
-  color: var(--primary);
-  border: 1px solid var(--primary);
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 600;
-}
-.review-section h3 button:hover { background: var(--primary); color: #fff; }
-.review-row { display: flex; padding: 6px 0; font-size: 0.85rem; }
-.review-label { width: 200px; color: var(--gray-500); flex-shrink: 0; }
-.review-value { color: var(--gray-900); font-weight: 500; }
-
-/* Result Messages */
-.result-message {
-  padding: 20px 24px;
-  border-radius: var(--radius);
-  margin-top: 20px;
-  display: none;
-}
-.result-message.success {
-  display: block;
-  background: #d4edda;
-  border: 1px solid #c3e6cb;
-  color: #155724;
-}
-.result-message.error-result {
-  display: block;
-  background: #f8d7da;
-  border: 1px solid #f5c6cb;
-  color: #721c24;
-}
-.result-message h3 { margin-bottom: 8px; }
-
-/* Responsive */
-@media (max-width: 600px) {
-  .radio-cards { flex-direction: column; }
-  .form-row { flex-direction: column; gap: 0; }
-  .progress-step .label { font-size: 0.55rem; }
-  .step-panel { padding: 20px; }
-  .review-row { flex-direction: column; }
-  .review-label { width: auto; margin-bottom: 2px; }
-  .device-type-radios { flex-direction: column; }
-}
-</style>
+<link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
 
@@ -466,8 +26,8 @@ html, body {
 <!-- Main content -->
 <div class="main-content">
 
-<div class="header">
-  <div class="header-inner">
+<div class="wizard-header">
+  <div class="wizard-header-inner">
     <h1>WPP Laptop Request System</h1>
     <p>Submit a new laptop procurement request</p>
   </div>
@@ -559,11 +119,8 @@ html, body {
     </div>
     <div class="form-group">
       <label>Requestor (EUS Lead) Email <span class="required">*</span></label>
-      <select id="cityLeader">
-        <option value="Parker.lu@wpp.com" selected>Parker Lu (Parker.lu@wpp.com) — Shanghai</option>
-        <option value="Jason.zhang@wpp.com">Jason Zhang (Jason.zhang@wpp.com) — Beijing</option>
-        <option value="King.liang@wpp.com">King Liang (King.liang@wpp.com) — Guangzhou</option>
-      </select>
+      <input type="email" id="cityLeader" placeholder="EUS Lead email address">
+      <div class="error-msg" id="err-cityLeader">Valid EUS Lead email is required</div>
     </div>
     <div class="form-group">
       <label>Date Required <span class="required">*</span></label>
@@ -756,7 +313,7 @@ html, body {
     <div class="form-row">
       <div class="form-group">
         <label>Number of New Hires <span class="required">*</span></label>
-        <input type="number" id="newHireCount" min="1" placeholder="1">
+        <input type="number" id="newHireCount" min="1" value="1">
         <div class="error-msg" id="err-newHireCount">Number of new hires is required</div>
       </div>
       <div class="form-group">
@@ -1091,9 +648,7 @@ function sidebarLogout() {
     currentUser = data.user;
     // Render sidebar
     renderWizardSidebar();
-    // Auto-fill from user profile
-    document.getElementById('requestorName').value = currentUser.name;
-    document.getElementById('email').value = currentUser.email;
+    // Auto-fill from user profile (skip name and email — user enters manually)
     var agencySelect = document.getElementById('agency');
     if (agencySelect) agencySelect.value = currentUser.opco;
     var marketSelect = document.getElementById('market');
@@ -1118,7 +673,7 @@ function sidebarLogout() {
       items.push({ label: 'All Applications', icon: '&#128202;', href: '/dashboard#all-applications' });
       items.push({ label: 'User Management', icon: '&#128101;', href: '/dashboard#user-management' });
     }
-    items.push({ label: 'Change Password', icon: '&#128274;', href: '/dashboard#change-password' });
+    items.push({ label: 'Profile', icon: '&#128274;', href: '/dashboard#profile' });
 
     var nav = document.getElementById('sidebarNav');
     nav.innerHTML = items.map(function(item) {
@@ -1246,6 +801,12 @@ function sidebarLogout() {
           var el = document.getElementById(key);
           if (el && procFields[key]) el.value = procFields[key];
         }
+
+        // In edit mode, jump to review step after data loads
+        setTimeout(function() {
+          updateReviewSummary();
+          showStep(9);
+        }, 600);
       });
   }
 
@@ -1548,6 +1109,8 @@ function sidebarLogout() {
       if (!val('market')) fail('market', 'err-market');
       var email = val('email');
       if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) fail('email', 'err-email');
+      var eusEmail = val('cityLeader');
+      if (!eusEmail || !/^[^@]+@[^@]+\.[^@]+$/.test(eusEmail)) fail('cityLeader', 'err-cityLeader');
       if (!val('dateRequired')) {
         fail('dateRequired', 'err-dateRequired');
       } else {
