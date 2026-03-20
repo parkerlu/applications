@@ -125,6 +125,28 @@
   </div>
 </div>
 
+<!-- Confirm dialog -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-header">
+      <h3 id="confirmTitle">Confirm</h3>
+      <button class="modal-close" onclick="closeConfirm()">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <p id="confirmMessage"></p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-danger" id="confirmOkBtn" onclick="confirmOk()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toast" style="position:fixed;bottom:24px;right:24px;z-index:2000;display:none;">
+  <div id="toastInner" style="padding:12px 20px;border-radius:8px;font-size:0.88rem;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,0.15);max-width:360px;"></div>
+</div>
+
 <script>
 'use strict';
 
@@ -132,6 +154,45 @@
 var currentUser = null;
 var currentView = 'my-applications';
 var editingUserId = null;
+var _appsList = [];
+var _confirmCallback = null;
+
+// ── Confirm dialog ────────────────────────────────────────────────────────
+function showConfirm(title, message, btnLabel, callback) {
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmMessage').textContent = message;
+  document.getElementById('confirmOkBtn').textContent = btnLabel || 'Delete';
+  _confirmCallback = callback;
+  document.getElementById('confirmModal').classList.add('visible');
+}
+function closeConfirm() {
+  document.getElementById('confirmModal').classList.remove('visible');
+  _confirmCallback = null;
+}
+function confirmOk() {
+  var cb = _confirmCallback;
+  closeConfirm();
+  if (cb) cb();
+}
+
+// ── Toast notification ────────────────────────────────────────────────────
+function showToast(message, type) {
+  var toast = document.getElementById('toast');
+  var inner = document.getElementById('toastInner');
+  inner.textContent = message;
+  if (type === 'error') {
+    inner.style.background = '#fef2f2';
+    inner.style.color = '#991b1b';
+    inner.style.border = '1px solid #fecaca';
+  } else {
+    inner.style.background = '#dcfce7';
+    inner.style.color = '#166534';
+    inner.style.border = '1px solid #bbf7d0';
+  }
+  toast.style.display = 'block';
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(function() { toast.style.display = 'none'; }, 3000);
+}
 
 // ── Init ───────────────────────────────────────────────────────────────────
 async function init() {
@@ -233,7 +294,8 @@ function renderApplicationsView(apps, showUser) {
       "<p>No applications yet. Click 'New Application' to get started.</p>" +
     '</div>';
   } else {
-    var rows = apps.map(function(app) {
+    _appsList = apps;
+    var rows = apps.map(function(app, idx) {
       var d = app.data || {};
       var date = app.created_at ? app.created_at.substring(0, 10) : '—';
       var userCol = showUser ? '<td>' + esc(app.submitted_by || app.user_id || '—') + '</td>' : '';
@@ -245,7 +307,7 @@ function renderApplicationsView(apps, showUser) {
         '<td>' + esc(date) + '</td>' +
         userCol +
         '<td><div class="actions-cell">' +
-          '<button class="btn btn-sm btn-secondary btn-icon" title="View" onclick="viewApplication(' + JSON.stringify(JSON.stringify(app)) + ')">&#128065;</button>' +
+          '<button class="btn btn-sm btn-secondary btn-icon" title="View" onclick="viewApplication(' + idx + ')">&#128065;</button>' +
           '<button class="btn btn-sm btn-secondary btn-icon" title="Edit" onclick="editApplication(\'' + esc(app.id) + '\')">&#9998;</button>' +
           '<button class="btn btn-sm btn-danger btn-icon" title="Delete" onclick="deleteApplication(\'' + esc(app.id) + '\')">&#128465;</button>' +
         '</div></td>' +
@@ -271,26 +333,29 @@ function renderApplicationsView(apps, showUser) {
 }
 
 async function deleteApplication(id) {
-  if (!confirm('Are you sure you want to delete this application?')) return;
-  try {
-    var res = await fetch('/api/applications/' + id, { method: 'DELETE' });
-    if (!res.ok) {
-      var d = await res.json();
-      alert(d.error || 'Delete failed');
-      return;
+  showConfirm('Delete Application', 'Are you sure you want to delete this application? This action cannot be undone.', 'Delete', async function() {
+    try {
+      var res = await fetch('/api/applications/' + id, { method: 'DELETE' });
+      if (!res.ok) {
+        var d = await res.json();
+        showToast(d.error || 'Delete failed', 'error');
+        return;
+      }
+      showToast('Application deleted successfully');
+      showView(currentView);
+    } catch (err) {
+      showToast('Delete failed. Please try again.', 'error');
     }
-    showView(currentView);
-  } catch (err) {
-    alert('Delete failed. Please try again.');
-  }
+  });
 }
 
 function editApplication(id) {
   window.location.href = '/application?edit=' + id;
 }
 
-function viewApplication(appJson) {
-  var app = JSON.parse(appJson);
+function viewApplication(idx) {
+  var app = _appsList[idx];
+  if (!app) return;
   var d = app.data || {};
 
   function dv(val) {
@@ -307,70 +372,96 @@ function viewApplication(appJson) {
     return '<div class="detail-item"><div class="detail-label">' + esc(label) + '</div>' + dv(val) + '</div>';
   }
 
+  var typeLabel = d.requestType === 'new' ? 'New Laptop' : d.requestType === 'replacement' ? 'Replacement Laptop' : d.requestType;
+
   var html =
     '<div class="detail-section">' +
       '<div class="detail-section-title">Request Info</div>' +
       '<div class="detail-grid">' +
         row('Request ID', app.request_id) +
         row('Status', app.status) +
+        row('Request Type', typeLabel) +
         row('Submitted', app.created_at ? app.created_at.substring(0,10) : '') +
-        row('Last Updated', app.updated_at ? app.updated_at.substring(0,10) : '') +
       '</div>' +
     '</div>' +
 
     '<div class="detail-section">' +
-      '<div class="detail-section-title">Applicant &amp; Company</div>' +
+      '<div class="detail-section-title">Requestor Information</div>' +
       '<div class="detail-grid">' +
-        row('Agency / OpCo', d.agency) +
+        row('Name', d.requestorName) +
+        row('Email', d.email) +
+        row('OpCo', d.agency) +
         row('Market', d.market) +
-        row('Applicant Name', d.applicantName) +
-        row('Applicant Email', d.applicantEmail) +
-        row('Department', d.department) +
-        row('Cost Center', d.costCenter) +
+        row('EUS Lead Email', d.eusLeadEmail || d.cityLeader) +
+        row('BU Email', d.buEmail) +
+        row('Date Required', d.dateRequired) +
+        row('Staff Category', d.staffCategory) +
       '</div>' +
     '</div>' +
 
     '<div class="detail-section">' +
-      '<div class="detail-section-title">Device Request</div>' +
+      '<div class="detail-section-title">Device Specifications</div>' +
       '<div class="detail-grid">' +
-        row('Laptop Model', d.laptopModel) +
+        row('EUC Persona', d.eucPersona) +
+        row('Device Type', d.deviceType === 'desktop' ? 'Desktop' : 'Laptop') +
+        row('Device Model', d.laptopModel) +
+        row('Make', d.selectedDeviceMake) +
+        row('MPN', d.selectedDeviceMpn) +
+        row('Operating System', d.os) +
         row('Quantity', d.quantity) +
-        row('Request Type', d.requestType) +
-        row('Priority', d.priority) +
-        row('Required Date', d.requiredDate) +
-        row('Operating System', d.operatingSystem) +
+        row('Specs', d.specs) +
+      '</div>' +
+    '</div>' +
+
+    '<div class="detail-section">' +
+      '<div class="detail-section-title">Cost &amp; Sourcing</div>' +
+      '<div class="detail-grid">' +
+        row('Unit Cost', d.unitCost ? d.unitCost + ' ' + (d.currency || 'USD') : '') +
+        row('Total Cost', d.unitCost && d.quantity ? (parseFloat(d.unitCost) * parseInt(d.quantity)).toFixed(2) + ' ' + (d.currency || 'USD') : '') +
+        row('Local Currency', d.localCurrency) +
+        row('Exchange Rate', d.exchangeRate) +
+        row('Local Cost Per Device', d.localCostPerDevice) +
       '</div>' +
     '</div>';
 
-  if (d.accessories && d.accessories.length) {
+  if (d.requestType === 'new') {
     html += '<div class="detail-section">' +
-      '<div class="detail-section-title">Accessories</div>' +
+      '<div class="detail-section-title">New Hire Details</div>' +
       '<div class="detail-grid">' +
-        row('Accessories', d.accessories) +
+        row('Number of New Hires', d.newHireCount) +
+        row('Expected Join Date', d.joinDate) +
+        row('EUC Persona Override', d.newHirePersona) +
+        row('Available Laptops', d.availableLaptops) +
       '</div>' +
     '</div>';
   }
 
-  if (d.oldAssetTag || d.oldSerialNumber) {
+  if (d.requestType === 'replacement') {
     html += '<div class="detail-section">' +
-      '<div class="detail-section-title">Replacement Device</div>' +
+      '<div class="detail-section-title">Replacement Details</div>' +
       '<div class="detail-grid">' +
-        row('Old Asset Tag', d.oldAssetTag) +
-        row('Old Serial Number', d.oldSerialNumber) +
-        row('Old Device Condition', d.oldDeviceCondition) +
+        row('Current Device', (d.currentDeviceMake || '') + ' ' + (d.currentDeviceModel || '')) +
+        row('Serial Number', d.currentSerialNumber) +
+        row('Device Age', d.currentDeviceAge ? d.currentDeviceAge + ' years' : '') +
+        row('Replacement Reason', d.currentCondition) +
+        row('Diagnostics', d.diagnostics) +
+        row('Current Workaround', d.currentWorkaround) +
+        row('Workaround Details', d.workaroundDetails) +
       '</div>' +
     '</div>';
   }
 
-  if (d.justification || d.additionalNotes) {
-    html += '<div class="detail-section">' +
-      '<div class="detail-section-title">Notes</div>' +
-      '<div class="detail-grid">' +
-        row('Justification', d.justification) +
-        row('Additional Notes', d.additionalNotes) +
-      '</div>' +
-    '</div>';
-  }
+  html += '<div class="detail-section">' +
+    '<div class="detail-section-title">Procurement Details</div>' +
+    '<div class="detail-grid">' +
+      row('ET Legal Entity', d.etLegalEntity) +
+      row('Lead Entity in Market', d.leadEntityInMarket) +
+      row('BFC Code', d.bfcCode) +
+      row('Stock or New Purchase', d.stockOrNewPurchase) +
+      row('Transfer Entity', d.transferEntity) +
+      row('Comments', d.comments) +
+    '</div>' +
+  '</div>';
 
   document.getElementById('viewModalTitle').textContent = 'Application – ' + (app.request_id || '');
   document.getElementById('viewModalBody').innerHTML = html;
@@ -530,18 +621,20 @@ function showUserError(msg) {
 }
 
 async function deleteUser(id) {
-  if (!confirm('Are you sure you want to delete this user?')) return;
-  try {
-    var res = await fetch('/api/users/' + id, { method: 'DELETE' });
-    var data = await res.json();
-    if (data.success) {
-      loadUsers();
-    } else {
-      alert(data.error || 'Delete failed.');
+  showConfirm('Delete User', 'Are you sure you want to delete this user? This action cannot be undone.', 'Delete', async function() {
+    try {
+      var res = await fetch('/api/users/' + id, { method: 'DELETE' });
+      var data = await res.json();
+      if (data.success) {
+        showToast('User deleted successfully');
+        loadUsers();
+      } else {
+        showToast(data.error || 'Delete failed.', 'error');
+      }
+    } catch (err) {
+      showToast('Delete failed. Please try again.', 'error');
     }
-  } catch (err) {
-    alert('Delete failed. Please try again.');
-  }
+  });
 }
 
 // ── Profile ───────────────────────────────────────────────────────────────
@@ -685,11 +778,16 @@ document.getElementById('viewModal').addEventListener('click', function(e) {
   if (e.target === this) closeViewModal();
 });
 
+document.getElementById('confirmModal').addEventListener('click', function(e) {
+  if (e.target === this) closeConfirm();
+});
+
 // Keyboard: ESC closes modals
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
     closeUserModal();
     closeViewModal();
+    closeConfirm();
   }
 });
 
