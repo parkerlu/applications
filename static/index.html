@@ -422,6 +422,7 @@ body {
 
 <div class="header">
   <div class="header-inner">
+    <a href="/dashboard" style="color: #fff; opacity: 0.8; text-decoration: none; font-size: 0.85rem;">&larr; Back to Dashboard</a>
     <h1>WPP Laptop Request System</h1>
     <p>Submit a new laptop procurement request</p>
   </div>
@@ -1023,6 +1024,145 @@ body {
   // Track currently selected device
   var selectedDevice = null;
 
+  // Auth state and edit mode
+  var currentUser = null;
+  var editingAppId = null;
+
+  // Auth guard
+  fetch('/api/me').then(function(r) {
+    if (!r.ok) { window.location.href = '/login'; return Promise.reject('not authed'); }
+    return r.json();
+  }).then(function(data) {
+    currentUser = data.user;
+    // Auto-fill from user profile
+    document.getElementById('requestorName').value = currentUser.name;
+    document.getElementById('email').value = currentUser.email;
+    var agencySelect = document.getElementById('agency');
+    if (agencySelect) agencySelect.value = currentUser.opco;
+    var marketSelect = document.getElementById('market');
+    if (marketSelect) marketSelect.value = currentUser.market;
+    // Check edit mode
+    var params = new URLSearchParams(window.location.search);
+    var editId = params.get('edit');
+    if (editId) {
+      editingAppId = editId;
+      loadApplicationForEdit(editId);
+    }
+  }).catch(function() {});
+
+  function loadApplicationForEdit(appId) {
+    fetch('/api/applications/' + appId)
+      .then(function(r) { return r.json(); })
+      .then(function(result) {
+        if (!result.success) return;
+        var d = result.application.data;
+
+        // Step 1: Request type
+        var rtRadio = document.querySelector('input[name="requestType"][value="' + d.requestType + '"]');
+        if (rtRadio) { rtRadio.checked = true; rtRadio.dispatchEvent(new Event('change', {bubbles: true})); }
+
+        // Step 2: Requestor info (these may be overwritten by user profile, set anyway)
+        if (d.requestorName) document.getElementById('requestorName').value = d.requestorName;
+        if (d.agency) document.getElementById('agency').value = d.agency;
+        if (d.market) document.getElementById('market').value = d.market;
+        if (d.email) document.getElementById('email').value = d.email;
+        if (d.buEmail) document.getElementById('buEmail').value = d.buEmail;
+        if (d.cityLeader) document.getElementById('cityLeader').value = d.cityLeader;
+        if (d.eusLeadEmail) {
+          var cl = document.getElementById('cityLeader');
+          if (cl) cl.value = d.eusLeadEmail;
+        }
+        if (d.dateRequired) document.getElementById('dateRequired').value = d.dateRequired;
+        if (d.staffCategory) document.getElementById('staffCategory').value = d.staffCategory;
+
+        // Step 3: Stock verification
+        document.getElementById('stockNoBuffer').checked = !!d.stockNoBuffer;
+        document.getElementById('stockListingUpToDate').checked = !!d.stockListingUpToDate;
+
+        // Step 4: Laptop specs
+        if (d.eucPersona) {
+          document.getElementById('eucPersona').value = d.eucPersona;
+          document.getElementById('eucPersona').dispatchEvent(new Event('change'));
+        }
+        if (d.deviceType) {
+          var dtRadio = document.querySelector('input[name="deviceType"][value="' + d.deviceType + '"]');
+          if (dtRadio) { dtRadio.checked = true; dtRadio.dispatchEvent(new Event('change', {bubbles: true})); }
+        }
+        // Device selection after cards render
+        setTimeout(function() {
+          var cards = document.querySelectorAll('.device-card');
+          cards.forEach(function(card, idx) {
+            var nameEl = card.querySelector('.device-name');
+            if (nameEl && nameEl.textContent === d.laptopModel) {
+              selectDevice(idx);
+            }
+          });
+          if (d.quantity) document.getElementById('quantity').value = d.quantity;
+          if (d.specs) document.getElementById('specs').value = d.specs;
+          var macJust = document.getElementById('macOsJustification');
+          if (macJust && d.macOsJustification) macJust.value = d.macOsJustification;
+        }, 500);
+
+        // Step 5: Cost & Sourcing
+        var lcField = document.getElementById('localCurrency');
+        if (lcField && d.localCurrency) lcField.value = d.localCurrency;
+        var erField = document.getElementById('exchangeRate');
+        if (erField && d.exchangeRate) erField.value = d.exchangeRate;
+        var lcpField = document.getElementById('localCostPerDevice');
+        if (lcpField && d.localCostPerDevice) lcpField.value = d.localCostPerDevice;
+        var cfd = document.getElementById('costFromDell');
+        if (cfd) cfd.checked = !!d.costFromDell;
+        var cet = document.getElementById('costExcludesTax');
+        if (cet) cet.checked = !!d.costExcludesTax;
+
+        // Step 6: New hire
+        if (d.requestType === 'new') {
+          var nhc = document.getElementById('newHireCount');
+          if (nhc && d.newHireCount) nhc.value = d.newHireCount;
+          var jd = document.getElementById('joinDate');
+          if (jd && d.joinDate) jd.value = d.joinDate;
+          var al = document.getElementById('availableLaptops');
+          if (al && d.availableLaptops) al.value = d.availableLaptops;
+        }
+
+        // Step 7: Replacement
+        if (d.requestType === 'replacement') {
+          var fields = {
+            currentDeviceMake: d.currentDeviceMake,
+            currentDeviceModel: d.currentDeviceModel,
+            currentSerialNumber: d.currentSerialNumber,
+            currentDeviceAge: d.currentDeviceAge,
+            currentDeviceSpecs: d.currentDeviceSpecs,
+            currentCondition: d.currentCondition,
+            diagnostics: d.diagnostics,
+            currentWorkaround: d.currentWorkaround,
+            workaroundDetails: d.workaroundDetails,
+            stockNotUsedJustification: d.stockNotUsedJustification,
+          };
+          for (var key in fields) {
+            var el = document.getElementById(key);
+            if (el && fields[key]) el.value = fields[key];
+          }
+          var euc = document.getElementById('eusConfirmed');
+          if (euc) euc.checked = !!d.eusConfirmed;
+        }
+
+        // Step 8: Procurement
+        var procFields = {
+          etLegalEntity: d.etLegalEntity,
+          leadEntityInMarket: d.leadEntityInMarket,
+          bfcCode: d.bfcCode,
+          stockOrNewPurchase: d.stockOrNewPurchase,
+          transferEntity: d.transferEntity,
+          comments: d.comments,
+        };
+        for (var key in procFields) {
+          var el = document.getElementById(key);
+          if (el && procFields[key]) el.value = procFields[key];
+        }
+      });
+  }
+
   let currentStep = 1;
 
   const stepLabels = {
@@ -1583,51 +1723,27 @@ body {
   }
 
   function submitRequest() {
-    var btn = document.getElementById('submitBtn');
-    btn.disabled = true;
-    btn.textContent = 'Submitting...';
-    document.getElementById('resultSuccess').style.display = 'none';
-    document.getElementById('resultError').style.display = 'none';
-
     var data = collectData();
+    var url = editingAppId ? '/api/applications/' + editingAppId : '/api/applications';
+    var method = editingAppId ? 'PUT' : 'POST';
 
-    fetch('/api/save', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    fetch(url, {
+      method: method,
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(data)
-    })
-    .then(function(resp) { return resp.json().then(function(j) { return { ok: resp.ok, data: j }; }); })
-    .then(function(result) {
-      if (result.ok && result.data.success) {
-        document.getElementById('resultFilename').textContent = result.data.filename;
-        document.getElementById('downloadMdLink').href = '/applications/' + result.data.filename;
-        if (result.data.excelFilename) {
-          document.getElementById('downloadExcelLink').href = '/applications/' + result.data.excelFilename;
-          document.getElementById('downloadExcelLink').style.display = 'inline-flex';
+    }).then(function(r) { return r.json(); })
+      .then(function(result) {
+        if (result.success) {
+          window.location.href = '/dashboard';
+        } else {
+          var msg = result.error || 'Submission failed';
+          if (result.details) msg += ': ' + result.details.join(', ');
+          alert(msg);
         }
-        document.getElementById('resultSuccess').style.display = 'block';
-        document.getElementById('submitArea').style.display = 'none';
-      } else {
-        document.getElementById('resultErrorMsg').textContent = result.data.error || 'Unknown error';
-        var ul = document.getElementById('resultErrorDetails');
-        ul.innerHTML = '';
-        (result.data.details || []).forEach(function(d) {
-          var li = document.createElement('li');
-          li.textContent = d;
-          ul.appendChild(li);
-        });
-        document.getElementById('resultError').style.display = 'block';
-        btn.disabled = false;
-        btn.textContent = 'Submit Request';
-      }
-    })
-    .catch(function(err) {
-      document.getElementById('resultErrorMsg').textContent = 'Network error: ' + err.message;
-      document.getElementById('resultErrorDetails').innerHTML = '';
-      document.getElementById('resultError').style.display = 'block';
-      btn.disabled = false;
-      btn.textContent = 'Submit Request';
-    });
+      })
+      .catch(function(err) {
+        alert('Network error: ' + err.message);
+      });
   }
 
   function resetForm() {
