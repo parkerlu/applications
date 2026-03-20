@@ -37,13 +37,6 @@ def _make_user_doc(username='testuser', role='user', user_id=None):
 @pytest.fixture
 def admin_client():
     from server import app
-    from auth import auth_bp, init_login
-    from api_users import users_bp
-    if 'auth' not in app.blueprints:
-        init_login(app)
-        app.register_blueprint(auth_bp)
-    if 'users' not in app.blueprints:
-        app.register_blueprint(users_bp)
     app.config['TESTING'] = True
     app.config['SECRET_KEY'] = 'test-secret'
     with app.test_client() as client:
@@ -63,13 +56,6 @@ def admin_client():
 @pytest.fixture
 def regular_client():
     from server import app
-    from auth import auth_bp, init_login
-    from api_users import users_bp
-    if 'auth' not in app.blueprints:
-        init_login(app)
-        app.register_blueprint(auth_bp)
-    if 'users' not in app.blueprints:
-        app.register_blueprint(users_bp)
     app.config['TESTING'] = True
     app.config['SECRET_KEY'] = 'test-secret'
     with app.test_client() as client:

@@ -1,17 +1,31 @@
 import os
 import re
 import glob
-from datetime import datetime
+from datetime import datetime, timezone
 from flask import Flask, request, jsonify, send_from_directory
+from flask_login import login_required, current_user
+from bson import ObjectId
+
 from utils import sanitize_company_name, validate_request, generate_markdown, generate_excel_workbook
+from auth import auth_bp, init_login
+from api_users import users_bp
+from api_applications import applications_bp, generate_request_id
+from db import init_db, get_db
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 APPLICATIONS_DIR = os.path.join(BASE_DIR, 'applications')
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
 app = Flask(__name__, static_folder=STATIC_DIR)
+app.config['SECRET_KEY'] = 'wpp-laptop-secret-key-change-me'
 
 os.makedirs(APPLICATIONS_DIR, exist_ok=True)
+
+# Initialize auth and register blueprints
+init_login(app)
+app.register_blueprint(auth_bp)
+app.register_blueprint(users_bp)
+app.register_blueprint(applications_bp)
 
 
 def generate_filename(agency, applications_dir=None):
@@ -43,36 +57,38 @@ def health():
     return jsonify({'status': 'ok'})
 
 
+@app.route('/login')
+def login_page():
+    return send_from_directory(STATIC_DIR, 'login.html')
+
+
+@app.route('/dashboard')
+def dashboard():
+    return send_from_directory(STATIC_DIR, 'dashboard.html')
+
+
 @app.route('/api/save', methods=['POST'])
+@login_required
 def save_request():
     data = request.get_json()
     if not data:
         return jsonify({'success': False, 'error': 'No data provided', 'details': []}), 400
-
     errors = validate_request(data)
     if errors:
         return jsonify({'success': False, 'error': 'Validation failed', 'details': errors}), 400
-
-    filename = generate_filename(data.get('agency', 'Unknown'))
-    request_id = filename.replace('.md', '')
-    md_content = generate_markdown(data, request_id)
-
-    filepath = os.path.join(APPLICATIONS_DIR, filename)
-    with open(filepath, 'w', encoding='utf-8') as f:
-        f.write(md_content)
-
-    # Generate Excel file
-    wb = generate_excel_workbook([data], [request_id])
-    excel_path = os.path.join(APPLICATIONS_DIR, request_id + '.xlsx')
-    wb.save(excel_path)
-    excel_filename = request_id + '.xlsx'
-
-    return jsonify({
-        'success': True,
-        'filename': filename,
-        'excelFilename': excel_filename,
-        'path': f'applications/{filename}'
-    })
+    request_id = generate_request_id(data.get('agency', 'Unknown'))
+    now = datetime.now(timezone.utc)
+    app_doc = {
+        'request_id': request_id,
+        'user_id': ObjectId(current_user.id),
+        'status': 'submitted',
+        'data': data,
+        'created_at': now,
+        'updated_at': now,
+    }
+    db = get_db()
+    result = db.applications.insert_one(app_doc)
+    return jsonify({'success': True, 'request_id': request_id, 'id': str(result.inserted_id)})
 
 
 @app.route('/applications/<path:filename>')
@@ -81,4 +97,5 @@ def download_file(filename):
 
 
 if __name__ == '__main__':
+    init_db()
     app.run(host='0.0.0.0', port=8900, debug=True)

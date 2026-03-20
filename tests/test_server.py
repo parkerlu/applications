@@ -10,6 +10,8 @@ from server import generate_filename, APPLICATIONS_DIR
 import tempfile
 import os
 from datetime import datetime
+from unittest.mock import patch, MagicMock
+from bson import ObjectId
 
 def test_sanitize_company_name_basic():
     assert sanitize_company_name("VML Shanghai") == "VML-Shanghai"
@@ -159,68 +161,115 @@ VALID_NEW_REQUEST = {
     "comments": ""
 }
 
+
+def _make_auth_db(user_doc):
+    """Return a MagicMock db where users.find_one returns user_doc."""
+    mock_db = MagicMock()
+    mock_db.users.find_one.return_value = user_doc
+    return mock_db
+
+
+def _login_test_user(client):
+    """Login a mock user for tests that need auth. Returns (user_doc, auth_db_mock)."""
+    user_doc = {
+        '_id': ObjectId(),
+        'username': 'testuser',
+        'email': 'test@wpp.com',
+        'name': 'Test User',
+        'opco': 'VML',
+        'market': 'Shanghai',
+        'role': 'user',
+        'must_change_password': False,
+        'password_hash': '$2b$12$validhashabcdefghijklmnopqrstuvwxyz012345',
+    }
+    auth_db = _make_auth_db(user_doc)
+    with patch('auth.get_db', return_value=auth_db), \
+         patch('auth.bcrypt.checkpw', return_value=True):
+        client.post('/api/login', json={'username': 'testuser', 'password': 'pass'})
+    return user_doc, auth_db
+
+
 def test_save_valid_new_request(client, tmp_path, monkeypatch):
-    monkeypatch.setattr('server.APPLICATIONS_DIR', str(tmp_path))
-    rv = client.post('/api/save', json=VALID_NEW_REQUEST)
+    user_doc, auth_db = _login_test_user(client)
+    with patch('auth.get_db', return_value=auth_db), \
+         patch('server.get_db') as mock_get_db, \
+         patch('api_applications.get_db') as mock_app_db:
+        mock_db = MagicMock()
+        mock_db.applications.find.return_value = []
+        mock_db.applications.insert_one.return_value = MagicMock(inserted_id=ObjectId())
+        mock_get_db.return_value = mock_db
+        mock_app_db.return_value = mock_db
+        rv = client.post('/api/save', json=VALID_NEW_REQUEST)
     assert rv.status_code == 200
     data = rv.get_json()
     assert data['success'] is True
-    assert data['filename'].startswith('REQ-')
-    assert data['filename'].endswith('.md')
-    files = list(tmp_path.glob('REQ-*.md'))
-    assert len(files) == 1
 
 def test_save_missing_required_field(client, tmp_path, monkeypatch):
-    monkeypatch.setattr('server.APPLICATIONS_DIR', str(tmp_path))
+    user_doc, auth_db = _login_test_user(client)
     bad_data = {**VALID_NEW_REQUEST, "requestorName": ""}
-    rv = client.post('/api/save', json=bad_data)
+    with patch('auth.get_db', return_value=auth_db):
+        rv = client.post('/api/save', json=bad_data)
     assert rv.status_code == 400
     data = rv.get_json()
     assert data['success'] is False
     assert 'requestorName' in str(data['details'])
 
 def test_save_invalid_email(client, tmp_path, monkeypatch):
-    monkeypatch.setattr('server.APPLICATIONS_DIR', str(tmp_path))
+    user_doc, auth_db = _login_test_user(client)
     bad_data = {**VALID_NEW_REQUEST, "email": "not-an-email"}
-    rv = client.post('/api/save', json=bad_data)
+    with patch('auth.get_db', return_value=auth_db):
+        rv = client.post('/api/save', json=bad_data)
     assert rv.status_code == 400
     data = rv.get_json()
     assert data['success'] is False
 
 def test_save_macos_justification_is_optional(client, tmp_path, monkeypatch):
-    monkeypatch.setattr('server.APPLICATIONS_DIR', str(tmp_path))
-    data_with_mac = {**VALID_NEW_REQUEST, "os": "macOS", "macOsJustification": None}
-    rv = client.post('/api/save', json=data_with_mac)
+    user_doc, auth_db = _login_test_user(client)
+    with patch('auth.get_db', return_value=auth_db), \
+         patch('server.get_db') as mock_get_db, \
+         patch('api_applications.get_db') as mock_app_db:
+        mock_db = MagicMock()
+        mock_db.applications.find.return_value = []
+        mock_db.applications.insert_one.return_value = MagicMock(inserted_id=ObjectId())
+        mock_get_db.return_value = mock_db
+        mock_app_db.return_value = mock_db
+        data_with_mac = {**VALID_NEW_REQUEST, "os": "macOS", "macOsJustification": None}
+        rv = client.post('/api/save', json=data_with_mac)
     assert rv.status_code == 200
 
 def test_save_stock_verification_required(client, tmp_path, monkeypatch):
-    monkeypatch.setattr('server.APPLICATIONS_DIR', str(tmp_path))
+    user_doc, auth_db = _login_test_user(client)
     bad_data = {**VALID_NEW_REQUEST, "stockNoBuffer": False}
-    rv = client.post('/api/save', json=bad_data)
+    with patch('auth.get_db', return_value=auth_db):
+        rv = client.post('/api/save', json=bad_data)
     assert rv.status_code == 400
 
 def test_save_quantity_must_be_positive(client, tmp_path, monkeypatch):
-    monkeypatch.setattr('server.APPLICATIONS_DIR', str(tmp_path))
+    user_doc, auth_db = _login_test_user(client)
     bad_data = {**VALID_NEW_REQUEST, "quantity": 0}
-    rv = client.post('/api/save', json=bad_data)
+    with patch('auth.get_db', return_value=auth_db):
+        rv = client.post('/api/save', json=bad_data)
     assert rv.status_code == 400
 
 def test_save_unit_cost_must_be_positive(client, tmp_path, monkeypatch):
-    monkeypatch.setattr('server.APPLICATIONS_DIR', str(tmp_path))
+    user_doc, auth_db = _login_test_user(client)
     bad_data = {**VALID_NEW_REQUEST, "unitCost": -100}
-    rv = client.post('/api/save', json=bad_data)
+    with patch('auth.get_db', return_value=auth_db):
+        rv = client.post('/api/save', json=bad_data)
     assert rv.status_code == 400
 
 def test_save_cost_confirmations_required(client, tmp_path, monkeypatch):
-    monkeypatch.setattr('server.APPLICATIONS_DIR', str(tmp_path))
+    user_doc, auth_db = _login_test_user(client)
     bad_data = {**VALID_NEW_REQUEST, "costFromDell": False}
-    rv = client.post('/api/save', json=bad_data)
+    with patch('auth.get_db', return_value=auth_db):
+        rv = client.post('/api/save', json=bad_data)
     assert rv.status_code == 400
 
 def test_save_new_hire_fields_required(client, tmp_path, monkeypatch):
-    monkeypatch.setattr('server.APPLICATIONS_DIR', str(tmp_path))
+    user_doc, auth_db = _login_test_user(client)
     bad_data = {**VALID_NEW_REQUEST, "joinDate": None}
-    rv = client.post('/api/save', json=bad_data)
+    with patch('auth.get_db', return_value=auth_db):
+        rv = client.post('/api/save', json=bad_data)
     assert rv.status_code == 400
 
 VALID_REPLACEMENT_REQUEST = {
@@ -256,32 +305,44 @@ VALID_REPLACEMENT_REQUEST = {
 }
 
 def test_save_valid_replacement_request(client, tmp_path, monkeypatch):
-    monkeypatch.setattr('server.APPLICATIONS_DIR', str(tmp_path))
-    rv = client.post('/api/save', json=VALID_REPLACEMENT_REQUEST)
+    user_doc, auth_db = _login_test_user(client)
+    with patch('auth.get_db', return_value=auth_db), \
+         patch('server.get_db') as mock_get_db, \
+         patch('api_applications.get_db') as mock_app_db:
+        mock_db = MagicMock()
+        mock_db.applications.find.return_value = []
+        mock_db.applications.insert_one.return_value = MagicMock(inserted_id=ObjectId())
+        mock_get_db.return_value = mock_db
+        mock_app_db.return_value = mock_db
+        rv = client.post('/api/save', json=VALID_REPLACEMENT_REQUEST)
     assert rv.status_code == 200
     data = rv.get_json()
     assert data['success'] is True
 
 def test_save_replacement_requires_condition(client, tmp_path, monkeypatch):
-    monkeypatch.setattr('server.APPLICATIONS_DIR', str(tmp_path))
+    user_doc, auth_db = _login_test_user(client)
     bad_data = {**VALID_REPLACEMENT_REQUEST, "currentCondition": None}
-    rv = client.post('/api/save', json=bad_data)
+    with patch('auth.get_db', return_value=auth_db):
+        rv = client.post('/api/save', json=bad_data)
     assert rv.status_code == 400
 
 def test_save_replacement_requires_diagnostics(client, tmp_path, monkeypatch):
-    monkeypatch.setattr('server.APPLICATIONS_DIR', str(tmp_path))
+    user_doc, auth_db = _login_test_user(client)
     bad_data = {**VALID_REPLACEMENT_REQUEST, "diagnostics": None}
-    rv = client.post('/api/save', json=bad_data)
+    with patch('auth.get_db', return_value=auth_db):
+        rv = client.post('/api/save', json=bad_data)
     assert rv.status_code == 400
 
 def test_save_replacement_requires_eus_confirmed(client, tmp_path, monkeypatch):
-    monkeypatch.setattr('server.APPLICATIONS_DIR', str(tmp_path))
+    user_doc, auth_db = _login_test_user(client)
     bad_data = {**VALID_REPLACEMENT_REQUEST, "eusConfirmed": False}
-    rv = client.post('/api/save', json=bad_data)
+    with patch('auth.get_db', return_value=auth_db):
+        rv = client.post('/api/save', json=bad_data)
     assert rv.status_code == 400
 
 def test_save_persona_other_requires_justification(client, tmp_path, monkeypatch):
-    monkeypatch.setattr('server.APPLICATIONS_DIR', str(tmp_path))
+    user_doc, auth_db = _login_test_user(client)
     bad_data = {**VALID_NEW_REQUEST, "eucPersona": "Other", "nonStandardJustification": None}
-    rv = client.post('/api/save', json=bad_data)
+    with patch('auth.get_db', return_value=auth_db):
+        rv = client.post('/api/save', json=bad_data)
     assert rv.status_code == 400

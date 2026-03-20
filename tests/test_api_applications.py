@@ -44,13 +44,6 @@ def _make_app_doc(user_id, app_id=None):
 @pytest.fixture
 def user_client():
     from server import app
-    from auth import auth_bp, init_login
-    from api_applications import applications_bp
-    if 'auth' not in app.blueprints:
-        init_login(app)
-        app.register_blueprint(auth_bp)
-    if 'applications' not in app.blueprints:
-        app.register_blueprint(applications_bp)
     app.config['TESTING'] = True
     app.config['SECRET_KEY'] = 'test-secret'
     with app.test_client() as client:
@@ -67,13 +60,6 @@ def user_client():
 @pytest.fixture
 def admin_client():
     from server import app
-    from auth import auth_bp, init_login
-    from api_applications import applications_bp
-    if 'auth' not in app.blueprints:
-        init_login(app)
-        app.register_blueprint(auth_bp)
-    if 'applications' not in app.blueprints:
-        app.register_blueprint(applications_bp)
     app.config['TESTING'] = True
     app.config['SECRET_KEY'] = 'test-secret'
     with app.test_client() as client:
@@ -279,13 +265,6 @@ def test_admin_can_list_all_applications(admin_client):
 def test_unauthenticated_cannot_access():
     """Verify unauthenticated access returns 401."""
     from server import app
-    from auth import auth_bp, init_login
-    from api_applications import applications_bp
-    if 'auth' not in app.blueprints:
-        init_login(app)
-        app.register_blueprint(auth_bp)
-    if 'applications' not in app.blueprints:
-        app.register_blueprint(applications_bp)
     app.config['TESTING'] = True
     app.config['SECRET_KEY'] = 'test-secret'
     # Fresh client with no login session

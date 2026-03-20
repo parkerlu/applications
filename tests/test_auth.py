@@ -30,11 +30,6 @@ def make_user_doc(user_id=None, password_hash=None):
 @pytest.fixture
 def auth_client():
     from server import app
-    from auth import auth_bp, init_login
-    # Register if not already registered
-    if 'auth' not in app.blueprints:
-        app.register_blueprint(auth_bp)
-        init_login(app)
     app.config['TESTING'] = True
     app.config['SECRET_KEY'] = 'test-secret'
     with app.test_client() as client:
