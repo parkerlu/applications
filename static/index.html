@@ -615,8 +615,13 @@ html:not(.dark) .result-message.error-result { background: #fef2f2; border: 1px 
 <!-- Top Header -->
 <header class="w-full sticky top-0 z-40 backdrop-blur-xl flex justify-between items-center px-12 py-6"
         style="background:var(--header-bg); border-bottom:1px solid var(--header-border);">
-  <div class="text-2xl font-black tracking-tighter text-primary font-headline">IT Asset Application Portal</div>
+  <div id="portalTitle" data-i18n="portal_title" class="text-2xl font-black tracking-tighter text-primary font-headline">IT Asset Application Portal</div>
   <div class="flex items-center gap-6">
+    <!-- Language Toggle -->
+    <button id="langBtn" onclick="toggleLang()"
+            class="w-8 h-8 flex items-center justify-center rounded-full text-xs font-black transition-colors"
+            style="background:var(--toggle-bg); border:1px solid var(--toggle-border); color:var(--c-primary);"
+            title="Switch Language">EN</button>
     <!-- Dark/Light Toggle -->
     <div class="flex items-center gap-0 rounded-full p-1" style="background:var(--toggle-bg); border:1px solid var(--toggle-border);">
       <button id="btnLight" onclick="setTheme('light')"
@@ -633,7 +638,7 @@ html:not(.dark) .result-message.error-result { background: #fef2f2; border: 1px 
             class="flex items-center gap-2 px-4 py-2 rounded-lg text-on-surface-variant hover:text-error transition-colors duration-200 text-sm font-medium"
             style="border:1px solid var(--sidebar-border);">
       <span class="material-symbols-outlined text-lg">logout</span>
-      <span>Sign Out</span>
+      <span id="signOutLabel" data-i18n="sign_out">Sign Out</span>
     </button>
   </div>
 </header>
@@ -646,41 +651,41 @@ html:not(.dark) .result-message.error-result { background: #fef2f2; border: 1px 
 
   <!-- Step 1: Request Type -->
   <div class="step-panel" id="step-1" data-step="1">
-    <h2>Request Type</h2>
-    <p class="step-subtitle">Select whether this is a new laptop or a replacement request.</p>
+    <h2 data-i18n="request_type">Request Type</h2>
+    <p class="step-subtitle" data-i18n="select_request_type_desc">Select whether this is a new laptop or a replacement request.</p>
     <div class="radio-cards">
       <label class="radio-card" onclick="selectRequestType('new')">
         <input type="radio" name="requestType" value="new">
         <div class="card-icon">&#128187;</div>
-        <div class="card-title">New Laptop</div>
-        <div class="card-desc">Request a laptop for a new hire or new role</div>
+        <div class="card-title" data-i18n="new_laptop">New Laptop</div>
+        <div class="card-desc" data-i18n="new_laptop_desc">Request a laptop for a new hire or new role</div>
       </label>
       <label class="radio-card" onclick="selectRequestType('replacement')">
         <input type="radio" name="requestType" value="replacement">
         <div class="card-icon">&#128260;</div>
-        <div class="card-title">Replacement Laptop</div>
-        <div class="card-desc">Replace an existing non-functional or outdated laptop</div>
+        <div class="card-title" data-i18n="replacement_laptop">Replacement Laptop</div>
+        <div class="card-desc" data-i18n="replacement_laptop_desc">Replace an existing non-functional or outdated laptop</div>
       </label>
     </div>
-    <div class="error-msg" id="err-requestType">Please select a request type</div>
+    <div class="error-msg" id="err-requestType" data-i18n="select_request_type_err">Please select a request type</div>
     <div class="nav-buttons">
       <div></div>
-      <button class="btn btn-primary" onclick="nextStep()">Next</button>
+      <button class="btn btn-primary" onclick="nextStep()" data-i18n="next">Next</button>
     </div>
   </div>
 
   <!-- Step 2: Requestor Info -->
   <div class="step-panel" id="step-2" data-step="2">
-    <h2>Requestor Information</h2>
-    <p class="step-subtitle">Enter details about the person submitting this request.</p>
+    <h2 data-i18n="requestor_info">Requestor Information</h2>
+    <p class="step-subtitle" data-i18n="requestor_info_desc">Enter details about the person submitting this request.</p>
     <div class="form-group">
-      <label>Name <span class="required">*</span></label>
+      <label data-i18n-html="name_req">Name <span class="required">*</span></label>
       <input type="text" id="requestorName" placeholder="Full name">
-      <div class="error-msg" id="err-requestorName">Name is required</div>
+      <div class="error-msg" id="err-requestorName" data-i18n="err_name">Name is required</div>
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label>OpCo <span class="required">*</span></label>
+        <label data-i18n-html="opco_req">OpCo <span class="required">*</span></label>
         <select id="agency">
           <option value="">-- Select OpCo --</option>
           <option value="WPP HQ">WPP HQ</option>
@@ -696,10 +701,10 @@ html:not(.dark) .result-message.error-result { background: #fef2f2; border: 1px 
           <option value="Landor">Landor</option>
           <option value="Design Bridge">Design Bridge</option>
         </select>
-        <div class="error-msg" id="err-agency">OpCo is required</div>
+        <div class="error-msg" id="err-agency" data-i18n="err_opco">OpCo is required</div>
       </div>
       <div class="form-group">
-        <label>Market <span class="required">*</span></label>
+        <label data-i18n-html="market_req">Market <span class="required">*</span></label>
         <select id="market">
           <option value="">-- Select Market --</option>
           <option value="Shanghai">Shanghai</option>
@@ -710,76 +715,76 @@ html:not(.dark) .result-message.error-result { background: #fef2f2; border: 1px 
           <option value="Hongkong">Hongkong</option>
           <option value="Taiwan">Taiwan</option>
         </select>
-        <div class="error-msg" id="err-market">Market is required</div>
+        <div class="error-msg" id="err-market" data-i18n="err_market">Market is required</div>
       </div>
     </div>
     <div class="form-group">
-      <label>Guardian Email <span class="required">*</span></label>
+      <label data-i18n-html="guardian_email_req">Guardian Email <span class="required">*</span></label>
       <input type="email" id="email" placeholder="name@company.com">
-      <div class="error-msg" id="err-email">Valid email is required</div>
+      <div class="error-msg" id="err-email" data-i18n="err_email">Valid email is required</div>
     </div>
     <div class="form-group">
-      <label>Requestor (BU) Email</label>
+      <label data-i18n="bu_email">Requestor (BU) Email</label>
       <input type="email" id="buEmail" placeholder="Business unit requestor email (if different)">
     </div>
     <div class="form-group">
-      <label>Requestor (EUS Lead) Email <span class="required">*</span></label>
+      <label data-i18n-html="eus_lead_email_req">Requestor (EUS Lead) Email <span class="required">*</span></label>
       <input type="email" id="cityLeader" placeholder="EUS Lead email address">
-      <div class="error-msg" id="err-cityLeader">Valid EUS Lead email is required</div>
+      <div class="error-msg" id="err-cityLeader" data-i18n="err_eus_lead_email">Valid EUS Lead email is required</div>
     </div>
     <div class="form-group">
-      <label>Date Required <span class="required">*</span></label>
+      <label data-i18n-html="date_required_req">Date Required <span class="required">*</span></label>
       <input type="date" id="dateRequired">
-      <div class="error-msg" id="err-dateRequired">Date required is required (must be at least 4 weeks from today)</div>
-      <small style="color:var(--c-on-surface-variant);">Must be at least 4 weeks from today</small>
+      <div class="error-msg" id="err-dateRequired" data-i18n="err_date_required">Date required is required (must be at least 4 weeks from today)</div>
+      <small style="color:var(--c-on-surface-variant);" data-i18n="date_required_hint">Must be at least 4 weeks from today</small>
     </div>
     <div class="form-group">
-      <label>Staff Category <span class="required">*</span></label>
+      <label data-i18n-html="staff_category_req">Staff Category <span class="required">*</span></label>
       <select id="staffCategory">
         <option value="">-- Select --</option>
         <option value="Standard" selected>Standard</option>
         <option value="WPP ET Staff">WPP ET Staff</option>
         <option value="India HQ">India HQ</option>
       </select>
-      <div class="error-msg" id="err-staffCategory">Staff category is required</div>
+      <div class="error-msg" id="err-staffCategory" data-i18n="err_staff_category">Staff category is required</div>
     </div>
     <div class="nav-buttons">
-      <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-      <button class="btn btn-primary" onclick="nextStep()">Next</button>
+      <button class="btn btn-secondary" onclick="prevStep()" data-i18n="back">Back</button>
+      <button class="btn btn-primary" onclick="nextStep()" data-i18n="next">Next</button>
     </div>
   </div>
 
   <!-- Step 3: Stock Verification -->
   <div class="step-panel" id="step-3" data-step="3">
-    <h2>Stock Verification</h2>
-    <p class="step-subtitle">Confirm existing stock has been reviewed before proceeding.</p>
+    <h2 data-i18n="stock_verification">Stock Verification</h2>
+    <p class="step-subtitle" data-i18n="stock_desc">Confirm existing stock has been reviewed before proceeding.</p>
     <div class="checkbox-group" id="cg-stockNoBuffer">
       <label>
         <input type="checkbox" id="stockNoBuffer">
-        I confirm all existing stocks within markets do not have buffer or almost-new laptops
+        <span data-i18n="stock_no_buffer">I confirm all existing stocks within markets do not have buffer or almost-new laptops</span>
       </label>
     </div>
-    <div class="error-msg" id="err-stockNoBuffer">This confirmation is required</div>
+    <div class="error-msg" id="err-stockNoBuffer" data-i18n="err_confirmation_required">This confirmation is required</div>
     <div class="checkbox-group" id="cg-stockListingUpToDate">
       <label>
         <input type="checkbox" id="stockListingUpToDate">
-        I confirm the laptop count from ALL agencies within market in 2026 Stock listing file is up to date
+        <span data-i18n="stock_listing_up_to_date">I confirm the laptop count from ALL agencies within market in 2026 Stock listing file is up to date</span>
       </label>
     </div>
-    <div class="error-msg" id="err-stockListingUpToDate">This confirmation is required</div>
+    <div class="error-msg" id="err-stockListingUpToDate" data-i18n="err_confirmation_required">This confirmation is required</div>
     <div class="nav-buttons">
-      <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-      <button class="btn btn-primary" onclick="nextStep()">Next</button>
+      <button class="btn btn-secondary" onclick="prevStep()" data-i18n="back">Back</button>
+      <button class="btn btn-primary" onclick="nextStep()" data-i18n="next">Next</button>
     </div>
   </div>
 
   <!-- Step 4: Device Specs & Persona -->
   <div class="step-panel" id="step-4" data-step="4">
-    <h2>Device Specifications &amp; Persona</h2>
-    <p class="step-subtitle">Select the EUC persona and approved device from the WPP standards catalog.</p>
+    <h2 data-i18n="laptop_specs">Device Specifications &amp; Persona</h2>
+    <p class="step-subtitle" data-i18n="laptop_specs_desc">Select the EUC persona and approved device from the WPP standards catalog.</p>
     <div class="form-row">
       <div class="form-group">
-        <label>WPP EUC Standards Persona <span class="required">*</span></label>
+        <label data-i18n-html="euc_persona_req">WPP EUC Standards Persona <span class="required">*</span></label>
         <select id="eucPersona" onchange="onPersonaChange()">
           <option value="">-- Select --</option>
           <option value="Business Leaders">Business Leaders</option>
@@ -790,32 +795,32 @@ html:not(.dark) .result-message.error-result { background: #fef2f2; border: 1px 
           <option value="Data Scientists">Data Scientists</option>
           <option value="Tech Specialists / GEC">Tech Specialists / GEC</option>
         </select>
-        <div class="error-msg" id="err-eucPersona">EUC Persona is required</div>
+        <div class="error-msg" id="err-eucPersona" data-i18n="err_euc_persona">EUC Persona is required</div>
       </div>
       <div class="form-group">
-        <label>EUC Standards Version</label>
+        <label data-i18n="euc_standards_version">EUC Standards Version</label>
         <input type="text" id="eucStandardsVersion" value="2026/Q1" readonly>
       </div>
     </div>
 
     <div class="form-group">
-      <label>Device Type <span class="required">*</span></label>
+      <label data-i18n-html="device_type_req">Device Type <span class="required">*</span></label>
       <div class="device-type-radios" id="deviceTypeRadios">
         <label class="dt-selected" onclick="selectDeviceType('laptop')">
-          <input type="radio" name="deviceType" value="laptop" checked> Laptop
+          <input type="radio" name="deviceType" value="laptop" checked> <span data-i18n="laptop">Laptop</span>
         </label>
         <label onclick="selectDeviceType('desktop')">
-          <input type="radio" name="deviceType" value="desktop"> Desktop
+          <input type="radio" name="deviceType" value="desktop"> <span data-i18n="desktop">Desktop</span>
         </label>
       </div>
     </div>
 
     <div class="form-group">
-      <label>Select Device <span class="required">*</span></label>
+      <label data-i18n-html="select_device_req">Select Device <span class="required">*</span></label>
       <div id="deviceCardsArea">
-        <div class="device-no-results">Please select an EUC Persona to see available devices.</div>
+        <div class="device-no-results" data-i18n="select_persona_hint">Please select an EUC Persona to see available devices.</div>
       </div>
-      <div class="error-msg" id="err-deviceSelection">Please select a device</div>
+      <div class="error-msg" id="err-deviceSelection" data-i18n="err_select_device">Please select a device</div>
     </div>
 
     <!-- Hidden fields populated by device selection -->
@@ -825,67 +830,67 @@ html:not(.dark) .result-message.error-result { background: #fef2f2; border: 1px 
     <input type="hidden" id="selectedDeviceMpn" value="">
 
     <div class="form-group" id="macOsGroup" style="display:none;">
-      <label>macOS Justification</label>
+      <label data-i18n="macos_justification">macOS Justification</label>
       <textarea id="macOsJustification" placeholder="Explain why macOS is required for this role"></textarea>
       <div class="warning-box" id="macOsWarning" style="display:none;">
-        &#9888; Stricter justification required for WPP ET / India HQ staff
+        <span data-i18n="macos_warning">&#9888; Stricter justification required for WPP ET / India HQ staff</span>
       </div>
-      <div class="error-msg" id="err-macOsJustification">macOS justification is required</div>
+      <div class="error-msg" id="err-macOsJustification" data-i18n="err_macos_justification">macOS justification is required</div>
     </div>
 
     <div class="form-group">
-      <label>Quantity <span class="required">*</span></label>
+      <label data-i18n-html="quantity_req">Quantity <span class="required">*</span></label>
       <input type="number" id="quantity" min="1" value="1" oninput="recalcUsdFromLocal()">
-      <div class="error-msg" id="err-quantity">Quantity must be at least 1</div>
+      <div class="error-msg" id="err-quantity" data-i18n="err_quantity">Quantity must be at least 1</div>
     </div>
 
     <div class="form-group">
-      <label>Specs Summary <span class="required">*</span></label>
+      <label data-i18n-html="specs_summary_req">Specs Summary <span class="required">*</span></label>
       <textarea id="specs" placeholder="Auto-filled when a device is selected. You may add notes."></textarea>
-      <div class="error-msg" id="err-specs">Specs summary is required</div>
+      <div class="error-msg" id="err-specs" data-i18n="err_specs">Specs summary is required</div>
     </div>
 
     <div class="nav-buttons">
-      <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-      <button class="btn btn-primary" onclick="nextStep()">Next</button>
+      <button class="btn btn-secondary" onclick="prevStep()" data-i18n="back">Back</button>
+      <button class="btn btn-primary" onclick="nextStep()" data-i18n="next">Next</button>
     </div>
   </div>
 
   <!-- Step 5: Cost & Sourcing -->
   <div class="step-panel" id="step-5" data-step="5">
-    <h2>Cost &amp; Sourcing</h2>
-    <p class="step-subtitle">Enter cost in local currency. USD will be auto-calculated.</p>
+    <h2 data-i18n="cost_sourcing">Cost &amp; Sourcing</h2>
+    <p class="step-subtitle" data-i18n="cost_sourcing_desc">Enter cost in local currency. USD will be auto-calculated.</p>
     <div class="form-row">
       <div class="form-group">
-        <label>Local Currency</label>
+        <label data-i18n="local_currency">Local Currency</label>
         <input type="text" id="localCurrency" placeholder="e.g. CNY, SGD, INR" value="CNY">
       </div>
       <div class="form-group">
-        <label>USD Exchange Rate</label>
+        <label data-i18n="usd_exchange_rate">USD Exchange Rate</label>
         <input type="number" id="exchangeRate" min="0" step="0.000001" value="7.259259259" oninput="recalcUsdFromLocal()">
-        <small style="color:var(--c-on-surface-variant);">1 USD = ? local currency</small>
+        <small style="color:var(--c-on-surface-variant);" data-i18n="exchange_rate_hint">1 USD = ? local currency</small>
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label>Cost per Device (Local Currency) <span class="required">*</span></label>
+        <label data-i18n-html="cost_per_device_local_req">Cost per Device (Local Currency) <span class="required">*</span></label>
         <input type="number" id="localCostPerDevice" min="0" step="0.01" placeholder="0.00" oninput="recalcUsdFromLocal()">
-        <div class="error-msg" id="err-localCostPerDevice">Local cost per device is required</div>
+        <div class="error-msg" id="err-localCostPerDevice" data-i18n="err_local_cost">Local cost per device is required</div>
       </div>
       <div class="form-group">
-        <label>Total Cost (Local Currency)</label>
+        <label data-i18n="total_cost_local">Total Cost (Local Currency)</label>
         <input type="text" id="localTotalCost" readonly value="">
       </div>
     </div>
-    <h3 style="color:var(--c-primary);margin:16px 0 8px;font-size:0.9rem;border-bottom:1px solid var(--c-outline-variant);padding-bottom:4px;">USD Equivalent (auto-calculated)</h3>
+    <h3 style="color:var(--c-primary);margin:16px 0 8px;font-size:0.9rem;border-bottom:1px solid var(--c-outline-variant);padding-bottom:4px;" data-i18n="usd_equivalent">USD Equivalent (auto-calculated)</h3>
     <div class="form-row">
       <div class="form-group">
-        <label>Cost per Device (USD)</label>
+        <label data-i18n="cost_per_device_usd">Cost per Device (USD)</label>
         <input type="number" id="unitCost" readonly step="0.01" value="0">
         <div class="error-msg" id="err-unitCost" style="display:none;"></div>
       </div>
       <div class="form-group">
-        <label>Total Cost (USD)</label>
+        <label data-i18n="total_cost_usd">Total Cost (USD)</label>
         <input type="text" id="totalCost" readonly value="0.00">
       </div>
     </div>
@@ -894,41 +899,41 @@ html:not(.dark) .result-message.error-result { background: #fef2f2; border: 1px 
     <div class="checkbox-group" id="cg-costFromDell">
       <label>
         <input type="checkbox" id="costFromDell">
-        <span id="costSourceLabel">I confirm cost is from Dell Direct portal / Dell-approved partner in market</span>
+        <span id="costSourceLabel" data-i18n="cost_from_dell">I confirm cost is from Dell Direct portal / Dell-approved partner in market</span>
       </label>
     </div>
-    <div class="error-msg" id="err-costFromDell">This confirmation is required</div>
+    <div class="error-msg" id="err-costFromDell" data-i18n="err_confirmation_required">This confirmation is required</div>
     <div class="checkbox-group" id="cg-costExcludesTax">
       <label>
         <input type="checkbox" id="costExcludesTax">
-        I confirm cost excludes local taxes
+        <span data-i18n="cost_excludes_tax">I confirm cost excludes local taxes</span>
       </label>
     </div>
-    <div class="error-msg" id="err-costExcludesTax">This confirmation is required</div>
+    <div class="error-msg" id="err-costExcludesTax" data-i18n="err_confirmation_required">This confirmation is required</div>
     <div class="nav-buttons">
-      <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-      <button class="btn btn-primary" onclick="nextStep()">Next</button>
+      <button class="btn btn-secondary" onclick="prevStep()" data-i18n="back">Back</button>
+      <button class="btn btn-primary" onclick="nextStep()" data-i18n="next">Next</button>
     </div>
   </div>
 
   <!-- Step 6: New Hire Details -->
   <div class="step-panel" id="step-6" data-step="6">
-    <h2>New Hire Details</h2>
-    <p class="step-subtitle">Provide details about the incoming new hire(s).</p>
+    <h2 data-i18n="new_hire_details">New Hire Details</h2>
+    <p class="step-subtitle" data-i18n="new_hire_details_desc">Provide details about the incoming new hire(s).</p>
     <div class="form-row">
       <div class="form-group">
-        <label>Number of New Hires <span class="required">*</span></label>
+        <label data-i18n-html="number_of_new_hires_req">Number of New Hires <span class="required">*</span></label>
         <input type="number" id="newHireCount" min="1" value="1">
-        <div class="error-msg" id="err-newHireCount">Number of new hires is required</div>
+        <div class="error-msg" id="err-newHireCount" data-i18n="err_new_hire_count">Number of new hires is required</div>
       </div>
       <div class="form-group">
-        <label>Expected Join Date <span class="required">*</span></label>
+        <label data-i18n-html="expected_join_date_req">Expected Join Date <span class="required">*</span></label>
         <input type="date" id="joinDate">
-        <div class="error-msg" id="err-joinDate">Join date is required</div>
+        <div class="error-msg" id="err-joinDate" data-i18n="err_join_date">Join date is required</div>
       </div>
     </div>
     <div class="form-group">
-      <label>New Hire's EUC Persona Override</label>
+      <label data-i18n="new_hire_persona_override">New Hire's EUC Persona Override</label>
       <select id="newHirePersona">
         <option value="">-- None (use default) --</option>
         <option value="Business Leaders">Business Leaders</option>
@@ -941,25 +946,25 @@ html:not(.dark) .result-message.error-result { background: #fef2f2; border: 1px 
       </select>
     </div>
     <div class="form-group">
-      <label>Available Functional Laptops <span class="required">*</span></label>
+      <label data-i18n-html="available_laptops_req">Available Functional Laptops <span class="required">*</span></label>
       <textarea id="availableLaptops" placeholder="Describe available laptops, or indicate 'None available'"></textarea>
-      <div class="error-msg" id="err-availableLaptops">This field is required</div>
+      <div class="error-msg" id="err-availableLaptops" data-i18n="err_field_required">This field is required</div>
     </div>
     <div class="nav-buttons">
-      <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-      <button class="btn btn-primary" onclick="nextStep()">Next</button>
+      <button class="btn btn-secondary" onclick="prevStep()" data-i18n="back">Back</button>
+      <button class="btn btn-primary" onclick="nextStep()" data-i18n="next">Next</button>
     </div>
   </div>
 
   <!-- Step 7: Replacement Details -->
   <div class="step-panel" id="step-7" data-step="7">
-    <h2>Replacement Details</h2>
-    <p class="step-subtitle">Provide details about the current device being replaced and why a replacement is needed.</p>
+    <h2 data-i18n="replacement_details">Replacement Details</h2>
+    <p class="step-subtitle" data-i18n="replacement_details_desc">Provide details about the current device being replaced and why a replacement is needed.</p>
 
-    <h3 style="color:var(--c-primary);margin:20px 0 12px;font-size:1rem;border-bottom:2px solid var(--c-primary);padding-bottom:6px;">Current Device Information</h3>
+    <h3 style="color:var(--c-primary);margin:20px 0 12px;font-size:1rem;border-bottom:2px solid var(--c-primary);padding-bottom:6px;" data-i18n="current_device_info">Current Device Information</h3>
     <div class="form-row">
       <div class="form-group">
-        <label>Current Device Make <span class="required">*</span></label>
+        <label data-i18n-html="current_device_make_req">Current Device Make <span class="required">*</span></label>
         <select id="currentDeviceMake">
           <option value="">-- Select --</option>
           <option value="Apple">Apple</option>
@@ -968,33 +973,33 @@ html:not(.dark) .result-message.error-result { background: #fef2f2; border: 1px 
           <option value="HP">HP</option>
           <option value="Other">Other</option>
         </select>
-        <div class="error-msg" id="err-currentDeviceMake">Device make is required</div>
+        <div class="error-msg" id="err-currentDeviceMake" data-i18n="err_device_make">Device make is required</div>
       </div>
       <div class="form-group">
-        <label>Current Device Model <span class="required">*</span></label>
+        <label data-i18n-html="current_device_model_req">Current Device Model <span class="required">*</span></label>
         <input type="text" id="currentDeviceModel" placeholder="e.g. MacBook Pro 2019, ThinkPad T480">
-        <div class="error-msg" id="err-currentDeviceModel">Device model is required</div>
+        <div class="error-msg" id="err-currentDeviceModel" data-i18n="err_device_model">Device model is required</div>
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label>Serial Number</label>
+        <label data-i18n="serial_number">Serial Number</label>
         <input type="text" id="currentSerialNumber" placeholder="e.g. C02XXXXXXXXX">
       </div>
       <div class="form-group">
-        <label>Device Age (years) <span class="required">*</span></label>
+        <label data-i18n-html="device_age_req">Device Age (years) <span class="required">*</span></label>
         <input type="number" id="currentDeviceAge" min="0" max="20" placeholder="e.g. 4">
-        <div class="error-msg" id="err-currentDeviceAge">Device age is required</div>
+        <div class="error-msg" id="err-currentDeviceAge" data-i18n="err_device_age">Device age is required</div>
       </div>
     </div>
     <div class="form-group">
-      <label>Current Device Specs</label>
+      <label data-i18n="current_device_specs">Current Device Specs</label>
       <input type="text" id="currentDeviceSpecs" placeholder="e.g. i5 8th Gen, 8GB RAM, 256GB SSD">
     </div>
 
-    <h3 style="color:var(--c-primary);margin:20px 0 12px;font-size:1rem;border-bottom:2px solid var(--c-primary);padding-bottom:6px;">Reason for Replacement</h3>
+    <h3 style="color:var(--c-primary);margin:20px 0 12px;font-size:1rem;border-bottom:2px solid var(--c-primary);padding-bottom:6px;" data-i18n="reason_for_replacement">Reason for Replacement</h3>
     <div class="form-group">
-      <label>Replacement Reason <span class="required">*</span></label>
+      <label data-i18n-html="replacement_reason_req">Replacement Reason <span class="required">*</span></label>
       <select id="currentCondition">
         <option value="">-- Select --</option>
         <option value="Hardware failure - cannot power on">Hardware failure - cannot power on</option>
@@ -1012,24 +1017,24 @@ html:not(.dark) .result-message.error-result { background: #fef2f2; border: 1px 
         <option value="End of lifecycle - scheduled refresh">End of lifecycle - scheduled refresh</option>
         <option value="Other">Other (specify in details below)</option>
       </select>
-      <div class="error-msg" id="err-currentCondition">Replacement reason is required</div>
+      <div class="error-msg" id="err-currentCondition" data-i18n="err_replacement_reason">Replacement reason is required</div>
     </div>
     <div class="form-group">
-      <label>Detailed Description of Issue <span class="required">*</span></label>
+      <label data-i18n-html="detailed_description_req">Detailed Description of Issue <span class="required">*</span></label>
       <textarea id="diagnostics" placeholder="Describe the issue in detail: what happened, when it started, what symptoms are observed, what troubleshooting has been done..." style="min-height:100px;"></textarea>
-      <div class="error-msg" id="err-diagnostics">Detailed description is required</div>
+      <div class="error-msg" id="err-diagnostics" data-i18n="err_detailed_description">Detailed description is required</div>
     </div>
     <div class="checkbox-group" id="cg-eusConfirmed">
       <label>
         <input type="checkbox" id="eusConfirmed">
-        EUS / IT Support team has confirmed this device cannot be repaired
+        <span data-i18n="eus_confirmed">EUS / IT Support team has confirmed this device cannot be repaired</span>
       </label>
     </div>
-    <div class="error-msg" id="err-eusConfirmed">EUS / IT Support confirmation is required</div>
+    <div class="error-msg" id="err-eusConfirmed" data-i18n="err_eus_confirmed">EUS / IT Support confirmation is required</div>
 
-    <h3 style="color:var(--c-primary);margin:20px 0 12px;font-size:1rem;border-bottom:2px solid var(--c-primary);padding-bottom:6px;">Current Workaround</h3>
+    <h3 style="color:var(--c-primary);margin:20px 0 12px;font-size:1rem;border-bottom:2px solid var(--c-primary);padding-bottom:6px;" data-i18n="current_workaround">Current Workaround</h3>
     <div class="form-group">
-      <label>How is the user currently working? <span class="required">*</span></label>
+      <label data-i18n-html="how_user_working_req">How is the user currently working? <span class="required">*</span></label>
       <select id="currentWorkaround">
         <option value="">-- Select --</option>
         <option value="Using personal device">Using personal device</option>
@@ -1039,103 +1044,103 @@ html:not(.dark) .result-message.error-result { background: #fef2f2; border: 1px 
         <option value="Working with limited functionality">Working with limited functionality</option>
         <option value="Other">Other (specify below)</option>
       </select>
-      <div class="error-msg" id="err-currentWorkaround">Current workaround is required</div>
+      <div class="error-msg" id="err-currentWorkaround" data-i18n="err_current_workaround">Current workaround is required</div>
     </div>
     <div class="form-group">
-      <label>Workaround Details</label>
+      <label data-i18n="workaround_details">Workaround Details</label>
       <textarea id="workaroundDetails" placeholder="Provide additional details about the current workaround situation, e.g. device model being used temporarily, impact on productivity..."></textarea>
     </div>
 
-    <h3 style="color:var(--c-primary);margin:20px 0 12px;font-size:1rem;border-bottom:2px solid var(--c-primary);padding-bottom:6px;">Additional Justification</h3>
+    <h3 style="color:var(--c-primary);margin:20px 0 12px;font-size:1rem;border-bottom:2px solid var(--c-primary);padding-bottom:6px;" data-i18n="additional_justification">Additional Justification</h3>
     <div class="form-group">
-      <label>Why Existing Stock Can't Be Used</label>
+      <label data-i18n="why_stock_not_used">Why Existing Stock Can't Be Used</label>
       <textarea id="stockNotUsedJustification" placeholder="Especially important for Senior Leader persona requests"></textarea>
     </div>
     <div class="form-group" id="nonStdGroup" style="display:none;">
-      <label>Non-Standard Config Justification <span class="required">*</span></label>
+      <label data-i18n-html="non_standard_justification_req">Non-Standard Config Justification <span class="required">*</span></label>
       <textarea id="nonStandardJustification" placeholder="Explain why a non-standard configuration is needed"></textarea>
-      <div class="error-msg" id="err-nonStandardJustification">Justification is required for 'Other' persona</div>
+      <div class="error-msg" id="err-nonStandardJustification" data-i18n="err_non_standard_justification">Justification is required for 'Other' persona</div>
     </div>
     <div class="nav-buttons">
-      <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-      <button class="btn btn-primary" onclick="nextStep()">Next</button>
+      <button class="btn btn-secondary" onclick="prevStep()" data-i18n="back">Back</button>
+      <button class="btn btn-primary" onclick="nextStep()" data-i18n="next">Next</button>
     </div>
   </div>
 
   <!-- Step 8: Procurement Details & Comments -->
   <div class="step-panel" id="step-8" data-step="8">
-    <h2>Procurement Details &amp; Comments</h2>
-    <p class="step-subtitle">Provide procurement tracking details and any additional context.</p>
+    <h2 data-i18n="procurement_details">Procurement Details &amp; Comments</h2>
+    <p class="step-subtitle" data-i18n="procurement_details_desc">Provide procurement tracking details and any additional context.</p>
 
     <div class="form-group">
-      <label>ET Legal Entity Presence in Location? <span class="required">*</span></label>
+      <label data-i18n-html="et_legal_entity_req">ET Legal Entity Presence in Location? <span class="required">*</span></label>
       <select id="etLegalEntity" onchange="toggleLeadEntity()">
         <option value="">-- Select --</option>
         <option value="Yes">Yes</option>
         <option value="No">No</option>
       </select>
-      <div class="error-msg" id="err-etLegalEntity">This field is required</div>
+      <div class="error-msg" id="err-etLegalEntity" data-i18n="err_field_required">This field is required</div>
     </div>
     <div class="form-group" id="leadEntityGroup" style="display:none;">
-      <label>Lead Entity in Market (if no ET Legal Entity)</label>
+      <label data-i18n="lead_entity_in_market">Lead Entity in Market (if no ET Legal Entity)</label>
       <input type="text" id="leadEntityInMarket" placeholder="e.g. VML Shanghai, Ogilvy Singapore">
     </div>
     <div class="form-group">
-      <label>BFC Code <span class="required">*</span></label>
+      <label data-i18n-html="bfc_code_req">BFC Code <span class="required">*</span></label>
       <input type="text" id="bfcCode" placeholder="e.g. CTJP, WINFPLUS" value="CTCN">
-      <div class="error-msg" id="err-bfcCode">BFC Code is required</div>
+      <div class="error-msg" id="err-bfcCode" data-i18n="err_bfc_code">BFC Code is required</div>
     </div>
     <div class="form-group">
-      <label>Using existing stock or new purchase <span class="required">*</span></label>
+      <label data-i18n-html="stock_or_new_purchase_req">Using existing stock or new purchase <span class="required">*</span></label>
       <select id="stockOrNewPurchase" onchange="toggleTransferEntity()">
         <option value="">-- Select --</option>
         <option value="New Purchase">New Purchase</option>
         <option value="Existing Stock">Existing Stock</option>
         <option value="Transfer from other entity">Transfer from other entity</option>
       </select>
-      <div class="error-msg" id="err-stockOrNewPurchase">This field is required</div>
+      <div class="error-msg" id="err-stockOrNewPurchase" data-i18n="err_field_required">This field is required</div>
     </div>
     <div class="form-group" id="transferEntityGroup" style="display:none;">
-      <label>If existing stock, which entity is transferring?</label>
+      <label data-i18n="transfer_entity">If existing stock, which entity is transferring?</label>
       <input type="text" id="transferEntity" placeholder="Entity name">
     </div>
 
     <div class="form-group">
-      <label>Comments</label>
+      <label data-i18n="comments">Comments</label>
       <textarea id="comments" placeholder="Enter any additional notes or context..." style="min-height:120px;"></textarea>
     </div>
     <div class="nav-buttons">
-      <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-      <button class="btn btn-primary" onclick="nextStep()">Next</button>
+      <button class="btn btn-secondary" onclick="prevStep()" data-i18n="back">Back</button>
+      <button class="btn btn-primary" onclick="nextStep()" data-i18n="next">Next</button>
     </div>
   </div>
 
   <!-- Step 9: Review & Submit -->
   <div class="step-panel" id="step-9" data-step="9">
-    <h2>Review &amp; Submit</h2>
-    <p class="step-subtitle">Review all entered data before submitting your request.</p>
+    <h2 data-i18n="review_submit">Review &amp; Submit</h2>
+    <p class="step-subtitle" data-i18n="review_desc">Review all entered data before submitting your request.</p>
     <div id="reviewContent"></div>
     <div id="submitArea">
       <div class="nav-buttons">
-        <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-        <button class="btn btn-success" id="submitBtn" onclick="submitRequest()">Submit Request</button>
+        <button class="btn btn-secondary" onclick="prevStep()" data-i18n="back">Back</button>
+        <button class="btn btn-success" id="submitBtn" onclick="submitRequest()" data-i18n="submit_request">Submit Request</button>
       </div>
     </div>
     <div class="result-message" id="resultSuccess">
-      <h3>Request Submitted Successfully</h3>
+      <h3 data-i18n="submit_success">Request Submitted Successfully</h3>
       <p>Your request has been saved as: <strong id="resultFilename"></strong></p>
       <div style="margin:16px 0;display:flex;gap:12px;flex-wrap:wrap;">
         <a id="downloadExcelLink" href="#" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:#217346;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;font-size:0.9rem;">
-          <span style="font-size:1.2em;">&#128202;</span> Download Excel (.xlsx)
+          <span style="font-size:1.2em;">&#128202;</span> <span data-i18n="download_excel">Download Excel (.xlsx)</span>
         </a>
         <a id="downloadMdLink" href="#" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--c-primary);color:var(--c-on-primary);border-radius:6px;text-decoration:none;font-weight:600;font-size:0.9rem;">
-          <span style="font-size:1.2em;">&#128196;</span> Download Markdown (.md)
+          <span style="font-size:1.2em;">&#128196;</span> <span data-i18n="download_markdown">Download Markdown (.md)</span>
         </a>
       </div>
-      <button class="btn btn-primary" onclick="resetForm()">New Request</button>
+      <button class="btn btn-primary" onclick="resetForm()" data-i18n="new_request">New Request</button>
     </div>
     <div class="result-message error-result" id="resultError" style="display:none;">
-      <h3>Submission Failed</h3>
+      <h3 data-i18n="submit_failed">Submission Failed</h3>
       <p id="resultErrorMsg"></p>
       <ul id="resultErrorDetails"></ul>
     </div>
@@ -1194,6 +1199,384 @@ function sidebarLogout() {
     window.location.href = '/login';
   });
 }
+
+// ── i18n ──────────────────────────────────────────────────────────────────
+var _lang = localStorage.getItem('lang') || 'en';
+var I18N = {
+  en: {
+    // Header / Sidebar
+    'portal_title': 'IT Asset Application Portal',
+    'my_applications': 'My Applications',
+    'new_application': 'New Application',
+    'all_applications': 'All Applications',
+    'user_management': 'User Management',
+    'profile': 'Profile',
+    'sign_out': 'Sign Out',
+
+    // Navigation
+    'next': 'Next',
+    'back': 'Back',
+
+    // Step 1 - Request Type
+    'request_type': 'Request Type',
+    'select_request_type_desc': 'Select whether this is a new laptop or a replacement request.',
+    'new_laptop': 'New Laptop',
+    'new_laptop_desc': 'Request a laptop for a new hire or new role',
+    'replacement_laptop': 'Replacement Laptop',
+    'replacement_laptop_desc': 'Replace an existing non-functional or outdated laptop',
+    'select_request_type_err': 'Please select a request type',
+
+    // Step 2 - Requestor Info
+    'requestor_info': 'Requestor Information',
+    'requestor_info_desc': 'Enter details about the person submitting this request.',
+    'name_req': 'Name <span class="required">*</span>',
+    'opco_req': 'OpCo <span class="required">*</span>',
+    'market_req': 'Market <span class="required">*</span>',
+    'guardian_email_req': 'Guardian Email <span class="required">*</span>',
+    'bu_email': 'Requestor (BU) Email',
+    'eus_lead_email_req': 'Requestor (EUS Lead) Email <span class="required">*</span>',
+    'date_required_req': 'Date Required <span class="required">*</span>',
+    'date_required_hint': 'Must be at least 4 weeks from today',
+    'staff_category_req': 'Staff Category <span class="required">*</span>',
+    'err_name': 'Name is required',
+    'err_opco': 'OpCo is required',
+    'err_market': 'Market is required',
+    'err_email': 'Valid email is required',
+    'err_eus_lead_email': 'Valid EUS Lead email is required',
+    'err_date_required': 'Date required is required (must be at least 4 weeks from today)',
+    'err_staff_category': 'Staff category is required',
+
+    // Step 3 - Stock Verification
+    'stock_verification': 'Stock Verification',
+    'stock_desc': 'Confirm existing stock has been reviewed before proceeding.',
+    'stock_no_buffer': 'I confirm all existing stocks within markets do not have buffer or almost-new laptops',
+    'stock_listing_up_to_date': 'I confirm the laptop count from ALL agencies within market in 2026 Stock listing file is up to date',
+    'err_confirmation_required': 'This confirmation is required',
+
+    // Step 4 - Device Specs
+    'laptop_specs': 'Device Specifications & Persona',
+    'laptop_specs_desc': 'Select the EUC persona and approved device from the WPP standards catalog.',
+    'euc_persona_req': 'WPP EUC Standards Persona <span class="required">*</span>',
+    'euc_standards_version': 'EUC Standards Version',
+    'device_type_req': 'Device Type <span class="required">*</span>',
+    'laptop': 'Laptop',
+    'desktop': 'Desktop',
+    'select_device_req': 'Select Device <span class="required">*</span>',
+    'select_persona_hint': 'Please select an EUC Persona to see available devices.',
+    'no_standard_devices': 'No standard {type} devices available for this persona.',
+    'macos_justification': 'macOS Justification',
+    'macos_warning': '\u26A0 Stricter justification required for WPP ET / India HQ staff',
+    'quantity_req': 'Quantity <span class="required">*</span>',
+    'specs_summary_req': 'Specs Summary <span class="required">*</span>',
+    'err_euc_persona': 'EUC Persona is required',
+    'err_select_device': 'Please select a device',
+    'err_macos_justification': 'macOS justification is required',
+    'err_quantity': 'Quantity must be at least 1',
+    'err_specs': 'Specs summary is required',
+
+    // Step 5 - Cost & Sourcing
+    'cost_sourcing': 'Cost & Sourcing',
+    'cost_sourcing_desc': 'Enter cost in local currency. USD will be auto-calculated.',
+    'local_currency': 'Local Currency',
+    'usd_exchange_rate': 'USD Exchange Rate',
+    'exchange_rate_hint': '1 USD = ? local currency',
+    'cost_per_device_local_req': 'Cost per Device (Local Currency) <span class="required">*</span>',
+    'total_cost_local': 'Total Cost (Local Currency)',
+    'usd_equivalent': 'USD Equivalent (auto-calculated)',
+    'cost_per_device_usd': 'Cost per Device (USD)',
+    'total_cost_usd': 'Total Cost (USD)',
+    'cost_from_dell': 'I confirm cost is from Dell Direct portal / Dell-approved partner in market',
+    'cost_from_apple': 'I confirm cost is from WPP designated supplier (Computacenter / Apple Direct)',
+    'cost_excludes_tax': 'I confirm cost excludes local taxes',
+    'err_local_cost': 'Local cost per device is required',
+
+    // Step 6 - New Hire Details
+    'new_hire_details': 'New Hire Details',
+    'new_hire_details_desc': 'Provide details about the incoming new hire(s).',
+    'number_of_new_hires_req': 'Number of New Hires <span class="required">*</span>',
+    'expected_join_date_req': 'Expected Join Date <span class="required">*</span>',
+    'new_hire_persona_override': "New Hire's EUC Persona Override",
+    'available_laptops_req': 'Available Functional Laptops <span class="required">*</span>',
+    'err_new_hire_count': 'Number of new hires is required',
+    'err_join_date': 'Join date is required',
+    'err_field_required': 'This field is required',
+
+    // Step 7 - Replacement Details
+    'replacement_details': 'Replacement Details',
+    'replacement_details_desc': 'Provide details about the current device being replaced and why a replacement is needed.',
+    'current_device_info': 'Current Device Information',
+    'current_device_make_req': 'Current Device Make <span class="required">*</span>',
+    'current_device_model_req': 'Current Device Model <span class="required">*</span>',
+    'serial_number': 'Serial Number',
+    'device_age_req': 'Device Age (years) <span class="required">*</span>',
+    'current_device_specs': 'Current Device Specs',
+    'reason_for_replacement': 'Reason for Replacement',
+    'replacement_reason_req': 'Replacement Reason <span class="required">*</span>',
+    'detailed_description_req': 'Detailed Description of Issue <span class="required">*</span>',
+    'eus_confirmed': 'EUS / IT Support team has confirmed this device cannot be repaired',
+    'current_workaround': 'Current Workaround',
+    'how_user_working_req': 'How is the user currently working? <span class="required">*</span>',
+    'workaround_details': 'Workaround Details',
+    'additional_justification': 'Additional Justification',
+    'why_stock_not_used': "Why Existing Stock Can't Be Used",
+    'non_standard_justification_req': 'Non-Standard Config Justification <span class="required">*</span>',
+    'err_device_make': 'Device make is required',
+    'err_device_model': 'Device model is required',
+    'err_device_age': 'Device age is required',
+    'err_replacement_reason': 'Replacement reason is required',
+    'err_detailed_description': 'Detailed description is required',
+    'err_eus_confirmed': 'EUS / IT Support confirmation is required',
+    'err_current_workaround': 'Current workaround is required',
+    'err_non_standard_justification': "Justification is required for 'Other' persona",
+
+    // Step 8 - Procurement Details
+    'procurement_details': 'Procurement Details & Comments',
+    'procurement_details_desc': 'Provide procurement tracking details and any additional context.',
+    'et_legal_entity_req': 'ET Legal Entity Presence in Location? <span class="required">*</span>',
+    'lead_entity_in_market': 'Lead Entity in Market (if no ET Legal Entity)',
+    'bfc_code_req': 'BFC Code <span class="required">*</span>',
+    'stock_or_new_purchase_req': 'Using existing stock or new purchase <span class="required">*</span>',
+    'transfer_entity': 'If existing stock, which entity is transferring?',
+    'comments': 'Comments',
+    'err_bfc_code': 'BFC Code is required',
+
+    // Step 9 - Review & Submit
+    'review_submit': 'Review & Submit',
+    'review_desc': 'Review all entered data before submitting your request.',
+    'submit_request': 'Submit Request',
+
+    // Result
+    'submit_success': 'Request Submitted Successfully',
+    'submit_failed': 'Submission Failed',
+    'new_request': 'New Request',
+    'download_excel': 'Download Excel (.xlsx)',
+    'download_markdown': 'Download Markdown (.md)',
+
+    // Progress bar labels
+    'step_type': 'Type',
+    'step_requestor': 'Requestor',
+    'step_stock': 'Stock',
+    'step_specs': 'Specs',
+    'step_cost': 'Cost',
+    'step_new_hire': 'New Hire',
+    'step_replacement': 'Replacement',
+    'step_procurement': 'Procurement',
+    'step_review': 'Review',
+
+    // Review section headers
+    'review_request_type': 'Request Type',
+    'review_requestor_info': 'Requestor Information',
+    'review_stock_verification': 'Stock Verification',
+    'review_device_specs': 'Device Specifications',
+    'review_cost_sourcing': 'Cost & Sourcing',
+    'review_new_hire': 'New Hire Details',
+    'review_replacement': 'Replacement Details',
+    'review_procurement': 'Procurement Details & Comments',
+    'edit': 'Edit',
+  },
+  zh: {
+    // Header / Sidebar
+    'portal_title': 'IT 资产申请门户',
+    'my_applications': '我的申请',
+    'new_application': '新建申请',
+    'all_applications': '所有申请',
+    'user_management': '用户管理',
+    'profile': '个人资料',
+    'sign_out': '退出登录',
+
+    // Navigation
+    'next': '下一步',
+    'back': '上一步',
+
+    // Step 1 - Request Type
+    'request_type': '申请类型',
+    'select_request_type_desc': '选择新笔记本电脑或替换申请',
+    'new_laptop': '新笔记本电脑',
+    'new_laptop_desc': '为新员工或新岗位申请笔记本电脑',
+    'replacement_laptop': '替换笔记本电脑',
+    'replacement_laptop_desc': '替换现有无法使用或过时的笔记本电脑',
+    'select_request_type_err': '请选择申请类型',
+
+    // Step 2 - Requestor Info
+    'requestor_info': '申请人信息',
+    'requestor_info_desc': '输入提交此申请的人员详情',
+    'name_req': '姓名 <span class="required">*</span>',
+    'opco_req': '运营公司 <span class="required">*</span>',
+    'market_req': '市场 <span class="required">*</span>',
+    'guardian_email_req': 'Guardian 邮箱 <span class="required">*</span>',
+    'bu_email': '申请人 (BU) 邮箱',
+    'eus_lead_email_req': '申请人 (EUS Lead) 邮箱 <span class="required">*</span>',
+    'date_required_req': '需求日期 <span class="required">*</span>',
+    'date_required_hint': '必须至少在今天起4周后',
+    'staff_category_req': '员工类别 <span class="required">*</span>',
+    'err_name': '姓名为必填项',
+    'err_opco': '运营公司为必填项',
+    'err_market': '市场为必填项',
+    'err_email': '请输入有效的邮箱地址',
+    'err_eus_lead_email': '请输入有效的 EUS Lead 邮箱地址',
+    'err_date_required': '需求日期为必填项（必须至少在今天起4周后）',
+    'err_staff_category': '员工类别为必填项',
+
+    // Step 3 - Stock Verification
+    'stock_verification': '库存验证',
+    'stock_desc': '确认已审查现有库存',
+    'stock_no_buffer': '我确认所有市场内的现有库存没有缓冲或几乎全新的笔记本电脑',
+    'stock_listing_up_to_date': '我确认市场内所有机构在2026年库存清单文件中的笔记本电脑数量是最新的',
+    'err_confirmation_required': '此确认为必填项',
+
+    // Step 4 - Device Specs
+    'laptop_specs': '设备规格与角色',
+    'laptop_specs_desc': '从 WPP 标准目录中选择 EUC 角色和批准的设备。',
+    'euc_persona_req': 'WPP EUC 标准角色 <span class="required">*</span>',
+    'euc_standards_version': 'EUC 标准版本',
+    'device_type_req': '设备类型 <span class="required">*</span>',
+    'laptop': '笔记本电脑',
+    'desktop': '台式机',
+    'select_device_req': '选择设备 <span class="required">*</span>',
+    'select_persona_hint': '请选择 EUC 角色以查看可用设备。',
+    'no_standard_devices': '该角色没有可用的标准{type}设备。',
+    'macos_justification': 'macOS 理由说明',
+    'macos_warning': '\u26A0 WPP ET / India HQ 员工需要更严格的理由说明',
+    'quantity_req': '数量 <span class="required">*</span>',
+    'specs_summary_req': '规格摘要 <span class="required">*</span>',
+    'err_euc_persona': 'EUC 角色为必填项',
+    'err_select_device': '请选择一台设备',
+    'err_macos_justification': 'macOS 理由说明为必填项',
+    'err_quantity': '数量必须至少为1',
+    'err_specs': '规格摘要为必填项',
+
+    // Step 5 - Cost & Sourcing
+    'cost_sourcing': '成本与采购',
+    'cost_sourcing_desc': '输入当地货币成本，美元将自动计算。',
+    'local_currency': '当地货币',
+    'usd_exchange_rate': '美元汇率',
+    'exchange_rate_hint': '1 USD = ? 当地货币',
+    'cost_per_device_local_req': '每台设备成本（当地货币） <span class="required">*</span>',
+    'total_cost_local': '总成本（当地货币）',
+    'usd_equivalent': '美元等值（自动计算）',
+    'cost_per_device_usd': '每台设备成本（美元）',
+    'total_cost_usd': '总成本（美元）',
+    'cost_from_dell': '我确认成本来自 Dell Direct 门户 / Dell 授权合作伙伴',
+    'cost_from_apple': '我确认成本来自 WPP 指定供应商（Computacenter / Apple Direct）',
+    'cost_excludes_tax': '我确认成本不含当地税费',
+    'err_local_cost': '每台设备当地货币成本为必填项',
+
+    // Step 6 - New Hire Details
+    'new_hire_details': '新员工详情',
+    'new_hire_details_desc': '提供新员工的相关详情。',
+    'number_of_new_hires_req': '新员工人数 <span class="required">*</span>',
+    'expected_join_date_req': '预计入职日期 <span class="required">*</span>',
+    'new_hire_persona_override': '新员工 EUC 角色覆盖',
+    'available_laptops_req': '可用笔记本电脑 <span class="required">*</span>',
+    'err_new_hire_count': '新员工人数为必填项',
+    'err_join_date': '入职日期为必填项',
+    'err_field_required': '此项为必填项',
+
+    // Step 7 - Replacement Details
+    'replacement_details': '替换详情',
+    'replacement_details_desc': '提供当前设备被替换的详情及替换原因。',
+    'current_device_info': '当前设备信息',
+    'current_device_make_req': '当前设备品牌 <span class="required">*</span>',
+    'current_device_model_req': '当前设备型号 <span class="required">*</span>',
+    'serial_number': '序列号',
+    'device_age_req': '设备年限（年） <span class="required">*</span>',
+    'current_device_specs': '当前设备规格',
+    'reason_for_replacement': '替换原因',
+    'replacement_reason_req': '替换原因 <span class="required">*</span>',
+    'detailed_description_req': '问题详细描述 <span class="required">*</span>',
+    'eus_confirmed': 'EUS / IT 支持团队已确认此设备无法维修',
+    'current_workaround': '当前解决方案',
+    'how_user_working_req': '用户目前如何工作？ <span class="required">*</span>',
+    'workaround_details': '解决方案详情',
+    'additional_justification': '额外说明',
+    'why_stock_not_used': '为什么现有库存无法使用',
+    'non_standard_justification_req': '非标准配置说明 <span class="required">*</span>',
+    'err_device_make': '设备品牌为必填项',
+    'err_device_model': '设备型号为必填项',
+    'err_device_age': '设备年限为必填项',
+    'err_replacement_reason': '替换原因为必填项',
+    'err_detailed_description': '详细描述为必填项',
+    'err_eus_confirmed': 'EUS / IT 支持确认为必填项',
+    'err_current_workaround': '当前解决方案为必填项',
+    'err_non_standard_justification': '"其他"角色需要提供说明',
+
+    // Step 8 - Procurement Details
+    'procurement_details': '采购详情与备注',
+    'procurement_details_desc': '提供采购跟踪详情及其他背景信息。',
+    'et_legal_entity_req': '所在地是否有 ET 法律实体？ <span class="required">*</span>',
+    'lead_entity_in_market': '市场中的主导实体（如无 ET 法律实体）',
+    'bfc_code_req': 'BFC 代码 <span class="required">*</span>',
+    'stock_or_new_purchase_req': '使用现有库存还是新购买 <span class="required">*</span>',
+    'transfer_entity': '如果是现有库存，由哪个实体转移？',
+    'comments': '备注',
+    'err_bfc_code': 'BFC 代码为必填项',
+
+    // Step 9 - Review & Submit
+    'review_submit': '审核与提交',
+    'review_desc': '提交前审查所有输入的数据',
+    'submit_request': '提交申请',
+
+    // Result
+    'submit_success': '申请提交成功',
+    'submit_failed': '提交失败',
+    'new_request': '新申请',
+    'download_excel': '下载 Excel (.xlsx)',
+    'download_markdown': '下载 Markdown (.md)',
+
+    // Progress bar labels
+    'step_type': '类型',
+    'step_requestor': '申请人',
+    'step_stock': '库存',
+    'step_specs': '规格',
+    'step_cost': '成本',
+    'step_new_hire': '新员工',
+    'step_replacement': '替换',
+    'step_procurement': '采购',
+    'step_review': '审核',
+
+    // Review section headers
+    'review_request_type': '申请类型',
+    'review_requestor_info': '申请人信息',
+    'review_stock_verification': '库存验证',
+    'review_device_specs': '设备规格',
+    'review_cost_sourcing': '成本与采购',
+    'review_new_hire': '新员工详情',
+    'review_replacement': '替换详情',
+    'review_procurement': '采购详情与备注',
+    'edit': '编辑',
+  }
+};
+
+function t(key) { return (I18N[_lang] && I18N[_lang][key]) || (I18N['en'][key]) || key; }
+
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(function(el) {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(function(el) {
+    el.innerHTML = t(el.getAttribute('data-i18n-html'));
+  });
+}
+
+function toggleLang() {
+  _lang = _lang === 'en' ? 'zh' : 'en';
+  localStorage.setItem('lang', _lang);
+  document.getElementById('langBtn').textContent = _lang === 'en' ? 'EN' : '中';
+  applyI18n();
+  if (typeof renderWizardSidebar === 'function') renderWizardSidebar();
+  if (typeof buildProgressBar === 'function') buildProgressBar();
+}
+
+// Apply saved language
+(function() {
+  var saved = localStorage.getItem('lang');
+  if (saved) _lang = saved;
+  // Update button text on load
+  document.addEventListener('DOMContentLoaded', function() {
+    var btn = document.getElementById('langBtn');
+    if (btn) btn.textContent = _lang === 'en' ? 'EN' : '中';
+  });
+})();
 
 (function() {
   'use strict';
@@ -1296,6 +1679,9 @@ function sidebarLogout() {
     renderWizardSidebar();
     // Update theme toggle buttons
     updateToggleButtons();
+    // Apply i18n
+    document.getElementById('langBtn').textContent = _lang === 'en' ? 'EN' : '中';
+    applyI18n();
     // Auto-fill from user profile (skip name and email — user enters manually)
     var agencySelect = document.getElementById('agency');
     if (agencySelect) agencySelect.value = currentUser.opco;
@@ -1322,14 +1708,14 @@ function sidebarLogout() {
 
   function renderWizardSidebar() {
     var items = [
-      { label: 'My Applications', icon: 'apps', href: '/dashboard' },
-      { label: 'New Application', icon: 'add_box', href: '/', active: true },
+      { label: t('my_applications'), icon: 'apps', href: '/dashboard' },
+      { label: t('new_application'), icon: 'add_box', href: '/', active: true },
     ];
     if (currentUser.role === 'admin') {
-      items.push({ label: 'All Applications', icon: 'admin_panel_settings', href: '/dashboard#all-applications' });
-      items.push({ label: 'User Management', icon: 'group', href: '/dashboard#user-management' });
+      items.push({ label: t('all_applications'), icon: 'admin_panel_settings', href: '/dashboard#all-applications' });
+      items.push({ label: t('user_management'), icon: 'group', href: '/dashboard#user-management' });
     }
-    items.push({ label: 'Profile', icon: 'account_circle', href: '/dashboard#profile' });
+    items.push({ label: t('profile'), icon: 'account_circle', href: '/dashboard#profile' });
 
     var nav = document.getElementById('sidebarNav');
     nav.innerHTML = items.map(function(item) {
@@ -1493,10 +1879,12 @@ function sidebarLogout() {
 
   let currentStep = 1;
 
-  const stepLabels = {
-    1: 'Type', 2: 'Requestor', 3: 'Stock', 4: 'Specs',
-    5: 'Cost', 6: 'New Hire', 7: 'Replacement', 8: 'Procurement', 9: 'Review'
-  };
+  function getStepLabels() {
+    return {
+      1: t('step_type'), 2: t('step_requestor'), 3: t('step_stock'), 4: t('step_specs'),
+      5: t('step_cost'), 6: t('step_new_hire'), 7: t('step_replacement'), 8: t('step_procurement'), 9: t('step_review')
+    };
+  }
 
   function getRequestType() {
     const el = document.querySelector('input[name="requestType"]:checked');
@@ -1521,6 +1909,7 @@ function sidebarLogout() {
     const bar = document.getElementById('progressBar');
     bar.innerHTML = '';
     const visible = getVisibleSteps();
+    const labels = getStepLabels();
     visible.forEach(function(stepNum, idx) {
       const div = document.createElement('div');
       div.className = 'progress-step';
@@ -1528,7 +1917,7 @@ function sidebarLogout() {
       const visIdx = visible.indexOf(currentStep);
       if (visible.indexOf(stepNum) < visIdx) div.classList.add('completed');
       if (stepNum === currentStep) div.classList.add('active');
-      div.innerHTML = '<div class="circle">' + (idx + 1) + '</div><div class="label">' + stepLabels[stepNum] + '</div>';
+      div.innerHTML = '<div class="circle">' + (idx + 1) + '</div><div class="label">' + labels[stepNum] + '</div>';
       bar.appendChild(div);
     });
   }
@@ -1583,7 +1972,7 @@ function sidebarLogout() {
     var area = document.getElementById('deviceCardsArea');
 
     if (!persona) {
-      area.innerHTML = '<div class="device-no-results">Please select an EUC Persona to see available devices.</div>';
+      area.innerHTML = '<div class="device-no-results">' + t('select_persona_hint') + '</div>';
       clearDeviceSelection();
       return;
     }
@@ -1592,7 +1981,7 @@ function sidebarLogout() {
     var devices = catalog[persona] || [];
 
     if (devices.length === 0) {
-      area.innerHTML = '<div class="device-no-results">No standard ' + dtype + ' devices available for this persona.</div>';
+      area.innerHTML = '<div class="device-no-results">' + t('no_standard_devices').replace('{type}', dtype) + '</div>';
       clearDeviceSelection();
       return;
     }
@@ -1694,9 +2083,9 @@ function sidebarLogout() {
     var label = document.getElementById('costSourceLabel');
     if (!label) return;
     if (selectedDevice && selectedDevice.make === 'Apple') {
-      label.textContent = 'I confirm cost is from WPP designated supplier (Computacenter / Apple Direct)';
+      label.textContent = t('cost_from_apple');
     } else {
-      label.textContent = 'I confirm cost is from Dell Direct portal / Dell-approved partner in market';
+      label.textContent = t('cost_from_dell');
     }
   }
 
@@ -1895,7 +2284,7 @@ function sidebarLogout() {
   }
 
   function sectionHeader(title, stepNum) {
-    return '<div class="review-section"><h3>' + escapeHtml(title) + ' <button onclick="goToStep(' + stepNum + ')">Edit</button></h3>';
+    return '<div class="review-section"><h3>' + escapeHtml(title) + ' <button onclick="goToStep(' + stepNum + ')">' + t('edit') + '</button></h3>';
   }
 
   function updateReviewSummary() {
@@ -1903,11 +2292,11 @@ function sidebarLogout() {
     var type = getRequestType();
     var typeLabel = type === 'new' ? 'New Laptop' : 'Replacement Laptop';
 
-    h += sectionHeader('Request Type', 1);
+    h += sectionHeader(t('review_request_type'), 1);
     h += reviewRow('Type', typeLabel);
     h += '</div>';
 
-    h += sectionHeader('Requestor Information', 2);
+    h += sectionHeader(t('review_requestor_info'), 2);
     h += reviewRow('Name', val('requestorName'));
     h += reviewRow('OpCo', val('agency'));
     h += reviewRow('Market', val('market'));
@@ -1918,13 +2307,13 @@ function sidebarLogout() {
     h += reviewRow('Staff Category', val('staffCategory'));
     h += '</div>';
 
-    h += sectionHeader('Stock Verification', 3);
+    h += sectionHeader(t('review_stock_verification'), 3);
     h += reviewCheck('No buffer/almost-new laptops', checked('stockNoBuffer'));
     h += reviewCheck('2026 Stock listing up to date', checked('stockListingUpToDate'));
     h += '</div>';
 
     var deviceTypeLabel = getDeviceType() === 'desktop' ? 'Desktop' : 'Laptop';
-    h += sectionHeader('Device Specifications', 4);
+    h += sectionHeader(t('review_device_specs'), 4);
     h += reviewRow('EUC Persona', val('eucPersona'));
     h += reviewRow('EUC Standards Version', val('eucStandardsVersion'));
     h += reviewRow('Device Type', deviceTypeLabel);
@@ -1941,7 +2330,7 @@ function sidebarLogout() {
     var qty = parseInt(val('quantity'), 10) || 0;
     var totalStr = (unit * qty).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    h += sectionHeader('Cost & Sourcing', 5);
+    h += sectionHeader(t('review_cost_sourcing'), 5);
     h += reviewRow('Unit Cost', val('unitCost') + ' ' + val('currency'));
     h += reviewRow('Total Cost', totalStr + ' ' + val('currency'));
     if (val('localCurrency')) {
@@ -1957,7 +2346,7 @@ function sidebarLogout() {
     h += '</div>';
 
     if (type === 'new') {
-      h += sectionHeader('New Hire Details', 6);
+      h += sectionHeader(t('review_new_hire'), 6);
       h += reviewRow('Number of New Hires', val('newHireCount'));
       h += reviewRow('Expected Join Date', val('joinDate'));
       h += reviewRow('EUC Persona Override', val('newHirePersona') || '(none)');
@@ -1965,7 +2354,7 @@ function sidebarLogout() {
       h += '</div>';
     }
     if (type === 'replacement') {
-      h += sectionHeader('Replacement Details', 7);
+      h += sectionHeader(t('review_replacement'), 7);
       h += reviewRow('Current Device', val('currentDeviceMake') + ' ' + val('currentDeviceModel'));
       h += reviewRow('Serial Number', val('currentSerialNumber') || '(not provided)');
       h += reviewRow('Device Age', val('currentDeviceAge') + ' years');
@@ -1979,7 +2368,7 @@ function sidebarLogout() {
       h += '</div>';
     }
 
-    h += sectionHeader('Procurement Details & Comments', 8);
+    h += sectionHeader(t('review_procurement'), 8);
     h += reviewRow('ET Legal Entity Presence', val('etLegalEntity'));
     if (val('etLegalEntity') === 'No') h += reviewRow('Lead Entity in Market', val('leadEntityInMarket') || '(none)');
     h += reviewRow('BFC Code', val('bfcCode'));
@@ -2104,20 +2493,21 @@ function sidebarLogout() {
     document.getElementById('leadEntityGroup').style.display = 'none';
     document.getElementById('transferEntityGroup').style.display = 'none';
 
-    // Reset device cards area
-    document.getElementById('deviceCardsArea').innerHTML = '<div class="device-no-results">Please select an EUC Persona to see available devices.</div>';
-
     // Reset result messages
     document.getElementById('resultSuccess').style.display = 'none';
     document.getElementById('resultError').style.display = 'none';
     document.getElementById('submitArea').style.display = 'block';
     var btn = document.getElementById('submitBtn');
     btn.disabled = false;
-    btn.textContent = 'Submit Request';
+    btn.textContent = t('submit_request');
+
+    // Reset device cards area message with i18n
+    document.getElementById('deviceCardsArea').innerHTML = '<div class="device-no-results">' + t('select_persona_hint') + '</div>';
 
     for (var i = 1; i <= 9; i++) clearErrors(i);
 
     showStep(1);
+    applyI18n();
   }
 
   function toggleLeadEntity() {
@@ -2161,6 +2551,8 @@ function sidebarLogout() {
   window.autoFillPrice = autoFillPrice;
   window.submitRequest = submitRequest;
   window.resetForm = resetForm;
+  window.renderWizardSidebar = renderWizardSidebar;
+  window.buildProgressBar = buildProgressBar;
 
   // Initialize
   showStep(1);
