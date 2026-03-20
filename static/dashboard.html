@@ -27,6 +27,12 @@
 
   <!-- Main -->
   <div class="main">
+    <div class="wizard-header">
+      <div class="wizard-header-inner" id="pageHeader">
+        <h1>WPP IT Asset Portal</h1>
+        <p>Manage laptop requests and users</p>
+      </div>
+    </div>
     <div class="content" id="content">
       <div class="loading">Loading&hellip;</div>
     </div>
@@ -255,7 +261,16 @@ function showView(view) {
   currentView = view;
   window.location.hash = view;
   setActiveNav(view);
-  var content = document.getElementById('content');
+
+  var headers = {
+    'my-applications':  { title: 'My Applications',  desc: 'View and manage your laptop requests' },
+    'all-applications': { title: 'All Applications',  desc: 'Review all submitted laptop requests' },
+    'user-management':  { title: 'User Management',   desc: 'Manage users and permissions' },
+    'profile':          { title: 'Profile',            desc: 'Update your email, market, and password' },
+  };
+  var h = headers[view] || headers['my-applications'];
+  var ph = document.getElementById('pageHeader');
+  ph.innerHTML = '<h1>' + h.title + '</h1><p>' + h.desc + '</p>';
 
   if (view === 'my-applications') {
     loadApplications(false);
