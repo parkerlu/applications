@@ -44,9 +44,19 @@ def _app_to_dict(app_doc):
 @applications_bp.route('/api/applications/export', methods=['GET'])
 @login_required
 def export_applications():
-    """Batch export all visible applications as an Excel file."""
+    """Batch export applications as an Excel file. Supports ?ids=id1,id2 to export selected."""
     db = get_db()
-    if current_user.is_admin:
+    ids_param = request.args.get('ids', '').strip()
+    if ids_param:
+        try:
+            oids = [ObjectId(i.strip()) for i in ids_param.split(',') if i.strip()]
+        except Exception:
+            return jsonify({'success': False, 'error': 'Invalid IDs'}), 400
+        query = {'_id': {'$in': oids}}
+        if not current_user.is_admin:
+            query['user_id'] = ObjectId(current_user.id)
+        apps = list(db.applications.find(query))
+    elif current_user.is_admin:
         apps = list(db.applications.find({}))
     else:
         apps = list(db.applications.find({'user_id': ObjectId(current_user.id)}))
@@ -217,7 +227,7 @@ def _generate_pdf(app_data):
 
     section('Requestor Information')
     row('Name', d.get('requestorName'))
-    row('Email', d.get('email'))
+    row('Guardian Email', d.get('email'))
     row('OpCo', d.get('agency'))
     row('Market', d.get('market'))
     row('EUS Lead Email', d.get('eusLeadEmail') or d.get('cityLeader'))

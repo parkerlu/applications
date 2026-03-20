@@ -801,6 +801,7 @@ function renderApplicationsView(apps, showUser) {
 
       return '<tr class="hover:transition-colors duration-200" style="--hover-bg:var(--table-hover);" ' +
         'onmouseenter="this.style.background=\'var(--table-hover)\'" onmouseleave="this.style.background=\'transparent\'">' +
+        '<td class="px-4 py-6 text-center"><input type="checkbox" class="row-check accent-primary w-4 h-4 rounded" data-id="' + esc(app.id) + '" onchange="updateExportSelected()"></td>' +
         '<td class="px-8 py-6 font-mono text-sm text-secondary font-semibold">' + esc(app.request_id) + '</td>' +
         '<td class="px-8 py-6 text-sm font-bold">' + esc(d.agency || '') + '</td>' +
         '<td class="px-8 py-6">' +
@@ -842,6 +843,7 @@ function renderApplicationsView(apps, showUser) {
         '<div class="overflow-x-auto">' +
           '<table class="w-full text-left border-collapse" id="dataTable">' +
             '<thead><tr style="background:var(--table-head-bg);">' +
+              '<th class="px-4 py-5 text-center"><input type="checkbox" class="accent-primary w-4 h-4 rounded" onchange="toggleSelectAll(this)"></th>' +
               '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Request ID</th>' +
               '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">OpCo</th>' +
               '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">Device Model</th>' +
@@ -859,11 +861,16 @@ function renderApplicationsView(apps, showUser) {
   content.innerHTML =
     '<div class="flex items-end justify-between mb-6">' +
       '<h2 class="text-xl font-bold text-on-surface">' + esc(title) + '</h2>' +
-      '<button class="flex items-center gap-2 px-6 py-3 rounded-lg font-bold text-primary transition-all duration-300 active:scale-95 text-sm" ' +
-        'style="background:var(--export-bg); border:1px solid var(--table-border);" ' +
-        'onmouseenter="this.style.background=\'var(--export-hover)\'" onmouseleave="this.style.background=\'var(--export-bg)\'" ' +
-        'onclick="exportAll()">' +
-        '<span class="material-symbols-outlined text-lg">download</span>Export All</button>' +
+      '<div class="flex items-center gap-3">' +
+        '<button id="exportSelectedBtn" class="flex items-center gap-2 px-5 py-3 rounded-lg font-bold text-sm transition-all duration-300 active:scale-95 bg-primary text-on-primary-container" ' +
+          'style="display:none;" onclick="exportSelected()">' +
+          '<span class="material-symbols-outlined text-lg">download</span>Export Selected (<span id="selectedCount">0</span>)</button>' +
+        '<button class="flex items-center gap-2 px-5 py-3 rounded-lg font-bold text-primary transition-all duration-300 active:scale-95 text-sm" ' +
+          'style="background:var(--export-bg); border:1px solid var(--table-border);" ' +
+          'onmouseenter="this.style.background=\'var(--export-hover)\'" onmouseleave="this.style.background=\'var(--export-bg)\'" ' +
+          'onclick="exportAll()">' +
+          '<span class="material-symbols-outlined text-lg">download</span>Export All</button>' +
+      '</div>' +
     '</div>' +
     tableHtml;
 }
@@ -934,7 +941,7 @@ async function viewApplication(id) {
     ) +
     section('Requestor Information',
       row('Name', d.requestorName) +
-      row('Email', d.email) +
+      row('Guardian Email', d.email) +
       row('OpCo', d.agency) +
       row('Market', d.market) +
       row('EUS Lead Email', d.eusLeadEmail || d.cityLeader) +
@@ -1006,6 +1013,30 @@ function exportAll() {
 
 function downloadPdf(id) {
   window.location.href = '/api/applications/' + id + '/pdf';
+}
+
+function toggleSelectAll(el) {
+  var checks = document.querySelectorAll('.row-check');
+  checks.forEach(function(c) { c.checked = el.checked; });
+  updateExportSelected();
+}
+
+function updateExportSelected() {
+  var checks = document.querySelectorAll('.row-check:checked');
+  var btn = document.getElementById('exportSelectedBtn');
+  var count = document.getElementById('selectedCount');
+  if (btn) {
+    btn.style.display = checks.length > 0 ? 'flex' : 'none';
+    if (count) count.textContent = checks.length;
+  }
+}
+
+function exportSelected() {
+  var checks = document.querySelectorAll('.row-check:checked');
+  var ids = [];
+  checks.forEach(function(c) { ids.push(c.dataset.id); });
+  if (ids.length === 0) { showToast('No applications selected', 'error'); return; }
+  window.location.href = '/api/applications/export?ids=' + ids.join(',');
 }
 
 // ── User Management ────────────────────────────────────────────────────────
