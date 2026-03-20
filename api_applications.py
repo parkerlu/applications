@@ -134,6 +134,154 @@ def get_application(app_id):
     return jsonify({'success': True, 'application': _app_to_dict(app_doc)})
 
 
+@applications_bp.route('/api/applications/<app_id>/pdf', methods=['GET'])
+@login_required
+def get_application_pdf(app_id):
+    """Generate and download a PDF for a single application."""
+    try:
+        oid = ObjectId(app_id)
+    except Exception:
+        return jsonify({'success': False, 'error': 'Invalid application ID'}), 400
+
+    db = get_db()
+    app_doc = db.applications.find_one({'_id': oid})
+    if not app_doc:
+        return jsonify({'success': False, 'error': 'Application not found'}), 404
+
+    if not current_user.is_admin and str(app_doc['user_id']) != current_user.id:
+        return jsonify({'success': False, 'error': 'Access denied'}), 403
+
+    app_data = _app_to_dict(app_doc)
+    pdf_bytes = _generate_pdf(app_data)
+    filename = f"{app_data['request_id']}.pdf"
+    return send_file(
+        io.BytesIO(pdf_bytes),
+        mimetype='application/pdf',
+        as_attachment=True,
+        download_name=filename,
+    )
+
+
+def _generate_pdf(app_data):
+    from fpdf import FPDF
+
+    d = app_data.get('data', {})
+    req_id = app_data.get('request_id', '')
+    status = app_data.get('status', '')
+    created = (app_data.get('created_at') or '')[:10]
+    type_label = 'New Laptop' if d.get('requestType') == 'new' else 'Replacement Laptop' if d.get('requestType') == 'replacement' else d.get('requestType', '')
+
+    pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=20)
+    pdf.add_page()
+
+    # Header
+    pdf.set_fill_color(15, 82, 186)
+    pdf.rect(0, 0, 210, 28, 'F')
+    pdf.set_text_color(255, 255, 255)
+    pdf.set_font('Helvetica', 'B', 14)
+    pdf.set_xy(10, 6)
+    pdf.cell(0, 8, f'WPP Laptop Request - {req_id}', ln=True)
+    pdf.set_font('Helvetica', '', 9)
+    pdf.set_x(10)
+    pdf.cell(0, 5, f'Generated {datetime.now().strftime("%Y-%m-%d")}')
+    pdf.ln(14)
+
+    def safe(val):
+        if val is None:
+            return ''
+        return str(val)
+
+    def section(title):
+        pdf.set_font('Helvetica', 'B', 11)
+        pdf.set_text_color(15, 82, 186)
+        pdf.cell(0, 8, title, ln=True)
+        pdf.set_draw_color(200, 210, 230)
+        pdf.line(10, pdf.get_y(), 200, pdf.get_y())
+        pdf.ln(2)
+
+    def row(label, val):
+        pdf.set_font('Helvetica', '', 9)
+        pdf.set_text_color(107, 114, 128)
+        pdf.cell(60, 6, label)
+        pdf.set_text_color(30, 30, 30)
+        pdf.set_font('Helvetica', '', 9)
+        pdf.cell(0, 6, safe(val), ln=True)
+
+    section('Request Info')
+    row('Request ID', req_id)
+    row('Status', status)
+    row('Request Type', type_label)
+    row('Submitted', created)
+    pdf.ln(3)
+
+    section('Requestor Information')
+    row('Name', d.get('requestorName'))
+    row('Email', d.get('email'))
+    row('OpCo', d.get('agency'))
+    row('Market', d.get('market'))
+    row('EUS Lead Email', d.get('eusLeadEmail') or d.get('cityLeader'))
+    row('BU Email', d.get('buEmail'))
+    row('Date Required', d.get('dateRequired'))
+    row('Staff Category', d.get('staffCategory'))
+    pdf.ln(3)
+
+    section('Device Specifications')
+    row('EUC Persona', d.get('eucPersona'))
+    row('Device Type', 'Desktop' if d.get('deviceType') == 'desktop' else 'Laptop')
+    row('Device Model', d.get('laptopModel'))
+    row('Make', d.get('selectedDeviceMake'))
+    row('MPN', d.get('selectedDeviceMpn'))
+    row('Operating System', d.get('os'))
+    row('Quantity', d.get('quantity'))
+    row('Specs', d.get('specs'))
+    pdf.ln(3)
+
+    section('Cost & Sourcing')
+    unit = d.get('unitCost', '')
+    qty = d.get('quantity', '')
+    currency = d.get('currency', 'USD')
+    row('Unit Cost', f'{unit} {currency}' if unit else '')
+    try:
+        total = float(unit) * int(qty)
+        row('Total Cost', f'{total:.2f} {currency}')
+    except (ValueError, TypeError):
+        row('Total Cost', '')
+    row('Local Currency', d.get('localCurrency'))
+    row('Exchange Rate', d.get('exchangeRate'))
+    row('Local Cost Per Device', d.get('localCostPerDevice'))
+    pdf.ln(3)
+
+    if d.get('requestType') == 'new':
+        section('New Hire Details')
+        row('Number of New Hires', d.get('newHireCount'))
+        row('Expected Join Date', d.get('joinDate'))
+        row('EUC Persona Override', d.get('newHirePersona'))
+        row('Available Laptops', d.get('availableLaptops'))
+        pdf.ln(3)
+
+    if d.get('requestType') == 'replacement':
+        section('Replacement Details')
+        row('Current Device', f"{safe(d.get('currentDeviceMake'))} {safe(d.get('currentDeviceModel'))}")
+        row('Serial Number', d.get('currentSerialNumber'))
+        row('Device Age', f"{safe(d.get('currentDeviceAge'))} years" if d.get('currentDeviceAge') else '')
+        row('Replacement Reason', d.get('currentCondition'))
+        row('Diagnostics', d.get('diagnostics'))
+        row('Current Workaround', d.get('currentWorkaround'))
+        row('Workaround Details', d.get('workaroundDetails'))
+        pdf.ln(3)
+
+    section('Procurement Details')
+    row('ET Legal Entity', d.get('etLegalEntity'))
+    row('Lead Entity in Market', d.get('leadEntityInMarket'))
+    row('BFC Code', d.get('bfcCode'))
+    row('Stock or New Purchase', d.get('stockOrNewPurchase'))
+    row('Transfer Entity', d.get('transferEntity'))
+    row('Comments', d.get('comments'))
+
+    return pdf.output()
+
+
 @applications_bp.route('/api/applications/<app_id>', methods=['PUT'])
 @login_required
 def update_application(app_id):

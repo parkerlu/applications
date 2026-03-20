@@ -1002,83 +1002,8 @@ function exportAll() {
   window.location.href = '/api/applications/export';
 }
 
-async function downloadPdf(id) {
-  try {
-    var res = await fetch('/api/applications/' + id);
-    if (!res.ok) { showToast('Failed to load application', 'error'); return; }
-    var result = await res.json();
-    if (!result.success) { showToast('Application not found', 'error'); return; }
-  } catch (err) { showToast('Failed to load application', 'error'); return; }
-
-  var app = result.application;
-  var d = app.data || {};
-
-  function pv(val) {
-    if (val === undefined || val === null || val === '') return '--';
-    return esc(String(val));
-  }
-  function pr(label, val) {
-    return '<tr><td style="padding:6px 12px;color:#6b7280;width:200px;font-size:13px;">' + esc(label) + '</td>' +
-           '<td style="padding:6px 12px;font-weight:500;font-size:13px;">' + pv(val) + '</td></tr>';
-  }
-  function psec(title) {
-    return '<tr><td colspan="2" style="padding:14px 12px 6px;font-weight:700;font-size:14px;color:#0f52ba;border-bottom:2px solid #eaf0fb;">' + esc(title) + '</td></tr>';
-  }
-
-  var typeLabel = d.requestType === 'new' ? 'New Laptop' : d.requestType === 'replacement' ? 'Replacement Laptop' : d.requestType;
-
-  var rows = psec('Request Info') +
-    pr('Request ID', app.request_id) + pr('Status', app.status) + pr('Request Type', typeLabel) +
-    pr('Submitted', app.created_at ? app.created_at.substring(0,10) : '') +
-    psec('Requestor Information') +
-    pr('Name', d.requestorName) + pr('Email', d.email) + pr('OpCo', d.agency) + pr('Market', d.market) +
-    pr('EUS Lead Email', d.eusLeadEmail || d.cityLeader) + pr('BU Email', d.buEmail) +
-    pr('Date Required', d.dateRequired) + pr('Staff Category', d.staffCategory) +
-    psec('Device Specifications') +
-    pr('EUC Persona', d.eucPersona) + pr('Device Type', d.deviceType === 'desktop' ? 'Desktop' : 'Laptop') +
-    pr('Device Model', d.laptopModel) + pr('Make', d.selectedDeviceMake) + pr('MPN', d.selectedDeviceMpn) +
-    pr('Operating System', d.os) + pr('Quantity', d.quantity) + pr('Specs', d.specs) +
-    psec('Cost & Sourcing') +
-    pr('Unit Cost', d.unitCost ? d.unitCost + ' ' + (d.currency || 'USD') : '') +
-    pr('Total Cost', d.unitCost && d.quantity ? (parseFloat(d.unitCost) * parseInt(d.quantity)).toFixed(2) + ' ' + (d.currency || 'USD') : '') +
-    pr('Local Currency', d.localCurrency) + pr('Exchange Rate', d.exchangeRate) + pr('Local Cost Per Device', d.localCostPerDevice);
-
-  if (d.requestType === 'new') {
-    rows += psec('New Hire Details') +
-      pr('Number of New Hires', d.newHireCount) + pr('Expected Join Date', d.joinDate) +
-      pr('EUC Persona Override', d.newHirePersona) + pr('Available Laptops', d.availableLaptops);
-  }
-  if (d.requestType === 'replacement') {
-    rows += psec('Replacement Details') +
-      pr('Current Device', (d.currentDeviceMake || '') + ' ' + (d.currentDeviceModel || '')) +
-      pr('Serial Number', d.currentSerialNumber) + pr('Device Age', d.currentDeviceAge ? d.currentDeviceAge + ' years' : '') +
-      pr('Replacement Reason', d.currentCondition) + pr('Diagnostics', d.diagnostics) +
-      pr('Current Workaround', d.currentWorkaround) + pr('Workaround Details', d.workaroundDetails);
-  }
-
-  rows += psec('Procurement Details') +
-    pr('ET Legal Entity', d.etLegalEntity) + pr('Lead Entity in Market', d.leadEntityInMarket) +
-    pr('BFC Code', d.bfcCode) + pr('Stock or New Purchase', d.stockOrNewPurchase) +
-    pr('Transfer Entity', d.transferEntity) + pr('Comments', d.comments);
-
-  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8">' +
-    '<title>Application ' + esc(app.request_id || '') + '</title>' +
-    '<style>' +
-      'body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;color:#111827;margin:0;padding:40px;}' +
-      '.hdr{background:linear-gradient(135deg,#0f52ba,#0a3a82);color:#fff;padding:24px 32px;margin:-40px -40px 24px;} ' +
-      '.hdr h1{font-size:18px;margin:0;} .hdr p{font-size:13px;opacity:.8;margin:4px 0 0;}' +
-      'table{width:100%;border-collapse:collapse;} tr:hover td{background:#f9fafb;}' +
-      '@media print{body{padding:20px;} .hdr{margin:-20px -20px 16px;padding:16px 20px;}}' +
-    '</style></head><body>' +
-    '<div class="hdr"><h1>WPP Laptop Request -- ' + esc(app.request_id || '') + '</h1>' +
-    '<p>Generated ' + new Date().toLocaleDateString() + '</p></div>' +
-    '<table>' + rows + '</table>' +
-    '<script>window.onload=function(){window.print();}<\/script>' +
-    '</body></html>';
-
-  var w = window.open('', '_blank');
-  if (w) { w.document.write(html); w.document.close(); }
-  else { showToast('Please allow popups to generate PDF', 'error'); }
+function downloadPdf(id) {
+  window.location.href = '/api/applications/' + id + '/pdf';
 }
 
 // ── User Management ────────────────────────────────────────────────────────

@@ -1,37 +1,637 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WPP Laptop Request</title>
-<link rel="stylesheet" href="/static/styles.css">
-</head>
-<body>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>WPP – New Application</title>
+<script src="/static/css/tailwind.js"></script>
+<link href="/static/fonts/fonts.css" rel="stylesheet">
+<link href="/static/fonts/material.css" rel="stylesheet">
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "inverse-primary": "var(--c-inverse-primary)",
+        "surface-dim": "var(--c-surface-dim)",
+        "on-error-container": "var(--c-on-error-container)",
+        "error": "var(--c-error)",
+        "tertiary-container": "var(--c-tertiary-container)",
+        "background": "var(--c-background)",
+        "outline": "var(--c-outline)",
+        "on-primary-fixed": "var(--c-on-primary-fixed)",
+        "secondary-container": "var(--c-secondary-container)",
+        "surface-variant": "var(--c-surface-variant)",
+        "on-primary-container": "var(--c-on-primary-container)",
+        "primary": "var(--c-primary)",
+        "error-container": "var(--c-error-container)",
+        "inverse-on-surface": "var(--c-inverse-on-surface)",
+        "primary-fixed-dim": "var(--c-primary-fixed-dim)",
+        "on-primary-fixed-variant": "var(--c-on-primary-fixed-variant)",
+        "surface-bright": "var(--c-surface-bright)",
+        "primary-fixed": "var(--c-primary-fixed)",
+        "on-background": "var(--c-on-background)",
+        "surface-container-lowest": "var(--c-surface-container-lowest)",
+        "on-secondary-container": "var(--c-on-secondary-container)",
+        "surface-container-highest": "var(--c-surface-container-highest)",
+        "on-surface-variant": "var(--c-on-surface-variant)",
+        "on-secondary": "var(--c-on-secondary)",
+        "surface-container": "var(--c-surface-container)",
+        "surface": "var(--c-surface)",
+        "secondary-dim": "var(--c-secondary-dim)",
+        "outline-variant": "var(--c-outline-variant)",
+        "on-surface": "var(--c-on-surface)",
+        "on-secondary-fixed": "var(--c-on-secondary-fixed)",
+        "tertiary-dim": "var(--c-tertiary-dim)",
+        "on-tertiary": "var(--c-on-tertiary)",
+        "primary-dim": "var(--c-primary-dim)",
+        "inverse-surface": "var(--c-inverse-surface)",
+        "error-dim": "var(--c-error-dim)",
+        "on-primary": "var(--c-on-primary)",
+        "surface-container-low": "var(--c-surface-container-low)",
+        "on-tertiary-container": "var(--c-on-tertiary-container)",
+        "on-tertiary-fixed": "var(--c-on-tertiary-fixed)",
+        "on-secondary-fixed-variant": "var(--c-on-secondary-fixed-variant)",
+        "surface-container-high": "var(--c-surface-container-high)",
+        "secondary-fixed-dim": "var(--c-secondary-fixed-dim)",
+        "secondary-fixed": "var(--c-secondary-fixed)",
+        "on-tertiary-fixed-variant": "var(--c-on-tertiary-fixed-variant)",
+        "tertiary-fixed-dim": "var(--c-tertiary-fixed-dim)",
+        "on-error": "var(--c-on-error)",
+        "tertiary-fixed": "var(--c-tertiary-fixed)",
+        "tertiary": "var(--c-tertiary)",
+        "primary-container": "var(--c-primary-container)",
+        "surface-tint": "var(--c-surface-tint)",
+        "secondary": "var(--c-secondary)"
+      },
+      fontFamily: {
+        "headline": ["Plus Jakarta Sans", "sans-serif"],
+        "body": ["Manrope", "sans-serif"],
+        "label": ["Manrope", "sans-serif"]
+      },
+      borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+    },
+  },
+}
+</script>
+<style>
+/* Dark mode colors (default) */
+.dark {
+  --c-inverse-primary: #004eea;
+  --c-surface-dim: #0e0e0e;
+  --c-on-error-container: #ffa8a3;
+  --c-error: #ff716c;
+  --c-tertiary-container: #d501f9;
+  --c-background: #0e0e0e;
+  --c-outline: #767575;
+  --c-on-primary-fixed: #000000;
+  --c-secondary-container: #006d35;
+  --c-surface-variant: #262626;
+  --c-on-primary-container: #001b61;
+  --c-primary: #94aaff;
+  --c-error-container: #9f0519;
+  --c-inverse-on-surface: #565555;
+  --c-primary-fixed-dim: #6c8cff;
+  --c-on-primary-fixed-variant: #002376;
+  --c-surface-bright: #2c2c2c;
+  --c-primary-fixed: #809bff;
+  --c-on-background: #ffffff;
+  --c-surface-container-lowest: #000000;
+  --c-on-secondary-container: #e3ffe4;
+  --c-surface-container-highest: #262626;
+  --c-on-surface-variant: #adaaaa;
+  --c-on-secondary: #005d2c;
+  --c-surface-container: #1a1a1a;
+  --c-surface: #0e0e0e;
+  --c-secondary-dim: #24f07e;
+  --c-outline-variant: #484847;
+  --c-on-surface: #ffffff;
+  --c-on-secondary-fixed: #004820;
+  --c-tertiary-dim: #c500e6;
+  --c-on-tertiary: #3c0048;
+  --c-primary-dim: #3367ff;
+  --c-inverse-surface: #fcf9f8;
+  --c-error-dim: #d7383b;
+  --c-on-primary: #00257b;
+  --c-surface-container-low: #131313;
+  --c-on-tertiary-container: #000000;
+  --c-on-tertiary-fixed: #2f0039;
+  --c-on-secondary-fixed-variant: #006832;
+  --c-surface-container-high: #20201f;
+  --c-secondary-fixed-dim: #24f07e;
+  --c-secondary-fixed: #3fff8b;
+  --c-on-tertiary-fixed-variant: #650077;
+  --c-tertiary-fixed-dim: #eb71ff;
+  --c-on-error: #490006;
+  --c-tertiary-fixed: #f189ff;
+  --c-tertiary: #e966ff;
+  --c-primary-container: #809bff;
+  --c-surface-tint: #94aaff;
+  --c-secondary: #3fff8b;
 
-<div class="app-layout">
+  /* Sidebar */
+  --sidebar-bg: #131313;
+  --sidebar-border: rgba(72,72,71,0.15);
+  --sidebar-hover: #20201f;
+  --sidebar-logo-color: #e966ff;
+  --header-bg: rgba(14,14,14,0.8);
+  --header-border: transparent;
+  --search-bg: #131313;
+  --search-border: rgba(72,72,71,0.3);
+  --toggle-bg: #131313;
+  --toggle-border: rgba(72,72,71,0.3);
+  --toggle-active-bg: #94aaff;
+  --toggle-active-text: #001b61;
+  --table-bg: #131313;
+  --table-shadow: 0 20px 40px rgba(148,170,255,0.06);
+  --table-border: rgba(72,72,71,0.15);
+  --table-head-bg: rgba(32,32,31,0.5);
+  --table-hover: #262626;
+  --badge-bg: #262626;
+  --icon-box-bg: #262626;
+  --export-bg: #20201f;
+  --export-hover: #262626;
+  --neon-glow: 0 0 15px rgba(148,170,255,0.4);
+  --neon-color: #94aaff;
+  --selection-bg: #94aaff;
+  --selection-text: #001b61;
+
+  /* Modal */
+  --modal-bg: #1a1a1a;
+  --modal-border: #484847;
+  --input-bg: #0e0e0e;
+  --input-border: #484847;
+  --input-text: #ffffff;
+  --input-focus-ring: rgba(148,170,255,0.4);
+}
+
+/* Light mode colors */
+html:not(.dark) {
+  --c-inverse-primary: #004eea;
+  --c-surface-dim: #f4f4f4;
+  --c-on-error-container: #410002;
+  --c-error: #ba1a1a;
+  --c-tertiary-container: #ffd7f3;
+  --c-background: #f8f9fa;
+  --c-outline: #767575;
+  --c-on-primary-fixed: #001b61;
+  --c-secondary-container: #d3e8d3;
+  --c-surface-variant: #e1e2ec;
+  --c-on-primary-container: #ffffff;
+  --c-primary: #3367ff;
+  --c-error-container: #ffdad6;
+  --c-inverse-on-surface: #f1f0f4;
+  --c-primary-fixed-dim: #6c8cff;
+  --c-on-primary-fixed-variant: #002376;
+  --c-surface-bright: #fcfcfc;
+  --c-primary-fixed: #809bff;
+  --c-on-background: #1a1c1e;
+  --c-surface-container-lowest: #ffffff;
+  --c-on-secondary-container: #00210a;
+  --c-surface-container-highest: #e2e2e6;
+  --c-on-surface-variant: #44474e;
+  --c-on-secondary: #ffffff;
+  --c-surface-container: #f0f0f3;
+  --c-surface: #ffffff;
+  --c-secondary-dim: #24f07e;
+  --c-outline-variant: #c4c6d0;
+  --c-on-surface: #1a1c1e;
+  --c-on-secondary-fixed: #00210a;
+  --c-tertiary-dim: #c500e6;
+  --c-on-tertiary: #ffffff;
+  --c-primary-dim: #3367ff;
+  --c-inverse-surface: #2f3033;
+  --c-error-dim: #ba1a1a;
+  --c-on-primary: #ffffff;
+  --c-surface-container-low: #f7f7f9;
+  --c-on-tertiary-container: #2f0039;
+  --c-on-tertiary-fixed: #2f0039;
+  --c-on-secondary-fixed-variant: #006d35;
+  --c-surface-container-high: #e9e9ed;
+  --c-secondary-fixed-dim: #24f07e;
+  --c-secondary-fixed: #3fff8b;
+  --c-on-tertiary-fixed-variant: #650077;
+  --c-tertiary-fixed-dim: #eb71ff;
+  --c-on-error: #ffffff;
+  --c-tertiary-fixed: #f189ff;
+  --c-tertiary: #d501f9;
+  --c-primary-container: #3367ff;
+  --c-surface-tint: #3367ff;
+  --c-secondary: #006d35;
+
+  /* Sidebar */
+  --sidebar-bg: #ffffff;
+  --sidebar-border: rgba(196,198,208,0.3);
+  --sidebar-hover: #f7f7f9;
+  --sidebar-logo-color: #d501f9;
+  --header-bg: rgba(248,249,250,0.8);
+  --header-border: rgba(196,198,208,0.1);
+  --search-bg: #f0f0f3;
+  --search-border: rgba(196,198,208,0.5);
+  --toggle-bg: #f0f0f3;
+  --toggle-border: rgba(196,198,208,0.3);
+  --toggle-active-bg: #ffffff;
+  --toggle-active-text: #3367ff;
+  --table-bg: #ffffff;
+  --table-shadow: 0 8px 30px rgb(0,0,0,0.04);
+  --table-border: rgba(196,198,208,0.2);
+  --table-head-bg: #f7f7f9;
+  --table-hover: rgba(247,247,249,0.5);
+  --badge-bg: #e9e9ed;
+  --icon-box-bg: #f0f0f3;
+  --export-bg: #ffffff;
+  --export-hover: #e9e9ed;
+  --neon-glow: 0 0 15px rgba(51,103,255,0.2);
+  --neon-color: #3367ff;
+  --selection-bg: rgba(51,103,255,0.2);
+  --selection-text: #3367ff;
+
+  /* Modal */
+  --modal-bg: #ffffff;
+  --modal-border: #c4c6d0;
+  --input-bg: #f8f9fa;
+  --input-border: #c4c6d0;
+  --input-text: #1a1c1e;
+  --input-focus-ring: rgba(51,103,255,0.3);
+}
+
+body {
+  font-family: 'Manrope', sans-serif;
+}
+h1, h2, h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+::selection {
+  background: var(--selection-bg);
+  color: var(--selection-text);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--c-outline-variant); border-radius: 3px; }
+
+/* ══════════════════════════════════════════════════════════════
+   Wizard-specific styles (preserved from styles.css)
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Buttons ──────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 20px;
+  font-size: 0.85rem;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  line-height: 1.4;
+}
+
+.btn-primary {
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.btn-primary:hover {
+  opacity: 0.9;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  transform: translateY(-0.5px);
+}
+
+.btn-secondary {
+  background: var(--c-surface-container-high);
+  color: var(--c-on-surface);
+  border: 1px solid var(--c-outline-variant);
+}
+.btn-secondary:hover {
+  background: var(--c-surface-variant);
+}
+
+.btn-success {
+  background: var(--c-secondary-container);
+  color: var(--c-on-secondary-container);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.btn-success:hover {
+  opacity: 0.9;
+  transform: translateY(-0.5px);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* ── Form elements ────────────────────────────────────────── */
+.form-group { margin-bottom: 20px; }
+
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--c-on-surface-variant);
+  margin-bottom: 6px;
+}
+
+.form-group .required { color: var(--c-error); margin-left: 2px; }
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="number"],
+.form-group input[type="date"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--input-border);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-family: 'Manrope', sans-serif;
+  color: var(--input-text);
+  background: var(--input-bg);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  line-height: 1.5;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--c-primary);
+  box-shadow: 0 0 0 3px var(--input-focus-ring);
+}
+
+.form-group input.error,
+.form-group select.error,
+.form-group textarea.error {
+  border-color: var(--c-error);
+}
+
+.form-group input[readonly],
+.form-group input:disabled {
+  background: var(--c-surface-container-high);
+  color: var(--c-on-surface-variant);
+  cursor: not-allowed;
+}
+
+.form-group textarea { min-height: 80px; resize: vertical; }
+
+.form-row { display: flex; gap: 16px; }
+.form-row .form-group { flex: 1; }
+
+.error-msg {
+  color: var(--c-error);
+  font-size: 0.76rem;
+  margin-top: 4px;
+  display: none;
+  font-weight: 500;
+}
+.error-msg.visible { display: block; }
+
+/* ── Checkbox groups ──────────────────────────────────────── */
+.checkbox-group { margin-bottom: 16px; }
+.checkbox-group label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-weight: 400;
+  cursor: pointer;
+  padding: 12px 14px;
+  border: 1.5px solid var(--input-border);
+  border-radius: 6px;
+  transition: border-color 0.2s, background 0.2s;
+  font-size: 0.88rem;
+  color: var(--c-on-surface);
+}
+.checkbox-group label:hover { background: var(--c-surface-container-high); border-color: var(--c-outline); }
+.checkbox-group label input[type="checkbox"] {
+  margin-top: 3px;
+  accent-color: var(--c-primary);
+  flex-shrink: 0;
+}
+.checkbox-group.error label { border-color: var(--c-error); }
+
+/* ── Radio cards ──────────────────────────────────────────── */
+.radio-cards { display: flex; gap: 16px; margin-top: 8px; }
+.radio-card {
+  flex: 1;
+  border: 2px solid var(--c-outline-variant);
+  border-radius: 10px;
+  padding: 28px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  background: var(--c-surface-container);
+}
+.radio-card:hover { border-color: var(--c-primary); background: var(--c-surface-container-high); }
+.radio-card.selected { border-color: var(--c-primary); background: var(--c-surface-container-high); box-shadow: 0 0 0 3px var(--input-focus-ring); }
+.radio-card input { position: absolute; opacity: 0; }
+.radio-card .card-icon { font-size: 2.2rem; margin-bottom: 10px; }
+.radio-card .card-title { font-weight: 700; font-size: 1rem; color: var(--c-on-surface); }
+.radio-card .card-desc { font-size: 0.8rem; color: var(--c-on-surface-variant); margin-top: 4px; }
+
+/* ── Device type radio ────────────────────────────────────── */
+.device-type-radios { display: flex; gap: 12px; margin-top: 6px; }
+.device-type-radios label {
+  display: flex; align-items: center; gap: 6px;
+  font-weight: 500; font-size: 0.88rem; cursor: pointer;
+  padding: 8px 18px; border: 2px solid var(--c-outline-variant); border-radius: 6px;
+  transition: all 0.2s; color: var(--c-on-surface);
+}
+.device-type-radios label:hover { border-color: var(--c-primary); background: var(--c-surface-container-high); }
+.device-type-radios label.dt-selected { border-color: var(--c-primary); background: var(--c-surface-container-high); font-weight: 600; }
+.device-type-radios input[type="radio"] { accent-color: var(--c-primary); }
+
+/* ── Device cards ─────────────────────────────────────────── */
+.device-cards-container { display: grid; grid-template-columns: 1fr; gap: 12px; margin-top: 12px; }
+.device-card {
+  border: 2px solid var(--c-outline-variant); border-radius: 10px;
+  padding: 16px 20px; cursor: pointer; transition: all 0.2s;
+  position: relative; background: var(--c-surface-container);
+}
+.device-card:hover { border-color: var(--c-primary); background: var(--c-surface-container-high); }
+.device-card.dc-selected {
+  border-color: var(--c-primary); background: var(--c-surface-container-high);
+  box-shadow: 0 0 0 3px var(--input-focus-ring);
+}
+.device-card .dc-check {
+  position: absolute; top: 12px; right: 14px; width: 24px; height: 24px;
+  border-radius: 50%; background: var(--c-primary); color: var(--c-on-primary);
+  display: none; align-items: center; justify-content: center;
+  font-size: 0.85rem; font-weight: 700;
+}
+.device-card.dc-selected .dc-check { display: flex; }
+.device-card .dc-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.device-card .dc-name { font-weight: 700; font-size: 1rem; color: var(--c-on-surface); }
+.device-card .dc-make-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 4px;
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;
+}
+.dc-make-apple { background: #1f2937; color: #fff; }
+.dc-make-dell { background: #0284c7; color: #fff; }
+.device-card .dc-specs { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.8rem; color: var(--c-on-surface-variant); margin-bottom: 8px; }
+.device-card .dc-specs span { white-space: nowrap; }
+.device-card .dc-specs .spec-label { color: var(--c-outline); font-weight: 500; }
+.device-card .dc-price { font-size: 0.85rem; font-weight: 700; color: var(--c-primary); }
+.device-no-results { padding: 20px; text-align: center; color: var(--c-on-surface-variant); font-size: 0.88rem; background: var(--c-surface-container); border-radius: 6px; margin-top: 12px; }
+
+/* ── Warning ──────────────────────────────────────────────── */
+.warning-box {
+  background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.4);
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-size: 0.85rem;
+  color: var(--c-on-surface);
+  margin-top: 8px;
+}
+
+/* ── Progress bar (wizard) ────────────────────────────────── */
+.progress-container { max-width: 820px; margin: 28px auto 0; padding: 0 24px; }
+.progress-bar { display: flex; align-items: center; gap: 0; }
+.progress-step { display: flex; flex-direction: column; align-items: center; flex: 1; position: relative; }
+.progress-step .circle {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--c-surface-container-high); color: var(--c-on-surface-variant);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 700; z-index: 1; transition: all 0.3s;
+  border: 2px solid transparent;
+}
+.progress-step.active .circle {
+  background: var(--c-primary); color: var(--c-on-primary);
+  box-shadow: 0 0 0 4px var(--input-focus-ring);
+  border-color: var(--c-primary);
+}
+.progress-step.completed .circle { background: var(--c-secondary-container); color: var(--c-on-secondary-container); border-color: var(--c-secondary-container); }
+.progress-step .label { font-size: 0.65rem; margin-top: 6px; color: var(--c-on-surface-variant); text-align: center; white-space: nowrap; font-weight: 500; }
+.progress-step.active .label { color: var(--c-primary); font-weight: 700; }
+.progress-step.completed .label { color: var(--c-secondary); font-weight: 600; }
+.progress-step:not(:last-child)::after {
+  content: ''; position: absolute; top: 17px; left: calc(50% + 17px);
+  width: calc(100% - 34px); height: 3px; background: var(--c-surface-container-high); z-index: 0;
+  border-radius: 2px;
+}
+.progress-step.completed:not(:last-child)::after { background: var(--c-secondary-container); }
+
+/* ── Step panels (wizard) ─────────────────────────────────── */
+.form-container { max-width: 820px; margin: 24px auto; padding: 0 24px 48px; }
+.step-panel {
+  display: none; background: var(--c-surface-container); border-radius: 14px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.08), 0 2px 4px -2px rgba(0,0,0,0.04); padding: 36px; animation: fadeIn 0.3s ease;
+  border: 1px solid var(--c-outline-variant);
+}
+.step-panel.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.step-panel h2 { font-size: 1.25rem; color: var(--c-primary); margin-bottom: 4px; font-weight: 700; }
+.step-panel .step-subtitle { font-size: 0.85rem; color: var(--c-on-surface-variant); margin-bottom: 24px; }
+
+/* ── Navigation buttons ───────────────────────────────────── */
+.nav-buttons {
+  display: flex; justify-content: space-between; margin-top: 32px;
+  padding-top: 20px; border-top: 1px solid var(--c-outline-variant);
+}
+
+/* ── Review summary ───────────────────────────────────────── */
+.review-section { margin-bottom: 24px; }
+.review-section h3 {
+  font-size: 0.92rem; color: var(--c-primary); font-weight: 700;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 2px solid var(--input-focus-ring); padding-bottom: 8px; margin-bottom: 10px;
+}
+.review-section h3 button {
+  font-size: 0.72rem; padding: 4px 14px; font-family: 'Manrope', sans-serif;
+  background: var(--c-surface-container-high); color: var(--c-primary);
+  border: 1px solid var(--c-outline-variant); border-radius: 4px;
+  cursor: pointer; font-weight: 600; transition: all 0.2s;
+}
+.review-section h3 button:hover { background: var(--c-primary); color: var(--c-on-primary); }
+.review-row { display: flex; padding: 7px 0; font-size: 0.85rem; }
+.review-label { width: 200px; color: var(--c-on-surface-variant); flex-shrink: 0; font-weight: 500; }
+.review-value { color: var(--c-on-surface); font-weight: 600; }
+
+/* ── Result messages ──────────────────────────────────────── */
+.result-message { padding: 20px 24px; border-radius: 10px; margin-top: 20px; display: none; }
+.result-message.success { display: block; }
+.dark .result-message.success { background: rgba(0,109,53,0.15); border: 1px solid rgba(63,255,139,0.3); color: #3fff8b; }
+html:not(.dark) .result-message.success { background: #dcfce7; border: 1px solid #bbf7d0; color: #166534; }
+.result-message.error-result { display: block; }
+.dark .result-message.error-result { background: rgba(159,5,25,0.15); border: 1px solid rgba(255,113,108,0.3); color: #ff716c; }
+html:not(.dark) .result-message.error-result { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+.result-message h3 { margin-bottom: 8px; }
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .radio-cards { flex-direction: column; }
+  .form-row { flex-direction: column; gap: 0; }
+  .progress-step .label { font-size: 0.55rem; }
+  .step-panel { padding: 20px; }
+  .review-row { flex-direction: column; }
+  .review-label { width: auto; margin-bottom: 2px; }
+  .device-type-radios { flex-direction: column; }
+}
+</style>
+</head>
+<body class="bg-background text-on-surface min-h-screen">
 
 <!-- Sidebar -->
-<aside class="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo-title">WPP</div>
-    <div class="logo-sub">IT Asset Portal</div>
+<aside class="h-screen w-64 fixed left-0 top-0 z-50 flex flex-col p-6"
+       style="background:var(--sidebar-bg); border-right:1px solid var(--sidebar-border);">
+  <!-- Logo -->
+  <div class="text-xl font-bold mb-12 flex items-center gap-2" style="color:var(--sidebar-logo-color);">
+    <span class="material-symbols-outlined text-2xl">auto_awesome</span>
+    <span class="font-headline tracking-tighter text-on-surface">WPP</span>
   </div>
-  <nav class="sidebar-nav" id="sidebarNav"></nav>
-  <div class="sidebar-footer">
-    <div class="user-info" id="sidebarUserInfo"></div>
-    <button class="btn-logout" onclick="sidebarLogout()">&#x2192; Sign Out</button>
+
+  <!-- Navigation -->
+  <nav class="flex-1 space-y-2" id="sidebarNav"></nav>
+
+  <!-- Sidebar Footer / User Info -->
+  <div class="mt-auto pt-6" style="border-top:1px solid var(--sidebar-border);">
+    <div id="sidebarUserInfo" class="flex items-center gap-3"></div>
   </div>
 </aside>
 
 <!-- Main content -->
-<div class="main-content">
+<main class="ml-64 min-h-screen">
 
-<div class="wizard-header">
-  <div class="wizard-header-inner">
-    <h1>WPP Laptop Request System</h1>
-    <p>Submit a new laptop procurement request</p>
+<!-- Top Header -->
+<header class="w-full sticky top-0 z-40 backdrop-blur-xl flex justify-between items-center px-12 py-6"
+        style="background:var(--header-bg); border-bottom:1px solid var(--header-border);">
+  <div class="text-2xl font-black tracking-tighter text-primary font-headline">IT Asset Application Portal</div>
+  <div class="flex items-center gap-6">
+    <!-- Dark/Light Toggle -->
+    <div class="flex items-center gap-0 rounded-full p-1" style="background:var(--toggle-bg); border:1px solid var(--toggle-border);">
+      <button id="btnLight" onclick="setTheme('light')"
+              class="w-8 h-8 flex items-center justify-center rounded-full transition-colors">
+        <span class="material-symbols-outlined text-lg">light_mode</span>
+      </button>
+      <button id="btnDark" onclick="setTheme('dark')"
+              class="w-8 h-8 flex items-center justify-center rounded-full transition-colors">
+        <span class="material-symbols-outlined text-lg">dark_mode</span>
+      </button>
+    </div>
+    <!-- Sign Out -->
+    <button onclick="sidebarLogout()"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-on-surface-variant hover:text-error transition-colors duration-200 text-sm font-medium"
+            style="border:1px solid var(--sidebar-border);">
+      <span class="material-symbols-outlined text-lg">logout</span>
+      <span>Sign Out</span>
+    </button>
   </div>
-</div>
+</header>
 
 <div class="progress-container">
   <div class="progress-bar" id="progressBar"></div>
@@ -126,7 +726,7 @@
       <label>Date Required <span class="required">*</span></label>
       <input type="date" id="dateRequired">
       <div class="error-msg" id="err-dateRequired">Date required is required (must be at least 4 weeks from today)</div>
-      <small style="color:var(--gray-500);">Must be at least 4 weeks from today</small>
+      <small style="color:var(--c-on-surface-variant);">Must be at least 4 weeks from today</small>
     </div>
     <div class="form-group">
       <label>Staff Category <span class="required">*</span></label>
@@ -258,7 +858,7 @@
       <div class="form-group">
         <label>USD Exchange Rate</label>
         <input type="number" id="exchangeRate" min="0" step="0.000001" value="7.259259259" oninput="recalcUsdFromLocal()">
-        <small style="color:var(--gray-500);">1 USD = ? local currency</small>
+        <small style="color:var(--c-on-surface-variant);">1 USD = ? local currency</small>
       </div>
     </div>
     <div class="form-row">
@@ -272,7 +872,7 @@
         <input type="text" id="localTotalCost" readonly value="">
       </div>
     </div>
-    <h3 style="color:var(--primary);margin:16px 0 8px;font-size:0.9rem;border-bottom:1px solid var(--gray-300);padding-bottom:4px;">USD Equivalent (auto-calculated)</h3>
+    <h3 style="color:var(--c-primary);margin:16px 0 8px;font-size:0.9rem;border-bottom:1px solid var(--c-outline-variant);padding-bottom:4px;">USD Equivalent (auto-calculated)</h3>
     <div class="form-row">
       <div class="form-group">
         <label>Cost per Device (USD)</label>
@@ -351,7 +951,7 @@
     <h2>Replacement Details</h2>
     <p class="step-subtitle">Provide details about the current device being replaced and why a replacement is needed.</p>
 
-    <h3 style="color:var(--primary);margin:20px 0 12px;font-size:1rem;border-bottom:2px solid var(--primary);padding-bottom:6px;">Current Device Information</h3>
+    <h3 style="color:var(--c-primary);margin:20px 0 12px;font-size:1rem;border-bottom:2px solid var(--c-primary);padding-bottom:6px;">Current Device Information</h3>
     <div class="form-row">
       <div class="form-group">
         <label>Current Device Make <span class="required">*</span></label>
@@ -387,7 +987,7 @@
       <input type="text" id="currentDeviceSpecs" placeholder="e.g. i5 8th Gen, 8GB RAM, 256GB SSD">
     </div>
 
-    <h3 style="color:var(--primary);margin:20px 0 12px;font-size:1rem;border-bottom:2px solid var(--primary);padding-bottom:6px;">Reason for Replacement</h3>
+    <h3 style="color:var(--c-primary);margin:20px 0 12px;font-size:1rem;border-bottom:2px solid var(--c-primary);padding-bottom:6px;">Reason for Replacement</h3>
     <div class="form-group">
       <label>Replacement Reason <span class="required">*</span></label>
       <select id="currentCondition">
@@ -422,7 +1022,7 @@
     </div>
     <div class="error-msg" id="err-eusConfirmed">EUS / IT Support confirmation is required</div>
 
-    <h3 style="color:var(--primary);margin:20px 0 12px;font-size:1rem;border-bottom:2px solid var(--primary);padding-bottom:6px;">Current Workaround</h3>
+    <h3 style="color:var(--c-primary);margin:20px 0 12px;font-size:1rem;border-bottom:2px solid var(--c-primary);padding-bottom:6px;">Current Workaround</h3>
     <div class="form-group">
       <label>How is the user currently working? <span class="required">*</span></label>
       <select id="currentWorkaround">
@@ -441,7 +1041,7 @@
       <textarea id="workaroundDetails" placeholder="Provide additional details about the current workaround situation, e.g. device model being used temporarily, impact on productivity..."></textarea>
     </div>
 
-    <h3 style="color:var(--primary);margin:20px 0 12px;font-size:1rem;border-bottom:2px solid var(--primary);padding-bottom:6px;">Additional Justification</h3>
+    <h3 style="color:var(--c-primary);margin:20px 0 12px;font-size:1rem;border-bottom:2px solid var(--c-primary);padding-bottom:6px;">Additional Justification</h3>
     <div class="form-group">
       <label>Why Existing Stock Can't Be Used</label>
       <textarea id="stockNotUsedJustification" placeholder="Especially important for Senior Leader persona requests"></textarea>
@@ -521,10 +1121,10 @@
       <p>Your request has been saved as: <strong id="resultFilename"></strong></p>
       <div style="margin:16px 0;display:flex;gap:12px;flex-wrap:wrap;">
         <a id="downloadExcelLink" href="#" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:#217346;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;font-size:0.9rem;">
-          <span style="font-size:1.2em;">📊</span> Download Excel (.xlsx)
+          <span style="font-size:1.2em;">&#128202;</span> Download Excel (.xlsx)
         </a>
-        <a id="downloadMdLink" href="#" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--primary);color:#fff;border-radius:6px;text-decoration:none;font-weight:600;font-size:0.9rem;">
-          <span style="font-size:1.2em;">📄</span> Download Markdown (.md)
+        <a id="downloadMdLink" href="#" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--c-primary);color:var(--c-on-primary);border-radius:6px;text-decoration:none;font-weight:600;font-size:0.9rem;">
+          <span style="font-size:1.2em;">&#128196;</span> Download Markdown (.md)
         </a>
       </div>
       <button class="btn btn-primary" onclick="resetForm()">New Request</button>
@@ -538,10 +1138,51 @@
 
 </div>
 
-</div><!-- /main-content -->
-</div><!-- /app-layout -->
+</main>
 
 <script>
+// ── Theme ──────────────────────────────────────────────────────────────────
+function setTheme(mode) {
+  if (mode === 'dark') {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+  localStorage.setItem('theme', mode);
+  updateToggleButtons();
+}
+
+function updateToggleButtons() {
+  var isDark = document.documentElement.classList.contains('dark');
+  var btnLight = document.getElementById('btnLight');
+  var btnDark = document.getElementById('btnDark');
+  if (isDark) {
+    btnDark.style.background = 'var(--toggle-active-bg)';
+    btnDark.style.color = 'var(--toggle-active-text)';
+    btnDark.style.boxShadow = '0 1px 3px rgba(0,0,0,0.2)';
+    btnLight.style.background = 'transparent';
+    btnLight.style.color = 'var(--c-on-surface-variant)';
+    btnLight.style.boxShadow = 'none';
+  } else {
+    btnLight.style.background = 'var(--toggle-active-bg)';
+    btnLight.style.color = 'var(--toggle-active-text)';
+    btnLight.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)';
+    btnDark.style.background = 'transparent';
+    btnDark.style.color = 'var(--c-on-surface-variant)';
+    btnDark.style.boxShadow = 'none';
+  }
+}
+
+// Apply saved theme or default to dark
+(function() {
+  var saved = localStorage.getItem('theme');
+  if (saved === 'light') {
+    document.documentElement.classList.remove('dark');
+  } else {
+    document.documentElement.classList.add('dark');
+  }
+})();
+
 // Global sidebar logout (called from onclick outside IIFE)
 function sidebarLogout() {
   fetch('/api/logout', { method: 'POST' }).then(function() {
@@ -648,6 +1289,8 @@ function sidebarLogout() {
     currentUser = data.user;
     // Render sidebar
     renderWizardSidebar();
+    // Update theme toggle buttons
+    updateToggleButtons();
     // Auto-fill from user profile (skip name and email — user enters manually)
     var agencySelect = document.getElementById('agency');
     if (agencySelect) agencySelect.value = currentUser.opco;
@@ -674,28 +1317,38 @@ function sidebarLogout() {
 
   function renderWizardSidebar() {
     var items = [
-      { label: 'My Applications', icon: '&#128203;', href: '/dashboard' },
-      { label: 'New Application', icon: '&#43;', href: '/', active: true },
+      { label: 'My Applications', icon: 'apps', href: '/dashboard' },
+      { label: 'New Application', icon: 'add_box', href: '/', active: true },
     ];
     if (currentUser.role === 'admin') {
-      items.push({ label: 'All Applications', icon: '&#128202;', href: '/dashboard#all-applications' });
-      items.push({ label: 'User Management', icon: '&#128101;', href: '/dashboard#user-management' });
+      items.push({ label: 'All Applications', icon: 'admin_panel_settings', href: '/dashboard#all-applications' });
+      items.push({ label: 'User Management', icon: 'group', href: '/dashboard#user-management' });
     }
-    items.push({ label: 'Profile', icon: '&#128274;', href: '/dashboard#profile' });
+    items.push({ label: 'Profile', icon: 'account_circle', href: '/dashboard#profile' });
 
     var nav = document.getElementById('sidebarNav');
     nav.innerHTML = items.map(function(item) {
-      return '<a class="nav-item' + (item.active ? ' active' : '') + '" href="' + item.href + '">' +
-        '<span class="nav-icon">' + item.icon + '</span>' +
-        '<span>' + item.label + '</span></a>';
+      var activeClass = item.active
+        ? 'bg-gradient-to-r from-primary to-primary-dim text-white shadow-[0_0_15px_rgba(148,170,255,0.4)]'
+        : 'text-on-surface-variant hover:translate-x-1';
+      var hoverBg = item.active ? '' : ' onmouseenter="this.style.background=\'var(--sidebar-hover)\'" onmouseleave="this.style.background=\'transparent\'"';
+
+      return '<a class="flex items-center gap-3 px-4 py-3 cursor-pointer rounded-lg transition-all duration-200 ' + activeClass + '" href="' + item.href + '"' + hoverBg + '>' +
+        '<span class="material-symbols-outlined">' + item.icon + '</span>' +
+        '<span class="font-medium text-sm">' + item.label + '</span></a>';
     }).join('');
 
     var info = document.getElementById('sidebarUserInfo');
+    var roleBadgeClass = 'bg-secondary-container text-on-secondary-container';
     info.innerHTML =
-      '<div class="user-name">' + esc(currentUser.name || currentUser.username) + '</div>' +
-      '<div class="user-meta">' +
-        '<span class="user-opco">' + esc(currentUser.opco || '') + '</span>' +
-        '<span class="role-badge ' + currentUser.role + '">' + currentUser.role + '</span>' +
+      '<div class="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden flex items-center justify-center flex-shrink-0">' +
+        '<span class="material-symbols-outlined text-on-surface-variant text-xl">person</span>' +
+      '</div>' +
+      '<div class="min-w-0">' +
+        '<p class="text-sm font-bold text-on-surface truncate">' + esc(currentUser.name || currentUser.username) + '</p>' +
+        '<span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider inline-block ' + roleBadgeClass + '">' +
+          esc(currentUser.opco || 'WPP') + ' ' + esc(currentUser.role) +
+        '</span>' +
       '</div>';
   }
 
