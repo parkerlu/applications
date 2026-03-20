@@ -5,7 +5,8 @@ def test_health_check(client):
     assert data['status'] == 'ok'
 
 
-from server import sanitize_company_name, generate_filename, APPLICATIONS_DIR
+from utils import sanitize_company_name
+from server import generate_filename, APPLICATIONS_DIR
 import tempfile
 import os
 from datetime import datetime
@@ -37,7 +38,7 @@ def test_generate_filename_increments_sequence():
         assert filename == f"REQ-{today}-003-VML-Shanghai.md"
 
 
-from server import generate_markdown
+from utils import generate_markdown
 
 def test_generate_markdown_new_laptop():
     data = {
