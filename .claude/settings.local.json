@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/Users/chunyuanlu/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.5/skills/brainstorming/scripts/start-server.sh --project-dir /Users/chunyuanlu/WebApp/wpp-work/Application --port 8900)",
+      "Bash(/Users/chunyuanlu/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.5/skills/brainstorming/scripts/start-server.sh --project-dir /Users/chunyuanlu/WebApp/wpp-work/Application)",
+      "Bash(python3 -m venv venv)",
+      "Bash(source venv/bin/activate)",
+      "Bash(pip install -r requirements.txt)",
+      "Bash(venv/bin/pytest tests/test_server.py -v)",
+      "Bash(python3 -c \":*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(chmod +x start.sh stop.sh)",
+      "Bash(brew install poppler)",
+      "Bash(pip3 install pymupdf)",
+      "Bash(pip install openpyxl)",
+      "Bash(venv/bin/pip install openpyxl)",
+      "Bash(pip3 list)",
+      "Bash(python -m pytest tests/ -v)",
+      "Bash(venv/bin/python3 -c \":*)"
+    ]
+  }
+}

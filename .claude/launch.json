@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "flask-server",
+      "runtimeExecutable": "/Users/chunyuanlu/WebApp/wpp-work/Application/venv/bin/python",
+      "runtimeArgs": ["server.py"],
+      "port": 8900
+    }
+  ]
+}
