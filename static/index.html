@@ -737,20 +737,35 @@ function sidebarLogout() {
           var dtRadio = document.querySelector('input[name="deviceType"][value="' + d.deviceType + '"]');
           if (dtRadio) { dtRadio.checked = true; dtRadio.dispatchEvent(new Event('change', {bubbles: true})); }
         }
-        // Device selection after cards render
-        setTimeout(function() {
-          var cards = document.querySelectorAll('.device-card');
-          cards.forEach(function(card, idx) {
-            var nameEl = card.querySelector('.device-name');
-            if (nameEl && nameEl.textContent === d.laptopModel) {
-              selectDevice(idx);
+        // Device selection after cards render — retry until found
+        var _editData = d;
+        function trySelectDevice(attempt) {
+          if (attempt > 20) return; // give up after 2 seconds
+          var persona = val('eucPersona');
+          var dtype = _editData.deviceType || 'laptop';
+          var catalog = dtype === 'desktop' ? EUC_DEVICES.desktops : EUC_DEVICES.laptops;
+          var devices = catalog[persona] || [];
+          var matched = false;
+          // Match by MPN first, then by model name
+          for (var i = 0; i < devices.length; i++) {
+            if ((_editData.selectedDeviceMpn && devices[i].mpn === _editData.selectedDeviceMpn) ||
+                (!_editData.selectedDeviceMpn && devices[i].name === _editData.laptopModel)) {
+              selectDevice(i);
+              matched = true;
+              break;
             }
-          });
-          if (d.quantity) document.getElementById('quantity').value = d.quantity;
-          if (d.specs) document.getElementById('specs').value = d.specs;
+          }
+          if (!matched && devices.length === 0) {
+            setTimeout(function() { trySelectDevice(attempt + 1); }, 100);
+            return;
+          }
+          // Restore quantity, specs, and macOS justification after device is selected
+          if (_editData.quantity) document.getElementById('quantity').value = _editData.quantity;
+          if (_editData.specs) document.getElementById('specs').value = _editData.specs;
           var macJust = document.getElementById('macOsJustification');
-          if (macJust && d.macOsJustification) macJust.value = d.macOsJustification;
-        }, 500);
+          if (macJust && _editData.macOsJustification) macJust.value = _editData.macOsJustification;
+        }
+        setTimeout(function() { trySelectDevice(0); }, 200);
 
         // Step 5: Cost & Sourcing
         var lcField = document.getElementById('localCurrency');
