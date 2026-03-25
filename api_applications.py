@@ -38,8 +38,38 @@ def _app_to_dict(app_doc):
     }
 
 
-# IMPORTANT: /export MUST be defined before /<app_id> to prevent Flask
-# from matching "export" as an app_id value.
+# IMPORTANT: /export and /batch-status MUST be defined before /<app_id>
+# to prevent Flask from matching them as an app_id value.
+
+@applications_bp.route('/api/applications/batch-status', methods=['POST'])
+@login_required
+def batch_update_status():
+    """Batch update the status of multiple applications. Admin only."""
+    if not current_user.is_admin:
+        return jsonify({'success': False, 'error': 'Admin access required'}), 403
+
+    data = request.get_json()
+    if not data:
+        return jsonify({'success': False, 'error': 'No data provided'}), 400
+
+    ids = data.get('ids', [])
+    status = data.get('status', '')
+    if not ids or status not in ('approved', 'rejected', 'submitted'):
+        return jsonify({'success': False, 'error': 'Invalid ids or status'}), 400
+
+    try:
+        oids = [ObjectId(i) for i in ids]
+    except Exception:
+        return jsonify({'success': False, 'error': 'Invalid IDs'}), 400
+
+    db = get_db()
+    now = datetime.now(timezone.utc)
+    result = db.applications.update_many(
+        {'_id': {'$in': oids}},
+        {'$set': {'status': status, 'updated_at': now}},
+    )
+    return jsonify({'success': True, 'modified': result.modified_count})
+
 
 @applications_bp.route('/api/applications/export', methods=['GET'])
 @login_required
@@ -89,7 +119,17 @@ def list_applications():
     else:
         apps = list(db.applications.find({'user_id': ObjectId(current_user.id)}))
 
-    return jsonify({'success': True, 'applications': [_app_to_dict(a) for a in apps]})
+    # Resolve user_id to user name
+    user_ids = list({a['user_id'] for a in apps})
+    users = {u['_id']: u.get('name', u.get('username', '')) for u in db.users.find({'_id': {'$in': user_ids}})}
+
+    result = []
+    for a in apps:
+        d = _app_to_dict(a)
+        d['submitted_by'] = users.get(a['user_id'], '')
+        result.append(d)
+
+    return jsonify({'success': True, 'applications': result})
 
 
 @applications_bp.route('/api/applications', methods=['POST'])

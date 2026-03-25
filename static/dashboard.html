@@ -445,6 +445,7 @@ html:not(.dark) .alert-success { background: #dcfce7; color: #166534; }
             <option>Peclersparis</option>
             <option>Landor</option>
             <option>Design Bridge</option>
+            <option>BCW</option>
           </select>
         </div>
         <div>
@@ -603,9 +604,18 @@ var I18N = {
     'opco': 'OpCo',
     'device_model': 'Device Model',
     'quantity': 'Quantity',
+    'status': 'Status',
     'date': 'Date',
     'actions': 'Actions',
     'submitted_by': 'Submitted By',
+    'search_apps': 'Search applications...',
+    'batch_approve': 'Approve',
+    'batch_reject': 'Reject',
+    'batch_submit': 'Reset to Submitted',
+    'batch_success': 'Status updated successfully',
+    'status_submitted': 'Submitted',
+    'status_approved': 'Approved',
+    'status_rejected': 'Rejected',
     'view': 'View',
     'edit': 'Edit',
     'delete': 'Delete',
@@ -659,9 +669,18 @@ var I18N = {
     'opco': '运营公司',
     'device_model': '设备型号',
     'quantity': '数量',
+    'status': '状态',
     'date': '日期',
     'actions': '操作',
     'submitted_by': '提交人',
+    'search_apps': '搜索申请...',
+    'batch_approve': '批准',
+    'batch_reject': '驳回',
+    'batch_submit': '重置为提交',
+    'batch_success': '状态更新成功',
+    'status_submitted': '已提交',
+    'status_approved': '已批准',
+    'status_rejected': '已驳回',
     'view': '查看',
     'edit': '编辑',
     'delete': '删除',
@@ -906,9 +925,153 @@ async function loadApplications(showAll) {
   }
 }
 
+var _currentApps = [];
+var _currentShowUser = false;
+var _sortField = 'date';
+var _sortAsc = false;
+
+function statusLabel(s) {
+  if (s === 'approved') return t('status_approved');
+  if (s === 'rejected') return t('status_rejected');
+  return t('status_submitted');
+}
+function statusStyle(s) {
+  if (s === 'approved') return 'background:#dcfce7;color:#166534;';
+  if (s === 'rejected') return 'background:#fef2f2;color:#991b1b;';
+  return 'background:var(--badge-bg);color:var(--c-on-surface);';
+}
+
+function sortApps(field) {
+  if (_sortField === field) { _sortAsc = !_sortAsc; } else { _sortField = field; _sortAsc = true; }
+  renderApplicationsTable();
+}
+
+function filterAppsTable() {
+  var q = (document.getElementById('appSearchInput') || {}).value || '';
+  q = q.toLowerCase().trim();
+  var rows = document.querySelectorAll('#dataTable tbody tr');
+  rows.forEach(function(row) {
+    if (!q) { row.style.display = ''; } else {
+      row.style.display = row.textContent.toLowerCase().indexOf(q) === -1 ? 'none' : '';
+    }
+  });
+}
+
+function getSortedApps() {
+  var apps = _currentApps.slice();
+  var field = _sortField;
+  apps.sort(function(a, b) {
+    var va, vb;
+    if (field === 'request_id') { va = a.request_id || ''; vb = b.request_id || ''; }
+    else if (field === 'opco') { va = (a.data||{}).agency || ''; vb = (b.data||{}).agency || ''; }
+    else if (field === 'model') { va = (a.data||{}).laptopModel || ''; vb = (b.data||{}).laptopModel || ''; }
+    else if (field === 'quantity') { va = parseInt((a.data||{}).quantity)||0; vb = parseInt((b.data||{}).quantity)||0; }
+    else if (field === 'status') { va = a.status || ''; vb = b.status || ''; }
+    else if (field === 'date') { va = a.created_at || ''; vb = b.created_at || ''; }
+    else if (field === 'submitted_by') { va = a.submitted_by || ''; vb = b.submitted_by || ''; }
+    else { va = ''; vb = ''; }
+    if (typeof va === 'number') return _sortAsc ? va - vb : vb - va;
+    va = String(va).toLowerCase(); vb = String(vb).toLowerCase();
+    if (va < vb) return _sortAsc ? -1 : 1;
+    if (va > vb) return _sortAsc ? 1 : -1;
+    return 0;
+  });
+  return apps;
+}
+
+function renderApplicationsTable() {
+  var apps = getSortedApps();
+  var showUser = _currentShowUser;
+  var deviceIcons = {
+    'macbook': 'laptop_mac', 'laptop': 'laptop_mac', 'thinkpad': 'laptop_mac', 'dell latitude': 'laptop_mac', 'hp elitebook': 'laptop_mac',
+    'ipad': 'tablet', 'tablet': 'tablet', 'surface': 'tablet',
+    'imac': 'desktop_windows', 'desktop': 'desktop_windows', 'dell optiplex': 'desktop_windows', 'monitor': 'desktop_windows', 'dell ultrasharp': 'desktop_windows',
+    'headphones': 'headphones', 'sony': 'headphones', 'airpods': 'headphones',
+    'iphone': 'smartphone', 'phone': 'smartphone', 'samsung': 'smartphone',
+  };
+  var rows = apps.map(function(app, idx) {
+    var d = app.data || {};
+    var date = app.created_at ? app.created_at.substring(0, 10) : '';
+    var model = d.laptopModel || '';
+    var specs = d.specs || (d.os || '');
+    var qty = String(d.quantity || '1');
+    if (qty.length === 1) qty = '0' + qty;
+    var userCol = showUser
+      ? '<td class="px-4 py-6 text-sm font-bold text-on-surface whitespace-nowrap">' + esc(app.submitted_by || app.user_id || '') + '</td>'
+      : '';
+    var deviceIcon = 'devices';
+    var modelLower = model.toLowerCase();
+    for (var key in deviceIcons) {
+      if (modelLower.indexOf(key) !== -1) { deviceIcon = deviceIcons[key]; break; }
+    }
+    var iconColors = ['text-primary', 'text-tertiary', 'text-secondary'];
+    var iconColor = iconColors[idx % 3];
+
+    return '<tr class="hover:transition-colors duration-200" style="--hover-bg:var(--table-hover);" ' +
+      'onmouseenter="this.style.background=\'var(--table-hover)\'" onmouseleave="this.style.background=\'transparent\'">' +
+      '<td class="px-4 py-6 text-center"><input type="checkbox" class="row-check accent-primary w-4 h-4 rounded" data-id="' + esc(app.id) + '" onchange="updateExportSelected()"></td>' +
+      '<td class="px-8 py-6 font-mono text-sm text-secondary font-semibold">' + esc(app.request_id) + '</td>' +
+      '<td class="px-4 py-6 text-sm font-bold whitespace-nowrap">' + esc(d.agency || '') + '</td>' +
+      '<td class="px-8 py-6">' +
+        '<div class="flex items-center gap-3">' +
+          '<div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:var(--icon-box-bg);">' +
+            '<span class="material-symbols-outlined ' + iconColor + ' text-xl">' + deviceIcon + '</span>' +
+          '</div>' +
+          '<div>' +
+            '<p class="text-sm font-bold">' + esc(model) + '</p>' +
+            (specs ? '<p class="text-xs text-on-surface-variant">' + esc(specs) + '</p>' : '') +
+          '</div>' +
+        '</div>' +
+      '</td>' +
+      '<td class="px-4 py-6 text-center">' +
+        '<span class="px-3 py-1 rounded-full text-xs font-bold" style="background:var(--badge-bg);">' + esc(qty) + '</span>' +
+      '</td>' +
+      '<td class="px-8 py-6">' +
+        '<span class="px-3 py-1 rounded-full text-xs font-bold" style="' + statusStyle(app.status) + '">' + statusLabel(app.status) + '</span>' +
+      '</td>' +
+      '<td class="px-8 py-6 text-sm text-on-surface-variant">' + esc(date) + '</td>' +
+      userCol +
+      '<td class="px-8 py-6 text-right">' +
+        '<div class="flex items-center justify-end gap-1">' +
+          '<button class="text-primary hover:text-secondary transition-colors p-2 rounded-lg" title="View" onclick="viewApplication(\'' + esc(app.id) + '\')">' +
+            '<span class="material-symbols-outlined text-xl">visibility</span></button>' +
+          '<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-lg" title="PDF" onclick="downloadPdf(\'' + esc(app.id) + '\')">' +
+            '<span class="material-symbols-outlined text-xl">picture_as_pdf</span></button>' +
+          '<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-lg" title="Edit" onclick="editApplication(\'' + esc(app.id) + '\')">' +
+            '<span class="material-symbols-outlined text-xl">edit</span></button>' +
+          '<button class="text-on-surface-variant hover:text-error transition-colors p-2 rounded-lg" title="Delete" onclick="deleteApplication(\'' + esc(app.id) + '\')">' +
+            '<span class="material-symbols-outlined text-xl">delete</span></button>' +
+        '</div>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+
+  var sortIcon = function(field) {
+    if (_sortField !== field) return '<span class="material-symbols-outlined text-xs opacity-30">unfold_more</span>';
+    return _sortAsc
+      ? '<span class="material-symbols-outlined text-xs">arrow_upward</span>'
+      : '<span class="material-symbols-outlined text-xs">arrow_downward</span>';
+  };
+  var userHeader = showUser
+    ? '<th class="px-8 py-5 text-sm font-black uppercase tracking-wider text-primary cursor-pointer select-none" onclick="sortApps(\'submitted_by\')">' + t('submitted_by') + ' ' + sortIcon('submitted_by') + '</th>'
+    : '';
+  var thCls = 'px-8 py-5 text-sm font-black uppercase tracking-wider text-primary cursor-pointer select-none';
+
+  var tbody = document.querySelector('#dataTable tbody');
+  var thead = document.querySelector('#dataTable thead tr');
+  if (tbody) {
+    tbody.innerHTML = rows;
+    filterAppsTable();
+    return;
+  }
+}
+
 function renderApplicationsView(apps, showUser) {
   var title = showUser ? t('all_applications') : t('my_applications');
   var content = document.getElementById('content');
+  _currentApps = apps;
+  _currentShowUser = showUser;
+  _appsList = apps;
 
   var tableHtml;
   if (apps.length === 0) {
@@ -919,102 +1082,56 @@ function renderApplicationsView(apps, showUser) {
         '<p class="text-sm mt-1">' + t('no_apps_desc') + '</p>' +
       '</div>';
   } else {
-    _appsList = apps;
-    var deviceIcons = {
-      'macbook': 'laptop_mac', 'laptop': 'laptop_mac', 'thinkpad': 'laptop_mac', 'dell latitude': 'laptop_mac', 'hp elitebook': 'laptop_mac',
-      'ipad': 'tablet', 'tablet': 'tablet', 'surface': 'tablet',
-      'imac': 'desktop_windows', 'desktop': 'desktop_windows', 'dell optiplex': 'desktop_windows', 'monitor': 'desktop_windows', 'dell ultrasharp': 'desktop_windows',
-      'headphones': 'headphones', 'sony': 'headphones', 'airpods': 'headphones',
-      'iphone': 'smartphone', 'phone': 'smartphone', 'samsung': 'smartphone',
+    var sortIcon = function(field) {
+      if (_sortField !== field) return '<span class="material-symbols-outlined text-xs opacity-30">unfold_more</span>';
+      return _sortAsc
+        ? '<span class="material-symbols-outlined text-xs">arrow_upward</span>'
+        : '<span class="material-symbols-outlined text-xs">arrow_downward</span>';
     };
-
-    var rows = apps.map(function(app, idx) {
-      var d = app.data || {};
-      var date = app.created_at ? app.created_at.substring(0, 10) : '';
-      var model = d.laptopModel || '';
-      var specs = d.specs || (d.os || '');
-      var qty = String(d.quantity || '1');
-      if (qty.length === 1) qty = '0' + qty;
-      var userCol = showUser
-        ? '<td class="px-8 py-6 text-sm font-bold text-on-surface">' + esc(app.submitted_by || app.user_id || '') + '</td>'
-        : '';
-
-      // Determine device icon
-      var deviceIcon = 'devices';
-      var modelLower = model.toLowerCase();
-      for (var key in deviceIcons) {
-        if (modelLower.indexOf(key) !== -1) {
-          deviceIcon = deviceIcons[key];
-          break;
-        }
-      }
-      var iconColors = ['text-primary', 'text-tertiary', 'text-secondary'];
-      var iconColor = iconColors[idx % 3];
-
-      return '<tr class="hover:transition-colors duration-200" style="--hover-bg:var(--table-hover);" ' +
-        'onmouseenter="this.style.background=\'var(--table-hover)\'" onmouseleave="this.style.background=\'transparent\'">' +
-        '<td class="px-4 py-6 text-center"><input type="checkbox" class="row-check accent-primary w-4 h-4 rounded" data-id="' + esc(app.id) + '" onchange="updateExportSelected()"></td>' +
-        '<td class="px-8 py-6 font-mono text-sm text-secondary font-semibold">' + esc(app.request_id) + '</td>' +
-        '<td class="px-8 py-6 text-sm font-bold">' + esc(d.agency || '') + '</td>' +
-        '<td class="px-8 py-6">' +
-          '<div class="flex items-center gap-3">' +
-            '<div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:var(--icon-box-bg);">' +
-              '<span class="material-symbols-outlined ' + iconColor + ' text-xl">' + deviceIcon + '</span>' +
-            '</div>' +
-            '<div>' +
-              '<p class="text-sm font-bold">' + esc(model) + '</p>' +
-              (specs ? '<p class="text-xs text-on-surface-variant">' + esc(specs) + '</p>' : '') +
-            '</div>' +
-          '</div>' +
-        '</td>' +
-        '<td class="px-8 py-6">' +
-          '<span class="px-3 py-1 rounded-full text-xs font-bold" style="background:var(--badge-bg);">' + esc(qty) + '</span>' +
-        '</td>' +
-        '<td class="px-8 py-6 text-sm text-on-surface-variant">' + esc(date) + '</td>' +
-        userCol +
-        '<td class="px-8 py-6 text-right">' +
-          '<div class="flex items-center justify-end gap-1">' +
-            '<button class="text-primary hover:text-secondary transition-colors p-2 rounded-lg" title="View" onclick="viewApplication(\'' + esc(app.id) + '\')">' +
-              '<span class="material-symbols-outlined text-xl">visibility</span></button>' +
-            '<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-lg" title="PDF" onclick="downloadPdf(\'' + esc(app.id) + '\')">' +
-              '<span class="material-symbols-outlined text-xl">picture_as_pdf</span></button>' +
-            '<button class="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-lg" title="Edit" onclick="editApplication(\'' + esc(app.id) + '\')">' +
-              '<span class="material-symbols-outlined text-xl">edit</span></button>' +
-            '<button class="text-on-surface-variant hover:text-error transition-colors p-2 rounded-lg" title="Delete" onclick="deleteApplication(\'' + esc(app.id) + '\')">' +
-              '<span class="material-symbols-outlined text-xl">delete</span></button>' +
-          '</div>' +
-        '</td>' +
-      '</tr>';
-    }).join('');
-
-    var userHeader = showUser
-      ? '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">' + t('submitted_by') + '</th>'
-      : '';
-    var thCls = 'px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary';
+    var thCls = 'px-8 py-5 text-sm font-black uppercase tracking-wider text-primary cursor-pointer select-none whitespace-nowrap';
     tableHtml =
       '<div class="rounded-xl overflow-hidden" style="background:var(--table-bg); box-shadow:var(--table-shadow); border:1px solid var(--table-border);">' +
         '<div class="overflow-x-auto">' +
           '<table class="w-full text-left border-collapse" id="dataTable">' +
             '<thead><tr style="background:var(--table-head-bg);">' +
               '<th class="px-4 py-5 text-center"><input type="checkbox" class="accent-primary w-4 h-4 rounded" onchange="toggleSelectAll(this)"></th>' +
-              '<th class="' + thCls + '">' + t('request_id') + '</th>' +
-              '<th class="' + thCls + '">' + t('opco') + '</th>' +
-              '<th class="' + thCls + '">' + t('device_model') + '</th>' +
-              '<th class="' + thCls + '">' + t('quantity') + '</th>' +
-              '<th class="' + thCls + '">' + t('date') + '</th>' +
-              userHeader +
-              '<th class="' + thCls + ' text-right">' + t('actions') + '</th>' +
+              '<th class="' + thCls + '" onclick="sortApps(\'request_id\')">' + t('request_id') + ' ' + sortIcon('request_id') + '</th>' +
+              '<th class="' + thCls + ' w-24" onclick="sortApps(\'opco\')">' + t('opco') + ' ' + sortIcon('opco') + '</th>' +
+              '<th class="' + thCls + '" onclick="sortApps(\'model\')">' + t('device_model') + ' ' + sortIcon('model') + '</th>' +
+              '<th class="' + thCls + ' w-16" onclick="sortApps(\'quantity\')">' + t('quantity') + ' ' + sortIcon('quantity') + '</th>' +
+              '<th class="' + thCls + '" onclick="sortApps(\'status\')">' + t('status') + ' ' + sortIcon('status') + '</th>' +
+              '<th class="' + thCls + '" onclick="sortApps(\'date\')">' + t('date') + ' ' + sortIcon('date') + '</th>' +
+              (showUser ? '<th class="' + thCls + ' w-32" onclick="sortApps(\'submitted_by\')">' + t('submitted_by') + ' ' + sortIcon('submitted_by') + '</th>' : '') +
+              '<th class="px-8 py-5 text-sm font-black uppercase tracking-wider text-primary text-right">' + t('actions') + '</th>' +
             '</tr></thead>' +
-            '<tbody class="divide-y" style="--tw-divide-opacity:0.1; --tw-divide-color:var(--c-outline-variant);">' + rows + '</tbody>' +
+            '<tbody class="divide-y" style="--tw-divide-opacity:0.1; --tw-divide-color:var(--c-outline-variant);"></tbody>' +
           '</table>' +
         '</div>' +
       '</div>';
   }
 
+  var batchBtns = showUser && apps.length > 0
+    ? '<div id="batchBtns" style="display:none;" class="flex items-center gap-2">' +
+        '<button class="flex items-center gap-1 px-4 py-2 rounded-lg font-bold text-sm transition-all active:scale-95" style="background:#dcfce7;color:#166534;" onclick="batchStatus(\'approved\')">' +
+          '<span class="material-symbols-outlined text-base">check_circle</span>' + t('batch_approve') + '</button>' +
+        '<button class="flex items-center gap-1 px-4 py-2 rounded-lg font-bold text-sm transition-all active:scale-95" style="background:#fef2f2;color:#991b1b;" onclick="batchStatus(\'rejected\')">' +
+          '<span class="material-symbols-outlined text-base">cancel</span>' + t('batch_reject') + '</button>' +
+        '<button class="flex items-center gap-1 px-4 py-2 rounded-lg font-bold text-sm transition-all active:scale-95" style="background:var(--badge-bg);color:var(--c-on-surface);" onclick="batchStatus(\'submitted\')">' +
+          '<span class="material-symbols-outlined text-base">undo</span>' + t('batch_submit') + '</button>' +
+      '</div>'
+    : '';
+
   content.innerHTML =
-    '<div class="flex items-end justify-between mb-6">' +
-      '<h2 class="text-xl font-bold text-on-surface">' + esc(title) + '</h2>' +
-      '<div class="flex items-center gap-3">' +
+    '<div class="flex items-end justify-between mb-6 flex-wrap gap-4">' +
+      '<h2 class="text-3xl font-extrabold text-on-surface">' + esc(title) + '</h2>' +
+      '<div class="flex items-center gap-3 flex-wrap">' +
+        '<div class="relative">' +
+          '<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>' +
+          '<input id="appSearchInput" type="text" placeholder="' + esc(t('search_apps')) + '" oninput="filterAppsTable()" ' +
+            'class="pl-10 pr-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2" ' +
+            'style="background:var(--input-bg); border:1px solid var(--input-border); color:var(--input-text); --tw-ring-color:var(--neon-color); min-width:220px;">' +
+        '</div>' +
+        batchBtns +
         '<button id="exportSelectedBtn" class="flex items-center gap-2 px-5 py-3 rounded-lg font-bold text-sm transition-all duration-300 active:scale-95 bg-primary text-on-primary-container" ' +
           'style="display:none;" onclick="exportSelected()">' +
           '<span class="material-symbols-outlined text-lg">download</span>' + t('export_selected') + ' (<span id="selectedCount">0</span>)</button>' +
@@ -1026,6 +1143,8 @@ function renderApplicationsView(apps, showUser) {
       '</div>' +
     '</div>' +
     tableHtml;
+
+  if (apps.length > 0) renderApplicationsTable();
 }
 
 async function deleteApplication(id) {
@@ -1178,9 +1297,13 @@ function updateExportSelected() {
   var checks = document.querySelectorAll('.row-check:checked');
   var btn = document.getElementById('exportSelectedBtn');
   var count = document.getElementById('selectedCount');
+  var batchBtns = document.getElementById('batchBtns');
   if (btn) {
     btn.style.display = checks.length > 0 ? 'flex' : 'none';
     if (count) count.textContent = checks.length;
+  }
+  if (batchBtns) {
+    batchBtns.style.display = checks.length > 0 ? 'flex' : 'none';
   }
 }
 
@@ -1190,6 +1313,29 @@ function exportSelected() {
   checks.forEach(function(c) { ids.push(c.dataset.id); });
   if (ids.length === 0) { showToast('No applications selected', 'error'); return; }
   window.location.href = '/api/applications/export?ids=' + ids.join(',');
+}
+
+async function batchStatus(status) {
+  var checks = document.querySelectorAll('.row-check:checked');
+  var ids = [];
+  checks.forEach(function(c) { ids.push(c.dataset.id); });
+  if (ids.length === 0) return;
+  try {
+    var res = await fetch('/api/applications/batch-status', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: ids, status: status })
+    });
+    if (!res.ok) {
+      var d = await res.json();
+      showToast(d.error || 'Update failed', 'error');
+      return;
+    }
+    showToast(t('batch_success'));
+    showView(currentView);
+  } catch (err) {
+    showToast('Update failed', 'error');
+  }
 }
 
 // ── User Management ────────────────────────────────────────────────────────
@@ -1255,13 +1401,13 @@ function renderUsersView(users) {
         '<div class="overflow-x-auto">' +
           '<table class="w-full text-left border-collapse" id="dataTable">' +
             '<thead><tr style="background:var(--table-head-bg);">' +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">' + t('username') + '</th>' +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">' + t('full_name') + '</th>' +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">' + t('email') + '</th>' +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">' + t('opco') + '</th>' +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">' + t('market') + '</th>' +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary">' + t('role') + '</th>' +
-              '<th class="px-8 py-5 text-[11px] font-black uppercase tracking-widest text-primary text-right">' + t('actions') + '</th>' +
+              '<th class="px-8 py-5 text-sm font-black uppercase tracking-wider text-primary">' + t('username') + '</th>' +
+              '<th class="px-8 py-5 text-sm font-black uppercase tracking-wider text-primary">' + t('full_name') + '</th>' +
+              '<th class="px-8 py-5 text-sm font-black uppercase tracking-wider text-primary">' + t('email') + '</th>' +
+              '<th class="px-8 py-5 text-sm font-black uppercase tracking-wider text-primary">' + t('opco') + '</th>' +
+              '<th class="px-8 py-5 text-sm font-black uppercase tracking-wider text-primary">' + t('market') + '</th>' +
+              '<th class="px-8 py-5 text-sm font-black uppercase tracking-wider text-primary">' + t('role') + '</th>' +
+              '<th class="px-8 py-5 text-sm font-black uppercase tracking-wider text-primary text-right">' + t('actions') + '</th>' +
             '</tr></thead>' +
             '<tbody class="divide-y" style="--tw-divide-opacity:0.1; --tw-divide-color:var(--c-outline-variant);">' + rows + '</tbody>' +
           '</table>' +

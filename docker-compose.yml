@@ -7,6 +7,13 @@ services:
     volumes:
       - mongodb_data:/data/db
       - app_data:/app/applications
+      - ./server.py:/app/server.py
+      - ./db.py:/app/db.py
+      - ./auth.py:/app/auth.py
+      - ./api_users.py:/app/api_users.py
+      - ./api_applications.py:/app/api_applications.py
+      - ./utils.py:/app/utils.py
+      - ./static:/app/static
     restart: unless-stopped
 
 volumes:
